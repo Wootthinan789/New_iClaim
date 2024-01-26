@@ -1,24 +1,30 @@
-import logo from './logo.svg';
 import './App.css';
+import React from 'react';
+import Signin from './Components/Signin';
+import Home from './Components/Home'
+import Profile from './Components/Profile';
+import { BrowserRouter, Route, Routes } from 'react-router-dom'
 
-function App() {
+const App = () =>{
+ /* const token = localStorage.getItem("accessToken");
+
+  if (!token){
+    return <Signin/>
+  }*/
+
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
-    </div>
+      <div className='wrapper'>
+        <BrowserRouter>
+        <Routes>
+        <Route path="/profile" 
+            element={<Profile />} 
+        />
+        <Route path="/" 
+            element={<Signin />} 
+        />
+        </Routes>
+        </BrowserRouter>
+      </div>
   );
 }
 
