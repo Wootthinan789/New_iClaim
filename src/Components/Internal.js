@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import './Style/Profile.css'
+import './Internal.css'
 import AppBar from '@mui/material/AppBar';
 import Box from '@mui/material/Box';
 import Toolbar from '@mui/material/Toolbar';
@@ -30,7 +30,7 @@ import FailIcon from './images-iclaim/cancel.png';
 let username = "วุฒินันท์ ปรางมาศ";
 const settings = ['กำหนดสิทธิ์', 'Log', 'ออกจากระบบ'];
 
-const Profile = () => {
+const Internal = () => {
   // Loop img and Title API iClaim
   const [countries, setCountries] = useState([]);
   const [loading, setLoading] = useState(true); 
@@ -72,7 +72,6 @@ const Profile = () => {
   const [checkedImages, setCheckedImages] = React.useState({});
   const [selectAllChecked, setSelectAllChecked] = React.useState(false);
   const [anchorElUser, setAnchorElUser] = React.useState(null);
-  const [allImagesSelected, setAllImagesSelected] = useState(false);
 
   const theme = useTheme();
   const isSmallScreen = useMediaQuery(theme.breakpoints.down('sm'));
@@ -115,36 +114,28 @@ const Profile = () => {
 
   const handleImageCheckboxChange = (imageName) => {
     setCheckedImages((prevCheckedImages) => {
-      const newCheckedImages = {
+      const allImagesChecked = Object.values({
+        ...prevCheckedImages,
+        [imageName]: !prevCheckedImages[imageName],
+      }).every((isChecked) => isChecked);
+
+      setSelectAllChecked(allImagesChecked);
+
+      return {
         ...prevCheckedImages,
         [imageName]: !prevCheckedImages[imageName],
       };
-
-      const allImagesChecked = countries.every((country, index) => {
-        const imageName = `iClaim${index + 1}`;
-        return newCheckedImages[imageName];
-      });
-
-      //setAllImagesSelected(allImagesChecked);
-      setSelectAllChecked(allImagesChecked);
-
-      return newCheckedImages;
     });
   };
-  
+
   const handleSelectAllChange = () => {
     const newCheckedImages = {};
-
-    countries.forEach((country, index) => {
-      const imageName = `iClaim${index + 1}`;
-      newCheckedImages[imageName] = !selectAllChecked;
-    });
-
+    for (const key in checkedImages) {
+      newCheckedImages[key] = !selectAllChecked;
+    }
     setCheckedImages(newCheckedImages);
-    setAllImagesSelected(!selectAllChecked);
-    setSelectAllChecked((prev) => !prev);
+    setSelectAllChecked(!selectAllChecked);
   };
-  
 
   const handleResetImages = () => {
     setCheckedImages({});
@@ -249,10 +240,10 @@ const Profile = () => {
           </button>
         </div>
         <div className='Fixlocation'>
-          <button className="Dashboard-Internal-button">Dashboard Internal</button>
+          <button className="Dashboard-Internal-button" style={{ background: '#2D7951' }}>Dashboard Internal</button>
         </div>
         <div className='Fixlocation'>
-          <button className="Dashboard-Internal-button" style={{ background: '#2D7951' }}>Dashboard External</button>
+          <button className="Dashboard-Internal-button">Dashboard External</button>
         </div>
         <div className='Fixlocation'>
           <DatePicker className='Dashboard-Internal-button-date'
@@ -260,6 +251,7 @@ const Profile = () => {
         </div>
       </div>
       <Card className='cardStyle' style={{backgroundColor:'#D9D9D9', boxShadow:'none', borderRadius:'15px'}}>
+        <div>
         {loading ? ( // ตรวจสอบสถานะการโหลดข้อมูล
         <p style={{textAlign:"center"}}>Loading...</p>
       ) : countries && countries.length > 0 ? ( // ตรวจสอบว่ามีข้อมูลอยู่หรือไม่
@@ -274,7 +266,7 @@ const Profile = () => {
                       icon={<RadioButtonUncheckedIcon />}
                       checkedIcon={<CheckCircleIcon />}
                       inputProps={{ 'aria-label': 'primary checkbox' }}
-                      checked={selectAllChecked || checkedImages[`iClaim${index + 1}`]}
+                      checked={checkedImages[`iClaim${index + 1}`]}
                       onChange={() => handleImageCheckboxChange(`iClaim${index + 1}`)}
                       size="small"
                     />
@@ -301,7 +293,7 @@ const Profile = () => {
                 }
               />
               <img
-                src={country.img_6}
+                src={country.img_7}
                 alt={`iClaim${index + 1}`}
                 style={{
                   width: '80%',
@@ -352,6 +344,7 @@ const Profile = () => {
       ) : (
         <p style={{textAlign:"center", fontFamily: "'Kanit', sans-serif", fontSize: isSmallScreen ? '8px' : '20px',}}>ไม่มีข้อมูลสําหรับวันที่เลือก</p>
       )}
+        </div>
       </Card>
       <div className='container-approve-reject'>
         <div className='Fixlocation-approve-reject'>
@@ -365,4 +358,4 @@ const Profile = () => {
   );
 };
 
-export default Profile;
+export default Internal;

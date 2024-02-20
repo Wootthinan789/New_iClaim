@@ -1,4 +1,5 @@
-import React, { useState, useEffect } from 'react';
+//import React, { useEffect } from 'react';
+import React , { useState } from 'react';
 import './Style/Profile.css'
 import AppBar from '@mui/material/AppBar';
 import Box from '@mui/material/Box';
@@ -20,59 +21,39 @@ import RadioButtonUncheckedIcon from '@mui/icons-material/RadioButtonUnchecked';
 import Modal from '@mui/material/Modal';
 import Button from '@mui/material/Button';
 import { useMediaQuery, useTheme } from '@mui/material';
-import DatePicker from 'react-datepicker';
-import 'react-datepicker/dist/react-datepicker.css';
+
 import logo from './images-iclaim/download (2).png';
+import iClaim1 from './images-iclaim/iClaim/messageImage_1707382667071.jpg';
+import iClaim2 from './images-iclaim/iClaim/2.png';
 import HomeIcon from './images-iclaim/home-regular-60.png';
 import SuccessIcon from './images-iclaim/checked.png';
 import FailIcon from './images-iclaim/cancel.png';
 
+//Test Date
+import DatePicker from 'react-datepicker';
+import 'react-datepicker/dist/react-datepicker.css';
+
+
 let username = "วุฒินันท์ ปรางมาศ";
 const settings = ['กำหนดสิทธิ์', 'Log', 'ออกจากระบบ'];
 
-const Profile = () => {
-  // Loop img and Title API iClaim
-  const [countries, setCountries] = useState([]);
-  const [loading, setLoading] = useState(true); 
-  
+const Profile_test = () => {
   const [selectedDate, setSelectedDate] = useState(new Date());
-  const [putdate, setPutDate] = useState(selectedDate.toISOString().slice(0, 10));
   const handleDateChange = date => {
     setSelectedDate(date);
-    const formattedDate = date.toISOString().slice(0, 10);
-    setPutDate(formattedDate);
   };
-
-  useEffect(() => {
-    const fetchCountries = async () => {
-      try {
-        const response = await fetch(`http://rpa-apiprd.inet.co.th:443/iClaim/list?date_on=${putdate}`);
-        const data = await response.json();
-        if (!Array.isArray(data) || data.length === 0) {
-          setCountries([]);
-          setLoading(false);
-        } else {
-          setCountries(data);
-          setLoading(false);
-        }
-      } catch (error) {
-        console.error('Error fetching countries:', error);
-        setLoading(false);
-      }
-    };
-
-    fetchCountries();
-  }, [putdate]);
 
   const [notification, setNotification] = useState({ message: '', show: false });
   const [darkBackground, setDarkBackground] = useState(false); 
   const [openModal, setOpenModal] = React.useState(false);
   const [rejectReason, setRejectReason] = React.useState('');
   const [rejectedImage, setRejectedImage] = React.useState(null);
-  const [checkedImages, setCheckedImages] = React.useState({});
+  const [checkedImages, setCheckedImages] = React.useState({
+    iClaim1: false,
+    iClaim2: false,
+  });
   const [selectAllChecked, setSelectAllChecked] = React.useState(false);
   const [anchorElUser, setAnchorElUser] = React.useState(null);
-  const [allImagesSelected, setAllImagesSelected] = useState(false);
 
   const theme = useTheme();
   const isSmallScreen = useMediaQuery(theme.breakpoints.down('sm'));
@@ -89,19 +70,16 @@ const Profile = () => {
   };
 
   const handleRejectConfirm = () => {
-    if (!rejectReason) {
-      console.error('Reject Reason is required');
-      return;
-    }
-    if (!rejectedImage) {
-      console.error('Rejected Image is required');
-      return;
-    }
+    const formData = new FormData();
+    formData.append('reason', rejectReason);
+    formData.append('image', rejectedImage);
 
-    // ส่งข้อมูลไปยัง API หรือทำอย่างอื่นตามที่ต้องการ
+    console.log('Reject Reason:', rejectReason);
+    console.log('Rejected Image:', rejectedImage);
 
     setRejectReason('');
     setRejectedImage(null);
+
     setOpenModal(false);
   };
 
@@ -115,41 +93,34 @@ const Profile = () => {
 
   const handleImageCheckboxChange = (imageName) => {
     setCheckedImages((prevCheckedImages) => {
-      const newCheckedImages = {
+      const allImagesChecked = Object.values({
+        ...prevCheckedImages,
+        [imageName]: !prevCheckedImages[imageName],
+      }).every((isChecked) => isChecked);
+
+      setSelectAllChecked(allImagesChecked);
+
+      return {
         ...prevCheckedImages,
         [imageName]: !prevCheckedImages[imageName],
       };
-
-      const allImagesChecked = countries.every((country, index) => {
-        const imageName = `iClaim${index + 1}`;
-        return newCheckedImages[imageName];
-      });
-
-      //setAllImagesSelected(allImagesChecked);
-      setSelectAllChecked(allImagesChecked);
-
-      return newCheckedImages;
     });
   };
-  
+
   const handleSelectAllChange = () => {
-    const newCheckedImages = {};
-
-    countries.forEach((country, index) => {
-      const imageName = `iClaim${index + 1}`;
-      newCheckedImages[imageName] = !selectAllChecked;
-    });
-
-    setCheckedImages(newCheckedImages);
-    setAllImagesSelected(!selectAllChecked);
     setSelectAllChecked((prev) => !prev);
+    setCheckedImages({
+      iClaim1: !selectAllChecked,
+      iClaim2: !selectAllChecked,
+    });
   };
-  
 
   const handleResetImages = () => {
-    setCheckedImages({});
+    setCheckedImages({
+      iClaim1: false,
+      iClaim2: false,
+    });
     setSelectAllChecked(false);
-    window.location.reload();
   };
 
   const handleApproveButtonClick = () => {
@@ -161,12 +132,16 @@ const Profile = () => {
       setDarkBackground(false); 
     }, 2500);
   };
-
-  const handleLogout = () => {
-    localStorage.removeItem("accessToken");
-    localStorage.removeItem("user");
-    window.location.href = "/";
-  };
+  
+  // useEffect(() => {
+  //   document.body.style.paddingRight = '0px';
+  //   document.body.style.overflow = 'visible';
+    
+  //   return () => {
+  //     document.body.style.paddingRight = '';
+  //     document.body.style.overflow = '';
+  //   };
+  // }, []);
 
   return (
     <div className='containerStype'>
@@ -209,7 +184,7 @@ const Profile = () => {
               onClose={handleCloseUserMenu}
             >
               {settings.map((setting) => (
-                <MenuItem key={setting} onClick={setting === 'ออกจากระบบ' ? handleLogout : handleCloseUserMenu}>
+                <MenuItem key={setting} onClick={handleCloseUserMenu}>
                   <Typography variant="h1" style={{ fontSize: isSmallScreen ? '8px' : '16px', margin: isSmallScreen ? '0' :'0' }}>{setting}</Typography>
                 </MenuItem>
               ))}
@@ -252,21 +227,22 @@ const Profile = () => {
           <button className="Dashboard-Internal-button">Dashboard Internal</button>
         </div>
         <div className='Fixlocation'>
-          <button className="Dashboard-Internal-button" style={{ background: '#2D7951' }}>Dashboard External</button>
+          <button className="Dashboard-Internal-button" style={{ background: '#2D7951' }}>Dashboard external</button>
         </div>
         <div className='Fixlocation'>
-          <DatePicker className='Dashboard-Internal-button-date'
-           selected={selectedDate} onChange={handleDateChange} dateFormat="dd/MM/yyyy"/>
-        </div>
+        <DatePicker className='Dashboard-Internal-button-date'
+         selected={selectedDate} onChange={handleDateChange} dateFormat="dd/MM/yyyy"/>
+      </div>
+
+        {/* <div className='Fixlocation'>
+          <button className="Dashboard-Internal-button">14/11/2567</button>
+        </div> */}
+
       </div>
       <Card className='cardStyle' style={{backgroundColor:'#D9D9D9', boxShadow:'none', borderRadius:'15px'}}>
-        {loading ? ( // ตรวจสอบสถานะการโหลดข้อมูล
-        <p style={{textAlign:"center"}}>Loading...</p>
-      ) : countries && countries.length > 0 ? ( // ตรวจสอบว่ามีข้อมูลอยู่หรือไม่
         <CardContent>
-        <FormGroup>
-          {countries.map((country, index) => ( 
-            <div key={index} style={{ marginBottom: '20px', textAlign: 'center', position: 'relative' }}>
+          <FormGroup>
+            <div style={{ marginBottom: '20px', textAlign: 'center', position: 'relative' }}>
               <FormControlLabel
                 control={
                   <label className="custom-checkbox">
@@ -274,8 +250,8 @@ const Profile = () => {
                       icon={<RadioButtonUncheckedIcon />}
                       checkedIcon={<CheckCircleIcon />}
                       inputProps={{ 'aria-label': 'primary checkbox' }}
-                      checked={selectAllChecked || checkedImages[`iClaim${index + 1}`]}
-                      onChange={() => handleImageCheckboxChange(`iClaim${index + 1}`)}
+                      checked={selectAllChecked || checkedImages.iClaim1}
+                      onChange={() => handleImageCheckboxChange('iClaim1')}
                       size="small"
                     />
                     <span className="checkmark"></span>
@@ -285,24 +261,24 @@ const Profile = () => {
                   <Typography
                     style={{
                       fontWeight: 'bold',
-                      background: checkedImages[`iClaim${index + 1}`] ? '#1768C4' : '#FFFF',
+                      background: checkedImages.iClaim1 ? '#1768C4' : '#FFFF',
                       borderRadius: '10px',
                       borderWidth: '10px',
                       fontFamily: "'Kanit', sans-serif",
                       marginTop: '5px',
                       padding: isSmallScreen ? '5px' : '10px',
                       margin: isSmallScreen ? '0px 5px':'0px 15px',
-                      fontSize: isSmallScreen ? '8px' : '20px',
-                      color: checkedImages[`iClaim${index + 1}`] ? '#FFFF' : 'black',
+                      fontSize: isSmallScreen ? '8px' : '16px',
+                      color: checkedImages.iClaim1 ? '#FFFF' : 'black',
                     }}
                   >
-                    {country.title}
+                    1.สรุปยอดเคลมประกันผ่าน iClaim โรงพยาบาลไทยนครินทร์  ข้อมูล  ณ วันที่ 11/01/2024 เวลา 23:59 น.
                   </Typography>
                 }
               />
               <img
-                src={country.img_6}
-                alt={`iClaim${index + 1}`}
+                src={iClaim1}
+                alt="iClaim1"
                 style={{
                   width: '80%',
                   height: '50%',
@@ -313,45 +289,88 @@ const Profile = () => {
                 }}
               />
             </div>
-          ))}
-        </FormGroup>
-        <FormControlLabel 
-          style={{ 
-            padding: isSmallScreen ? '0px 2px 0px' : '0px 10px 0px',
-            marginTop: isSmallScreen ? '0px ' : '10px' 
-          }}
-          control={
-            <label className="custom-checkbox">
-              <Checkbox
-                icon={<RadioButtonUncheckedIcon />}
-                checkedIcon={<CheckCircleIcon />}
-                inputProps={{ 'aria-label': 'primary checkbox' }}
-                checked={selectAllChecked}
-                onChange={handleSelectAllChange}
-                size="small"
+
+            <div style={{ textAlign: 'center', position: 'relative' }}>
+              <FormControlLabel
+                control={
+                  <label className="custom-checkbox">
+                    <Checkbox
+                      icon={<RadioButtonUncheckedIcon />}
+                      checkedIcon={<CheckCircleIcon />}
+                      inputProps={{ 'aria-label': 'primary checkbox' }}
+                      checked={selectAllChecked || checkedImages.iClaim2}
+                      onChange={() => handleImageCheckboxChange('iClaim2')}
+                      size="small"
+                    />
+                    <span className="checkmark"></span>
+                  </label>
+                }
+                label={
+                  <Typography
+                    style={{
+                      fontWeight: 'bold',
+                      fontFamily: "'Kanit', sans-serif",
+                      marginTop: '5px',
+                      background: checkedImages.iClaim2 ? '#1768C4' : '#FFFF',
+                      borderRadius: '10px',
+                      padding: isSmallScreen ? '5px' : '10px',
+                      margin: isSmallScreen ? '0px 5px':'0px 15px',
+                      fontSize: isSmallScreen ? '8px' : '16px',
+                      color: checkedImages.iClaim2 ? '#FFFF' : 'black',
+                    }}
+                  >
+                    2.สรุปยอดเคลมประกันผ่าน iClaim โรงพยาบาลไทยนครินทร์  ข้อมูล  ณ วันที่ 11/01/2024 เวลา 23:59 น.
+                  </Typography>
+                }
               />
-              <span className="checkmark"></span>
-            </label>
-          }
-          label={
-            <Typography
-              style={{
-                fontWeight: 'bold',
-                fontFamily: "'Kanit', sans-serif",
-                marginTop: '5px',
-                margin: isSmallScreen ? '0px 0px 2px' : '0px 7px',
-                fontSize: isSmallScreen ? '10px':'18px',
-                color: selectAllChecked ? '#1768C4' : 'black',
-              }}
-            >
-              Select All
-            </Typography>
-          }
-        />
-      </CardContent>
-      ) : (
-        <p style={{textAlign:"center", fontFamily: "'Kanit', sans-serif", fontSize: isSmallScreen ? '8px' : '20px',}}>ไม่มีข้อมูลสําหรับวันที่เลือก</p>
-      )}
+              <img
+                src={iClaim2}
+                alt="iClaim2"
+                style={{
+                  width: '80%',
+                  height: '50%',
+                  objectFit: 'cover',
+                  borderRadius: '0 0 8px 8px',
+                  paddingTop: isSmallScreen ? '3px':'10px',
+                  paddingLeft: isSmallScreen ? '10px' : '0px',
+                }}
+              />
+            </div>
+          </FormGroup>
+          <FormControlLabel 
+            style={{ 
+              padding: isSmallScreen ? '0px 2px 0px' : '0px 10px 0px',
+              marginTop: isSmallScreen ? '0px ' : '10px' 
+            }}
+            control={
+              <label className="custom-checkbox">
+                <Checkbox
+                  icon={<RadioButtonUncheckedIcon />}
+                  checkedIcon={<CheckCircleIcon />}
+                  inputProps={{ 'aria-label': 'primary checkbox' }}
+                  checked={selectAllChecked}
+                  onChange={handleSelectAllChange}
+                  size="small"
+                />
+                <span className="checkmark"></span>
+              </label>
+            }
+            label={
+              <Typography
+                style={{
+                  fontWeight: 'bold',
+                  fontFamily: "'Kanit', sans-serif",
+                  marginTop: '5px',
+                  margin: isSmallScreen ? '0px 0px 2px' : '0px 7px',
+                  fontSize: isSmallScreen ? '10px':'18px',
+                  color: selectAllChecked ? '#1768C4' : 'black',
+                }}
+              >
+                Select All
+              </Typography>
+            }
+          />
+        </CardContent>
       </Card>
       <div className='container-approve-reject'>
         <div className='Fixlocation-approve-reject'>
@@ -365,4 +384,4 @@ const Profile = () => {
   );
 };
 
-export default Profile;
+export default Profile_test;

@@ -1,0 +1,53 @@
+body.active-modal {
+    overflow-y: hidden;
+}
+
+.btn-modal {
+    padding: 10px 20px;
+    display: block;
+    margin: 100px auto 0;
+    font-size: 18px;
+}
+
+.modal, .overlay {
+    width: 100vw;
+    height: 100vh;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    position: fixed;
+}
+
+.overlay {
+    background: rgba(77, 77, 77, 0.8);
+}
+
+.modal-content {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    line-height: 1.4;
+    background: #f1f1f1;
+    padding: 14px 20px;
+    border-radius: 15px;
+    max-width: 600px;
+    min-width: 300px;
+}
+
+.close-modal {
+    margin: 15px 0 2.5px;
+    border: none; /* ปรับค่าให้เป็น none จาก 1px */
+    padding: 10px;
+    border-radius: 15px;
+    margin-left: auto;
+    background: #b9dbef;
+    color: black;
+    text-shadow: 0 1px 3px rgba(208, 183, 183, 0.913);
+    box-shadow: 0 0px 2px #828181;
+    cursor: pointer;
+    display: block;
+    font-size: 15px;
+    width: fit-content; /* เปลี่ยนค่าให้เป็น fit-content เพื่อให้ปุ่มมีขนาดเพียงพอต่อเนื้อหา */
+}
