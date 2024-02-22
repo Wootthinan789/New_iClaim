@@ -7,7 +7,7 @@ import Grid from '@material-ui/core/Grid';
 import Typography from '@material-ui/core/Typography';
 import { makeStyles } from '@material-ui/core/styles';
 import swal from 'sweetalert';
-import './Signin.css';
+import './Style/Signin.css';
 import backgroundImg from './images-iclaim/blur-hospital.jpg';
 import iconiclaim from './images-iclaim/download (2).png';
 
@@ -36,12 +36,24 @@ const useStyles = makeStyles((theme) => ({
 }));
 
 async function loginUser(credentials) {
-  return fetch('https://www.melivecode.com/api/login', {
+  const { username, password } = credentials;
+  const clientId = '885';
+  const secretKey = 'TW0rWlcSRxKkkLWxBHQF6gTkeQDIEWchsswv34fh';
+  
+  const body = {
+    grant_type: "password",
+    username,
+    password,
+    client_id: clientId,
+    client_secret: secretKey
+  };
+
+  return fetch('https://one.th/api/oauth/getpwd', {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json'
     },
-    body: JSON.stringify(credentials)
+    body: JSON.stringify(body)
   })
     .then(data => data.json())
  }
@@ -59,7 +71,7 @@ const Signin = () => {
       "expiresIn": 60000
     });
     console.log(response)
-    if ('accessToken' in response) {
+    if ('access_token' in response) {
       swal({
         text: 'Login Success',
         icon: 'success',
@@ -67,9 +79,9 @@ const Signin = () => {
         timer: 2000,
       })
       .then((value) => {
-        localStorage.setItem('accessToken', response['accessToken']);
-        localStorage.setItem('user', JSON.stringify(response['user']));
-        window.location.href = "/profile";
+        localStorage.setItem('access_token', response['access_token']);
+        localStorage.setItem('username', JSON.stringify(response));
+        window.location.href = "/Dashboard/External";
       });
     } else {
       swal({

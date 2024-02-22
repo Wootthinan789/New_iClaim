@@ -3,7 +3,7 @@
   }
   /*แยก Style จาก*/
   .containerStype{
-    background-image: url('./images-iclaim/blur-hospital.jpg');
+    background-image: url('../images-iclaim/blur-hospital.jpg');
     background-size: cover;
     background-repeat: no-repeat;
     background-position: center;
@@ -14,6 +14,48 @@
     align-items: center;
     overflow: hidden;
   }
+  .Text_Log{
+    position: absolute;
+    top: 0;
+    background: none;
+    margin: 180px 2px;
+    font-size: 24px;
+    font-weight: 900;
+  }
+  /*-------------------------------*/
+  .background_log{
+    display: flex;
+    gap: 0;
+    margin-top: 10px;
+    font-size: 16px;
+    font-weight: 700;
+    font-family: 'Kanit', sans-serif;
+  }
+  .box_insert_data1{
+    display: flex;
+    gap: 0;
+  }
+  .insert_date1{
+    background: #ffffff;
+    width: 25%;
+    padding: 10px;
+    text-align: center;
+  }
+  .box_insert_data2{
+
+    display: flex;
+    font-family: 'Kanit', sans-serif;
+    align-items: flex-start; /* จัดให้เริ่มต้นที่ด้านบน */
+    justify-content: center; /* จัดให้อยู่กึ่งกลางตามแนวนอน */
+    font-size: 16px;
+    font-weight: 700;
+    gap: 0;
+  }
+  .insert_date2{
+    width: 25%;
+    text-align: center;
+  }
+    /*-------------------------------*/
   .appBarStyle{
     position:static;
     width: 100%;
@@ -23,6 +65,10 @@
     width: 90%;
     height: 60%;
     overflow-y: auto;
+  }
+  .cardStyle_Log {
+    width: 90%;
+    height: 500px;
   }
   .BoxStyle {
     position: absolute;
@@ -163,6 +209,15 @@
   .custom-checkbox {
     background-color: rgb(255, 255, 255);
     border-radius: 50%;
+    align-items: center;
+  }
+  .custom-checkbox1 {
+    display: flex;
+    align-items: flex-start;
+    justify-content: center;
+    padding: 5px 50px;
+    width: 90%;
+    height: 60%;
   }
   
   .button-Approve {
@@ -339,11 +394,12 @@
     .modalStyle {
         width: 80%;
     }
+    
   }
   
   @media (max-width: 480px) {
     .containerStype{
-      background-image: url('./images-iclaim/blur-hospital.jpg');
+      background-image: url('../images-iclaim/blur-hospital.jpg');
       background-size: cover;
       min-height: 100vh;
       display: flex;
@@ -351,6 +407,48 @@
       align-items: center;
       width: auto;
     }
+    /*-------------------------------*/
+   .Text_Log{
+    position: absolute;
+    top: 0;
+    background: none;
+    margin: 109px 2px;
+    font-size: 12px;
+    font-weight: 900;
+  }
+   .background_log{
+    display: flex;
+    gap: 0;
+    margin-top: 1px;
+    font-size: 8px;
+    font-weight: 700;
+    font-family: 'Kanit', sans-serif;
+  }
+  .box_insert_data1{
+    display: flex;
+    gap: 0;
+  }
+  .insert_date1{
+    background: #ffffff;
+    width: 25%;
+    padding: 3px;
+    text-align: center;
+  }
+  .box_insert_data2{
+
+    display: flex;
+    font-family: 'Kanit', sans-serif;
+    align-items: flex-start; /* จัดให้เริ่มต้นที่ด้านบน */
+    justify-content: center; /* จัดให้อยู่กึ่งกลางตามแนวนอน */
+    font-size: 6px;
+    font-weight: 700;
+    gap: 0;
+  }
+  .insert_date2{
+    width: 25%;
+    text-align: center;
+  }
+    /*-------------------------------*/
     .logoStyle {
       height: 40px;
       margin-right: 5px;
@@ -556,10 +654,16 @@
       border: none;
       display: flex;
     }
+    .custom-checkbox1 {
+      display: flex;
+      padding: 2px 0px;
+      width: auto;
+      height: 20%;
+    }
   }
   @media (max-width: 420px) {
     .containerStype{
-      background-image: url('./images-iclaim/blur-hospital.jpg');
+      background-image: url('../images-iclaim/blur-hospital.jpg');
       background-size: cover;
       min-height: 100vh;
       display: flex;

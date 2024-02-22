@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import './Style/Profile.css'
+import './Style/Profile.css';
 import AppBar from '@mui/material/AppBar';
 import Box from '@mui/material/Box';
 import Toolbar from '@mui/material/Toolbar';
@@ -13,12 +13,10 @@ import KeyboardArrowDownIcon from '@mui/icons-material/KeyboardArrowDown';
 import Card from '@mui/material/Card';
 import CardContent from '@mui/material/CardContent';
 import FormGroup from '@mui/material/FormGroup';
-import Checkbox from '@mui/material/Checkbox';
 import FormControlLabel from '@mui/material/FormControlLabel';
-import CheckCircleIcon from '@mui/icons-material/CheckCircle';
-import RadioButtonUncheckedIcon from '@mui/icons-material/RadioButtonUnchecked';
 import Modal from '@mui/material/Modal';
 import Button from '@mui/material/Button';
+import Checkbox from '@mui/material/Checkbox';
 import { useMediaQuery, useTheme } from '@mui/material';
 import DatePicker from 'react-datepicker';
 import 'react-datepicker/dist/react-datepicker.css';
@@ -26,21 +24,111 @@ import logo from './images-iclaim/download (2).png';
 import HomeIcon from './images-iclaim/home-regular-60.png';
 import SuccessIcon from './images-iclaim/checked.png';
 import FailIcon from './images-iclaim/cancel.png';
+import { useNavigate } from 'react-router-dom';
+import RadioButtonUncheckedIcon from '@mui/icons-material/RadioButtonUnchecked';
+import CheckCircleIcon from '@mui/icons-material/CheckCircle';
 
-let username = "วุฒินันท์ ปรางมาศ";
+//let username = "วุฒินันท์ ปรางมาศ";
 const settings = ['กำหนดสิทธิ์', 'Log', 'ออกจากระบบ'];
 
 const Profile = () => {
-  // Loop img and Title API iClaim
   const [countries, setCountries] = useState([]);
-  const [loading, setLoading] = useState(true); 
-  
+  const [loading, setLoading] = useState(true);
   const [selectedDate, setSelectedDate] = useState(new Date());
   const [putdate, setPutDate] = useState(selectedDate.toISOString().slice(0, 10));
-  const handleDateChange = date => {
+  const [notification, setNotification] = useState({ message: '', show: false });
+  const [darkBackground, setDarkBackground] = useState(false);
+  const [openModal, setOpenModal] = useState(false);
+  const [rejectReason, setRejectReason] = useState('');
+  const [rejectedImage, setRejectedImage] = useState(null);
+  const [anchorElUser, setAnchorElUser] = useState(null);
+  const [checkedItems, setCheckedItems] = useState({});
+  const usernameJson = JSON.parse(localStorage.getItem('username'));
+
+  const theme = useTheme();
+  const isSmallScreen = useMediaQuery(theme.breakpoints.down('sm'));
+
+  const handleDateChange = (date) => {
     setSelectedDate(date);
     const formattedDate = date.toISOString().slice(0, 10);
     setPutDate(formattedDate);
+  };
+
+  const navigate = useNavigate();
+  const handleDashboardInternalClick = () => {
+      navigate('/Dashboard/Internal')
+    };
+
+  const handleRejectButtonClick = () => {
+    setOpenModal(true);
+  };
+
+  const handleCloseModal = () => {
+    setRejectReason('');
+    setRejectedImage(null);
+    setOpenModal(false);
+  };
+
+  const handleRejectConfirm = () => {
+    if (!rejectReason) {
+      console.error('Reject Reason is required');
+      return;
+    }
+    if (!rejectedImage) {
+      console.error('Rejected Image is required');
+      return;
+    }
+
+    setRejectReason('');
+    setRejectedImage(null);
+    setOpenModal(false);
+  };
+
+  const handleOpenUserMenu = (event) => {
+    setAnchorElUser(event.currentTarget);
+  };
+
+  const handleCloseUserMenu = () => {
+    setAnchorElUser(null);
+  };
+
+  const handleApproveButtonClick = () => {
+    setNotification({ message: 'ยืนยันเรียบร้อยแล้ว', show: true });
+    setDarkBackground(true);
+
+    setTimeout(() => {
+      setNotification({ message: '', show: false });
+      setDarkBackground(false);
+    }, 2500);
+  };
+
+  const handleLogout = () => {
+    localStorage.removeItem("access_token");
+    localStorage.removeItem("username");
+    window.location.href = "/";
+  };
+
+  const handleLogClick = () => {
+    navigate('/Log')
+  }
+
+  const handleCheckboxChange = (event, index) => {
+    setCheckedItems({
+      ...checkedItems,
+      [index]: event.target.checked
+    });
+  };
+
+  const handleSelectAllCheckboxChange = (event) => {
+    const newCheckedItems = {};
+    countries.forEach((_, index) => {
+      newCheckedItems[index] = event.target.checked;
+    });
+    setCheckedItems(newCheckedItems);
+  };
+
+  const handleReload = () => {
+    window.location.reload();
   };
 
   useEffect(() => {
@@ -64,135 +152,40 @@ const Profile = () => {
     fetchCountries();
   }, [putdate]);
 
-  const [notification, setNotification] = useState({ message: '', show: false });
-  const [darkBackground, setDarkBackground] = useState(false); 
-  const [openModal, setOpenModal] = React.useState(false);
-  const [rejectReason, setRejectReason] = React.useState('');
-  const [rejectedImage, setRejectedImage] = React.useState(null);
-  const [checkedImages, setCheckedImages] = React.useState({});
-  const [selectAllChecked, setSelectAllChecked] = React.useState(false);
-  const [anchorElUser, setAnchorElUser] = React.useState(null);
-  const [allImagesSelected, setAllImagesSelected] = useState(false);
-
-  const theme = useTheme();
-  const isSmallScreen = useMediaQuery(theme.breakpoints.down('sm'));
-
-  const handleRejectButtonClick = () => {
-    setOpenModal(true);
-  };
-
-  const handleCloseModal = () => {
-    setRejectReason('');
-    setRejectedImage(null);
-
-    setOpenModal(false);
-  };
-
-  const handleRejectConfirm = () => {
-    if (!rejectReason) {
-      console.error('Reject Reason is required');
-      return;
-    }
-    if (!rejectedImage) {
-      console.error('Rejected Image is required');
-      return;
-    }
-
-    // ส่งข้อมูลไปยัง API หรือทำอย่างอื่นตามที่ต้องการ
-
-    setRejectReason('');
-    setRejectedImage(null);
-    setOpenModal(false);
-  };
-
-  const handleOpenUserMenu = (event) => {
-    setAnchorElUser(event.currentTarget);
-  };
-
-  const handleCloseUserMenu = () => {
-    setAnchorElUser(null);
-  };
-
-  const handleImageCheckboxChange = (imageName) => {
-    setCheckedImages((prevCheckedImages) => {
-      const newCheckedImages = {
-        ...prevCheckedImages,
-        [imageName]: !prevCheckedImages[imageName],
-      };
-
-      const allImagesChecked = countries.every((country, index) => {
-        const imageName = `iClaim${index + 1}`;
-        return newCheckedImages[imageName];
-      });
-
-      //setAllImagesSelected(allImagesChecked);
-      setSelectAllChecked(allImagesChecked);
-
-      return newCheckedImages;
+  useEffect(() => {
+    const initialCheckedItems = {};
+    countries.forEach((_, index) => {
+      initialCheckedItems[index] = false;
     });
-  };
-  
-  const handleSelectAllChange = () => {
-    const newCheckedImages = {};
-
-    countries.forEach((country, index) => {
-      const imageName = `iClaim${index + 1}`;
-      newCheckedImages[imageName] = !selectAllChecked;
-    });
-
-    setCheckedImages(newCheckedImages);
-    setAllImagesSelected(!selectAllChecked);
-    setSelectAllChecked((prev) => !prev);
-  };
-  
-
-  const handleResetImages = () => {
-    setCheckedImages({});
-    setSelectAllChecked(false);
-    window.location.reload();
-  };
-
-  const handleApproveButtonClick = () => {
-    setNotification({ message: 'ยืนยันเรียบร้อยแล้ว', show: true });
-    setDarkBackground(true); 
-
-    setTimeout(() => {
-      setNotification({ message: '', show: false });
-      setDarkBackground(false); 
-    }, 2500);
-  };
-
-  const handleLogout = () => {
-    localStorage.removeItem("accessToken");
-    localStorage.removeItem("user");
-    window.location.href = "/";
-  };
+    setCheckedItems(initialCheckedItems);
+  }, [countries]);
 
   return (
     <div className='containerStype'>
-      <AppBar position="static" className='appBarStyle' style={{backgroundColor: 'white',boxShadow: 'none',}}>
+      <AppBar position="static" className='appBarStyle' style={{ backgroundColor: 'white', boxShadow: 'none', }}>
         <Toolbar>
           <Box className='BoxStyle'>
-            <img src={logo} alt="Logo" className='logoStyle'/>
+            <img src={logo} alt="Logo" className='logoStyle' />
           </Box>
           <Box sx={{ flexGrow: 1 }} />
-          <Box className = 'Box1'>
+          <Box className='Box1'>
             <Tooltip>
               <IconButton onClick={handleOpenUserMenu} sx={{ p: 0 }}>
                 <Box className='Box2'>
                   <Avatar
                     alt="Remy Sharp"
-                    src="https://1.bp.blogspot.com/-2PZ5N_3DEhY/VWGBjmg_yiI/AAAAAAAAAdo/OBu_pBiqAr4/s1600/mdicth4.jpg"
+                    //src="https://1.bp.blogspot.com/-2PZ5N_3DEhY/VWGBjmg_yiI/AAAAAAAAAdo/OBu_pBiqAr4/s1600/mdicth4.jpg"
                     className='Avatar-img'
                   />
-                  <Typography variant="body1" style={{fontSize: isSmallScreen ? '8px' : '16px', fontWeight: 'bold', fontFamily: "'Kanit', sans-serif"}}>
-                    {username}
+                  <Typography variant="body1" style={{ fontSize: isSmallScreen ? '8px' : '16px', fontWeight: 'bold', fontFamily: "'Kanit', sans-serif" }}>
+                    {usernameJson.username}
                   </Typography>
                   <KeyboardArrowDownIcon />
                 </Box>
               </IconButton>
             </Tooltip>
             <Menu
+              style={{position:'fixed'}}
               className='Menu-list'
               id="menu-appbar"
               anchorEl={anchorElUser}
@@ -207,11 +200,29 @@ const Profile = () => {
               }}
               open={Boolean(anchorElUser)}
               onClose={handleCloseUserMenu}
+              PaperProps={{
+                style: {
+                  maxHeight:isSmallScreen ? '' : '200px', // ปรับสูงความสูงตามที่ต้องการ
+                  width: isSmallScreen ? '100px' : '150px', // ปรับความกว้างตามที่ต้องการ
+                },
+              }}
             >
               {settings.map((setting) => (
-                <MenuItem key={setting} onClick={setting === 'ออกจากระบบ' ? handleLogout : handleCloseUserMenu}>
-                  <Typography variant="h1" style={{ fontSize: isSmallScreen ? '8px' : '16px', margin: isSmallScreen ? '0' :'0' }}>{setting}</Typography>
-                </MenuItem>
+                <MenuItem key={setting} 
+                //className='Menu-list-icon'
+                style={{    
+                  padding: isSmallScreen ? '0 5px' : '8px 12px',}} // ปรับขนาดของ MenuItem
+                onClick={setting === 'ออกจากระบบ' ? handleLogout : setting === 'Log' ? handleLogClick : null}
+                
+              >
+                <Typography       
+                style={{
+                  padding: isSmallScreen ? '0 12px' : '0 10px',
+                  fontSize: isSmallScreen ? '12px' : '16px',
+                  margin: isSmallScreen ? '1px 0' : '0 0',
+                  }}
+                  >{setting}</Typography>
+              </MenuItem>
               ))}
             </Menu>
           </Box>
@@ -224,7 +235,7 @@ const Profile = () => {
         aria-describedby="modal-modal-description"
       >
         <Box className="modalStyle">
-          <img src={FailIcon} alt="Fail Icon" style={{ marginRight: '10px' }} className='FailIcon-img'/>
+          <img src={FailIcon} alt="Fail Icon" style={{ marginRight: '10px' }} className='FailIcon-img' />
           <p>ปฎิเสธ</p>
           <input type="text" value={rejectReason} onChange={(e) => setRejectReason(e.target.value)} />
           <input type="file" accept="image/*" onChange={(e) => setRejectedImage(e.target.files[0])} />
@@ -237,121 +248,117 @@ const Profile = () => {
       </Modal>
       {notification.show && (
         <div className="notification">
-          <img src={SuccessIcon} alt="Success Icon" className='SuccessIcon-img'/>
+          <img src={SuccessIcon} alt="Success Icon" className='SuccessIcon-img' />
           <p>{notification.message}</p>
         </div>
       )}
-      {darkBackground && <div className="dark-background"></div>} 
+      {darkBackground && <div className="dark-background"></div>}
       <div className='container'>
         <div className='Fixlocation'>
-          <button onClick={handleResetImages} >
-            <img src={HomeIcon} alt="HomeIcon" className='homeicon'/>
+          <button onClick={handleReload}>
+            <img src={HomeIcon} alt="HomeIcon" className='homeicon' />
           </button>
         </div>
         <div className='Fixlocation'>
-          <button className="Dashboard-Internal-button">Dashboard Internal</button>
+          <button className="Dashboard-Internal-button" onClick={handleDashboardInternalClick}>Dashboard Internal</button>
         </div>
         <div className='Fixlocation'>
           <button className="Dashboard-Internal-button" style={{ background: '#2D7951' }}>Dashboard External</button>
         </div>
         <div className='Fixlocation'>
           <DatePicker className='Dashboard-Internal-button-date'
-           selected={selectedDate} onChange={handleDateChange} dateFormat="dd/MM/yyyy"/>
+            selected={selectedDate} onChange={handleDateChange} dateFormat="dd/MM/yyyy" />
         </div>
       </div>
-      <Card className='cardStyle' style={{backgroundColor:'#D9D9D9', boxShadow:'none', borderRadius:'15px'}}>
-        {loading ? ( // ตรวจสอบสถานะการโหลดข้อมูล
-        <p style={{textAlign:"center"}}>Loading...</p>
-      ) : countries && countries.length > 0 ? ( // ตรวจสอบว่ามีข้อมูลอยู่หรือไม่
-        <CardContent>
-        <FormGroup>
-          {countries.map((country, index) => ( 
-            <div key={index} style={{ marginBottom: '20px', textAlign: 'center', position: 'relative' }}>
+      <Card className='cardStyle' style={{ backgroundColor: '#D9D9D9', boxShadow: 'none', borderRadius: '15px' }}>
+        {loading ? (
+          <p style={{ textAlign: "center" }}>Loading...</p>
+        ) : countries && countries.length > 0 ? (
+          <CardContent>
+            {countries.map((country, index) => (
+              <div key={index} style={{ marginBottom: '20px', textAlign: 'center', position: 'relative' }}>
+                <FormGroup row >
+                  <FormControlLabel className="custom-checkbox1"
+                    control={
+                      <label className="custom-checkbox" >
+                        <Checkbox
+                          icon={<RadioButtonUncheckedIcon />}
+                          checkedIcon={<CheckCircleIcon />}
+                          checked={checkedItems[index] || false}
+                          onChange={(event) => handleCheckboxChange(event, index)}
+                          size="small"
+                        />
+                        <span className='checkmark'></span>
+                      </label>
+                    }
+                    label={
+                      <Typography
+                        style={{
+                          fontWeight: 'bold',
+                          background: checkedItems[index] ? '#1768C4' : '#FFFF',
+                          borderRadius: '10px',
+                          borderWidth: '10px',
+                          fontFamily: "'Kanit', sans-serif",
+                          marginTop: '5px',
+                          padding: isSmallScreen ? '5px' : '10px',
+                          margin: isSmallScreen ? '0px 5px' : '0px 15px',
+                          fontSize: isSmallScreen ? '8px' : '16px',
+                          color: checkedItems[index] ? '#FFFF' : 'black',
+                        }}
+                      >
+                        {country.title}
+                      </Typography>
+                    }
+                  />
+                </FormGroup>
+                <img
+                  src={country.img_6}
+                  alt={`iClaim${index + 1}`}
+                  style={{
+                    width: '80%',
+                    height: '50%',
+                    objectFit: 'cover',
+                    borderRadius: '0 0 8px 8px',
+                    paddingTop: isSmallScreen ? '3px' : '10px',
+                    paddingLeft: isSmallScreen ? '10px' : '0px',
+                  }}
+                />
+              </div>
+            ))}
+            <FormGroup row>
               <FormControlLabel
                 control={
-                  <label className="custom-checkbox">
+                  <label className="custom-checkbox" >
                     <Checkbox
                       icon={<RadioButtonUncheckedIcon />}
                       checkedIcon={<CheckCircleIcon />}
-                      inputProps={{ 'aria-label': 'primary checkbox' }}
-                      checked={selectAllChecked || checkedImages[`iClaim${index + 1}`]}
-                      onChange={() => handleImageCheckboxChange(`iClaim${index + 1}`)}
+                      checked={Object.values(checkedItems).every(Boolean)}
+                      onChange={handleSelectAllCheckboxChange}
                       size="small"
                     />
-                    <span className="checkmark"></span>
+                    <span className='checkmark'></span>
                   </label>
+
                 }
                 label={
                   <Typography
                     style={{
                       fontWeight: 'bold',
-                      background: checkedImages[`iClaim${index + 1}`] ? '#1768C4' : '#FFFF',
-                      borderRadius: '10px',
-                      borderWidth: '10px',
                       fontFamily: "'Kanit', sans-serif",
                       marginTop: '5px',
-                      padding: isSmallScreen ? '5px' : '10px',
-                      margin: isSmallScreen ? '0px 5px':'0px 15px',
-                      fontSize: isSmallScreen ? '8px' : '20px',
-                      color: checkedImages[`iClaim${index + 1}`] ? '#FFFF' : 'black',
+                      margin: isSmallScreen ? '0px 0px 2px' : '0px 7px',
+                      fontSize: isSmallScreen ? '10px' : '18px',
                     }}
                   >
-                    {country.title}
+                    Select All
                   </Typography>
                 }
               />
-              <img
-                src={country.img_6}
-                alt={`iClaim${index + 1}`}
-                style={{
-                  width: '80%',
-                  height: '50%',
-                  objectFit: 'cover',
-                  borderRadius: '0 0 8px 8px',
-                  paddingTop: isSmallScreen ? '3px':'10px',
-                  paddingLeft: isSmallScreen ? '10px' : '0px',
-                }}
-              />
-            </div>
-          ))}
-        </FormGroup>
-        <FormControlLabel 
-          style={{ 
-            padding: isSmallScreen ? '0px 2px 0px' : '0px 10px 0px',
-            marginTop: isSmallScreen ? '0px ' : '10px' 
-          }}
-          control={
-            <label className="custom-checkbox">
-              <Checkbox
-                icon={<RadioButtonUncheckedIcon />}
-                checkedIcon={<CheckCircleIcon />}
-                inputProps={{ 'aria-label': 'primary checkbox' }}
-                checked={selectAllChecked}
-                onChange={handleSelectAllChange}
-                size="small"
-              />
-              <span className="checkmark"></span>
-            </label>
-          }
-          label={
-            <Typography
-              style={{
-                fontWeight: 'bold',
-                fontFamily: "'Kanit', sans-serif",
-                marginTop: '5px',
-                margin: isSmallScreen ? '0px 0px 2px' : '0px 7px',
-                fontSize: isSmallScreen ? '10px':'18px',
-                color: selectAllChecked ? '#1768C4' : 'black',
-              }}
-            >
-              Select All
-            </Typography>
-          }
-        />
-      </CardContent>
-      ) : (
-        <p style={{textAlign:"center", fontFamily: "'Kanit', sans-serif", fontSize: isSmallScreen ? '8px' : '20px',}}>ไม่มีข้อมูลสําหรับวันที่เลือก</p>
-      )}
+            </FormGroup>
+          </CardContent>
+        ) : (
+          <p style={{ textAlign: "center", fontFamily: "'Kanit', sans-serif", fontSize: isSmallScreen ? '8px' : '20px', }}>ไม่มีข้อมูลสําหรับวันที่เลือก</p>
+        )}
       </Card>
       <div className='container-approve-reject'>
         <div className='Fixlocation-approve-reject'>

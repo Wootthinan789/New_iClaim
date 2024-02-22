@@ -7,9 +7,9 @@ import Grid from '@material-ui/core/Grid';
 import Typography from '@material-ui/core/Typography';
 import { makeStyles } from '@material-ui/core/styles';
 import swal from 'sweetalert';
-import './Components/Signin.css';
-import backgroundImg from './Components/images-iclaim/blur-hospital.jpg';
-import iconiclaim from './Components/images-iclaim/download (2).png';
+import './Style/Signin.css';
+import backgroundImg from './images-iclaim/blur-hospital.jpg';
+import iconiclaim from './images-iclaim/download (2).png';
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -36,7 +36,7 @@ const useStyles = makeStyles((theme) => ({
 }));
 
 async function loginUser(credentials) {
-  return fetch('https://www.mecallapi.com/api/login', {
+  return fetch('https://www.melivecode.com/api/login', {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json'
@@ -46,7 +46,7 @@ async function loginUser(credentials) {
     .then(data => data.json())
  }
 
-export default function Signin() {
+const Signin = () => {
   const classes = useStyles();
   const [username, setUserName] = useState('');
   const [password, setPassword] = useState('');
@@ -55,20 +55,29 @@ export default function Signin() {
     e.preventDefault();
     const response = await loginUser({
       username,
-      password
+      password,
+      "expiresIn": 60000
     });
+    console.log(response)
     if ('accessToken' in response) {
-      swal("Success", response.message, "success", {
+      swal({
+        text: 'Login Success',
+        icon: 'success',
         buttons: false,
         timer: 2000,
       })
       .then((value) => {
         localStorage.setItem('accessToken', response['accessToken']);
         localStorage.setItem('user', JSON.stringify(response['user']));
-        window.location.href = "/profile";
+        window.location.href = "/Dashboard/External";
       });
     } else {
-      swal("Failed", response.message, "error");
+      swal({
+        text: 'Login Fail!!',
+        icon: 'error',
+        buttons: false,
+        timer:2000
+      });
     }
   }
 
@@ -141,3 +150,4 @@ export default function Signin() {
     </Grid>
   );
 }
+export default Signin;
