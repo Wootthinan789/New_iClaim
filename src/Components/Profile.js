@@ -21,6 +21,7 @@ import { useMediaQuery, useTheme } from '@mui/material';
 import DatePicker from 'react-datepicker';
 import 'react-datepicker/dist/react-datepicker.css';
 import logo from './images-iclaim/download (2).png';
+import employee from './images-iclaim/employee.png'
 import HomeIcon from './images-iclaim/home-regular-60.png';
 import SuccessIcon from './images-iclaim/checked.png';
 import FailIcon from './images-iclaim/cancel.png';
@@ -29,7 +30,7 @@ import RadioButtonUncheckedIcon from '@mui/icons-material/RadioButtonUnchecked';
 import CheckCircleIcon from '@mui/icons-material/CheckCircle';
 
 //let username = "วุฒินันท์ ปรางมาศ";
-const settings = ['กำหนดสิทธิ์', 'Log', 'ออกจากระบบ'];
+const settings = ['กำหนดสิทธิ์','แก้ไขโรงพยาบาล' , 'Log', 'ออกจากระบบ'];
 
 const Profile = () => {
   const [countries, setCountries] = useState([]);
@@ -112,11 +113,23 @@ const Profile = () => {
     navigate('/Log')
   }
 
+  const handleEdithospitalClick = () => {
+    navigate('/Edit/Hospital')
+  }
+
   const handleCheckboxChange = (event, index) => {
     setCheckedItems({
       ...checkedItems,
       [index]: event.target.checked
     });
+    console.log(countries)
+    if ((event.target.checked) === true) {
+      const checkboxData = countries[index];
+      const id_hospital = checkboxData.id_hospital;
+      const img_6_Array = checkboxData.img_6;
+      console.log('id_hospital : ',id_hospital);
+      console.log('img_6_Array : ',img_6_Array);
+    }
   };
 
   const handleSelectAllCheckboxChange = (event) => {
@@ -125,6 +138,7 @@ const Profile = () => {
       newCheckedItems[index] = event.target.checked;
     });
     setCheckedItems(newCheckedItems);
+    console.log(countries)
   };
 
   const handleReload = () => {
@@ -172,11 +186,11 @@ const Profile = () => {
             <Tooltip>
               <IconButton onClick={handleOpenUserMenu} sx={{ p: 0 }}>
                 <Box className='Box2'>
-                  <Avatar
-                    alt="Remy Sharp"
-                    //src="https://1.bp.blogspot.com/-2PZ5N_3DEhY/VWGBjmg_yiI/AAAAAAAAAdo/OBu_pBiqAr4/s1600/mdicth4.jpg"
-                    className='Avatar-img'
-                  />
+                    <Avatar
+                            alt="employee.png"
+                            src={employee}
+                            className='Avatar-img'
+                    />
                   <Typography variant="body1" style={{ fontSize: isSmallScreen ? '8px' : '16px', fontWeight: 'bold', fontFamily: "'Kanit', sans-serif" }}>
                     {usernameJson.username}
                   </Typography>
@@ -203,7 +217,7 @@ const Profile = () => {
               PaperProps={{
                 style: {
                   maxHeight:isSmallScreen ? '' : '200px', // ปรับสูงความสูงตามที่ต้องการ
-                  width: isSmallScreen ? '100px' : '150px', // ปรับความกว้างตามที่ต้องการ
+                  width: isSmallScreen ? '108px' : '150px', // ปรับความกว้างตามที่ต้องการ
                 },
               }}
             >
@@ -212,11 +226,12 @@ const Profile = () => {
                 //className='Menu-list-icon'
                 style={{    
                   padding: isSmallScreen ? '0 5px' : '8px 12px',}} // ปรับขนาดของ MenuItem
-                onClick={setting === 'ออกจากระบบ' ? handleLogout : setting === 'Log' ? handleLogClick : null}
+                onClick={setting === 'ออกจากระบบ' ? handleLogout : setting === 'Log' ? handleLogClick : setting === 'แก้ไขโรงพยาบาล' ? handleEdithospitalClick : null}
                 
               >
                 <Typography       
                 style={{
+                  fontFamily: "'Kanit', sans-serif",
                   padding: isSmallScreen ? '0 12px' : '0 10px',
                   fontSize: isSmallScreen ? '12px' : '16px',
                   margin: isSmallScreen ? '1px 0' : '0 0',

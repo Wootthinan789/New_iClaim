@@ -80,6 +80,7 @@ const Signin = () => {
       })
       .then((value) => {
         localStorage.setItem('access_token', response['access_token']);
+        localStorage.setItem('account_id', response['account_id']);
         localStorage.setItem('username', JSON.stringify(response));
         window.location.href = "/Dashboard/External";
       });
