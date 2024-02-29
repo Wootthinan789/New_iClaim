@@ -19,17 +19,21 @@ import employee from './images-iclaim/employee.png'
 import HomeIcon from './images-iclaim/home-regular-60.png';
 import { useNavigate } from 'react-router-dom';
 import axios from "axios";
+import Dialog from '@mui/material/Dialog';
+import DialogTitle from '@mui/material/DialogTitle';
+import DialogContent from '@mui/material/DialogContent';
+import DialogActions from '@mui/material/DialogActions';
+import Button from '@mui/material/Button';
 
 const usernameJson = JSON.parse(localStorage.getItem('username'));
 const settings = ['กำหนดสิทธิ์','แก้ไขโรงพยาบาล' , 'Log', 'ออกจากระบบ'];
 
 const Edit_hospital = () => {
-
     const [anchorElUser, setAnchorElUser] = useState(null);
-
-    const [ListHospital, setListHospital] = useState([]); // Corrected variable name
+    const [ListHospital, setListHospital] = useState([]);
     const [loading, setLoading] = useState(true);
     const [searchTerm, setSearchTerm] = useState('');
+    const [selectedHospital, setSelectedHospital] = useState(null);
 
     const theme = useTheme();
     const isSmallScreen = useMediaQuery(theme.breakpoints.down('sm'));
@@ -70,7 +74,7 @@ const Edit_hospital = () => {
       const fetchData = async () => {
         try {
           const response = await axios.get('http://localhost:443/iClaim/list/hospital');
-          setListHospital(response.data); // Corrected function call
+          setListHospital(response.data);
           setLoading(false);
         } catch (error) {
           console.error('Error fetching data:', error);
@@ -84,6 +88,10 @@ const Edit_hospital = () => {
     const filteredData = ListHospital ? ListHospital.filter(item => {
       return item.hospital.toLowerCase().includes(searchTerm.toLowerCase());
     }) : [];
+
+    const handleOpenEditDialog = (hospital) => {
+        setSelectedHospital(hospital);
+    };
 
     return (
       <div className='containerStype'>
@@ -126,8 +134,8 @@ const Edit_hospital = () => {
                 onClose={handleCloseUserMenu}
                 PaperProps={{
                     style: {
-                      maxHeight:isSmallScreen ? '' : '200px', // ปรับสูงความสูงตามที่ต้องการ
-                      width: isSmallScreen ? '108px' : '150px', // ปรับความกว้างตามที่ต้องการ
+                      maxHeight:isSmallScreen ? '' : '200px', 
+                      width: isSmallScreen ? '108px' : '150px', 
                     },
                   }}
               >
@@ -166,8 +174,9 @@ const Edit_hospital = () => {
         </div>
         <Card className='cardStyle_EditHospital' style={{ backgroundColor: '#D9D9D9', boxShadow: 'none', borderRadius: '15px' }}>
             <div>
-          <h1 style={{ textAlign: "center" }}>รายชื่อ โรงพยาบาล</h1>
+          <h1 className='hard_title'>รายชื่อ โรงพยาบาล</h1>
           <input
+          className='Search_Style'
             type="text"
             placeholder="ค้นหาด้วยชื่อโรงพยาบาล"
             value={searchTerm}
@@ -176,31 +185,66 @@ const Edit_hospital = () => {
           {loading ? (
             <p>Loading...</p>
           ) : (
-            <div>
-              <table>
+            <div className='hard_name'>
+              <table className='table_Style'>
                 <thead>
                   <tr>
-                    <th>Name Hospital</th>
-                    <th>Token</th>
+                    <th className='Name_Hospital_Style' style={{ padding: '5px'}}>Name Hospital</th>
+                    <th className='Token_Style' style={{ padding: '5px' }}>Token</th>
+                    <th >
+                      <button className='button_Add_Hospital' >เพิ่ม</button>
+                    </th>
                   </tr>
                 </thead>
-                <tbody className="scrollable-container">
+                <tbody>
                   {filteredData.map((item, index) => (
                     <tr key={index}>
-                      <td>{item.hospital}</td>
-                      <td>{item.token}</td>
+                      <td className='data_Style'>{item.hospital}</td>
+                      <td className='data_Style'>{item.token}</td>
+                      <td className='data_Style'>
+                        <button className='button_Edit' onClick={() => handleOpenEditDialog(item)}>แก้ไข</button>
+                      </td>
+                      <td className='data_Style'>
+                        <button className='button_Delete' onClick={() => handleOpenEditDialog(item)}>ลบ</button>
+                      </td>
                     </tr>
                   ))}
                 </tbody>
               </table>
             </div>
+
           )}
         </div>
           </Card>
-
+        <EditHospitalDialog
+          open={!!selectedHospital}
+          handleClose={() => setSelectedHospital(null)}
+          hospital={selectedHospital}
+        />
       </div>
       
     );
   };
+
+    const EditHospitalDialog = ({ open, handleClose, hospital }) => {
+      const handleEdit = () => {
+        console.log("Editing hospital:", hospital);
+        handleClose();
+      };
+
+      return (
+        <Dialog open={open} onClose={handleClose}>
+          <DialogTitle>แก้ไขโรงพยาบาล</DialogTitle>
+          <DialogContent>
+            <p>ข้อมูลโรงพยาบาล: {hospital?.hospital}</p>
+            <p>Token: {hospital?.token}</p>
+          </DialogContent>
+          <DialogActions>
+            <Button onClick={handleClose}>ยกเลิก</Button>
+            <Button onClick={handleEdit}>บันทึก</Button>
+          </DialogActions>
+        </Dialog>
+      );
+    };
 
 export default Edit_hospital;

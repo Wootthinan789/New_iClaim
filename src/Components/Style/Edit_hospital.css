@@ -1,3 +1,94 @@
+.font_text_Edit_hospital{
+  font-family: 'Kanit', sans-serif;
+  font-size: 16px;
+}
+.hard_title {
+  text-align: center; /* จัดข้อความให้อยู่ตรงกลาง */
+  margin-top: 20px; /* เพิ่มระยะห่างด้านบน */
+  margin-bottom: 20px; /* เพิ่มระยะห่างด้านล่าง */
+  background-color: #F2F2F2; /* กำหนดสีพื้นหลัง */
+  padding: 10px; /* เพิ่มช่องว่างรอบข้อความ */
+  border-radius: 10px; /* กำหนดขอบมน */
+  width: 40%; /* กำหนดความกว้างของข้อความ */
+  margin-left: auto; /* จัดตำแหน่งข้อความให้อยู่กึ่งกลาง */
+  margin-right: auto; /* จัดตำแหน่งข้อความให้อยู่กึ่งกลาง */
+  word-wrap: break-word; /* แบ่งข้อความที่ยาวเกินไป */
+  font-family: 'Kanit', sans-serif;
+}
+.cardStyle_EditHospital {
+  width: 90%;
+  height: auto;
+  overflow-y: auto;
+}
+.hard_name{
+  display: grid;
+  place-items: center;
+}
+.Name_Hospital_Style{
+  background-color: #F2F2F2;
+  border-radius: 8px 0 0 8px;
+  width: auto;
+  font-weight: 700;
+  font-family: 'Kanit', sans-serif;
+}
+.Token_Style{
+  background-color: #F2F2F2;
+  border-radius: 0 8px 8px 0;;
+  font-family: 'Kanit', sans-serif;
+  font-weight: 700;
+}
+.data_Style{
+  padding: 10px;
+  text-align: center;
+  background-color: none;
+}
+.table_Style{
+  margin-top: 10px;
+  border-collapse: collapse;
+  border-spacing: 0;
+  width: 80%;
+}
+.button_Edit{
+  background-color: #1480d3;
+  border-radius: 10px;
+  width: 50px;
+  color: #ffffff;
+  cursor: pointer;
+  font-family: 'Kanit', sans-serif;
+}
+.button_Delete{
+  background-color: #d31414;
+  color: #ffffff;
+  cursor: pointer;
+  border-radius: 10px;
+  font-family: 'Kanit', sans-serif;
+  width: 50px;
+}
+.Search_Style {
+  text-align: center;
+  margin-left: 43%;
+  border: none; /* ลบขอบ */
+  outline: none; /* ลบขอบนอก */
+  border-radius: 10px;
+  width: 200px; /* ปรับขนาดความกว้างตามที่ต้องการ */
+  height: 25px; /* ปรับขนาดความสูงตามที่ต้องการ */
+  font-size: 14px; /* ปรับขนาดตัวอักษรตามที่ต้องการ */
+  font-family: 'Kanit', sans-serif;
+  font-weight: 600;
+}
+.button_Add_Hospital{
+  background-color: rgb(13, 107, 21);
+  font-family: 'Kanit', sans-serif;
+  border-radius: 10px;
+  margin-left: auto; /* จัดตำแหน่งข้อความให้อยู่กึ่งกลาง */
+  margin-right: auto; /* จัดตำแหน่งข้อความให้อยู่กึ่งกลาง */
+  cursor: pointer;
+  width:  60px;
+  color: #ffffff;
+  height: 30px;
+  font-size: 16px;
+}
+
 .background-profile {
     background-image: url();
   }

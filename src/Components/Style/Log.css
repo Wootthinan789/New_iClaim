@@ -26,7 +26,6 @@
     min-width: 120;
     background-color: none;
     font-family: 'Kanit', sans-serif;
-    font-weight: 700;
     text-align: center;
     font-size: 16px;
   }
@@ -68,6 +67,7 @@
     position:static;
     width: 100%;
     padding: 15px;
+    z-index: 1000;
   }
   .cardStyle {
     width: 90%;
@@ -145,15 +145,17 @@
     max-width: 50%;
     cursor: pointer;
   }
+  .homeicon:hover {
+    transform: scale(1.22);
+  }
   .file_export{
     position: relative;
     bottom: 0;
     left: 95%;
     cursor: pointer;
   }
-  
-  .homeicon:hover {
-    transform: scale(1.22);
+  .file_export:hover {
+    transform: scale(1.05);
   }
   
   .Fixlocation {
