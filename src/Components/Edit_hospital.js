@@ -11,7 +11,6 @@ import Tooltip from '@mui/material/Tooltip';
 import MenuItem from '@mui/material/MenuItem';
 import KeyboardArrowDownIcon from '@mui/icons-material/KeyboardArrowDown';
 import Card from '@mui/material/Card';
-import CardContent from '@mui/material/CardContent';
 import { useMediaQuery, useTheme } from '@mui/material';
 import 'react-datepicker/dist/react-datepicker.css';
 import logo from './images-iclaim/download (2).png';
@@ -38,6 +37,9 @@ const Edit_hospital = () => {
     const [newHospitalData, setNewHospitalData] = useState({ hospital: '', token: '' });
     const [deleteConfirmationDialogOpen, setDeleteConfirmationDialogOpen] = useState(false);
     const [hospitalToDelete, setHospitalToDelete] = useState(null);
+    
+    const [editedHospitalData, setEditedHospitalData] = useState({ hospital: '', token: '' });
+
 
     const theme = useTheme();
     const isSmallScreen = useMediaQuery(theme.breakpoints.down('sm'));
@@ -79,6 +81,7 @@ const Edit_hospital = () => {
       const fetchData = async () => {
         try {
           const response = await axios.get('http://localhost:443/iClaim/list/hospital');
+          console.log("Data from API:", response.data);
           setListHospital(response.data);
           setLoading(false);
         } catch (error) {
@@ -86,7 +89,6 @@ const Edit_hospital = () => {
           setLoading(false);
         }
       };
-  
       fetchData();
     }, []);
 
@@ -95,6 +97,7 @@ const Edit_hospital = () => {
     }) : [];
 
     const handleOpenEditDialog = (hospital) => {
+        console.log("Fetching hospital ID:", hospital.id);
         setSelectedHospital(hospital);
     };
 
@@ -102,11 +105,37 @@ const Edit_hospital = () => {
       setOpenAddDialog(true);
     };
 
-    const handleAddHospital = () => {
+    const handleAddHospital = async () => {
       console.log("Adding new hospital:", newHospitalData);
+      console.log("Hospital:", newHospitalData.hospital);
+      console.log("Token:", newHospitalData.token);
+
+      try {
+        const response = await axios.post(
+          'http://rpa-apiprd.inet.co.th:443/iClaim/add/hospital',
+          {
+            hospital_name: newHospitalData.hospital,
+            token_line: newHospitalData.token
+          },
+          {
+            headers: {
+              'Content-Type': 'application/json'
+            }
+          }
+        );
+    
+        if (response.status === 200) {
+          console.log("Hospital added successfully");
+          window.location.reload();
+        } else {
+          console.error("Failed to add hospital");
+        }
+      } catch (error) {
+        console.error('Error adding hospital:', error);
+      }
+
       setOpenAddDialog(false);
       setNewHospitalData({ hospital: '', token: '' });
-      // ส่วนอื่น ๆ ที่เกี่ยวข้อง เช่น ส่งข้อมูลไปที่เซิร์ฟเวอร์ เป็นต้น
     };
 
     const handleOpenDeleteConfirmationDialog = (hospital) => {
@@ -114,8 +143,30 @@ const Edit_hospital = () => {
         setDeleteConfirmationDialogOpen(true);
     };
 
-    const handleDeleteHospital = () => {
-        console.log("Deleting hospital:", hospitalToDelete);
+    const handleDeleteHospital = async() => {
+        console.log("Deleting hospital:", hospitalToDelete.id);
+        try {
+          const response = await axios.post(
+            'http://rpa-apiprd.inet.co.th:443/iClaim/del/hospital',
+            {
+              id_hospital: hospitalToDelete.id,
+            },
+            {
+              headers: {
+                'Content-Type': 'application/json'
+              }
+            }
+          );
+      
+          if (response.status === 200) {
+            console.log("Hospital Delete successfully");
+            //window.location.reload();
+          } else {
+            console.error("Failed to Delete hospital");
+          }
+        } catch (error) {
+          console.error('Error Deleting hospital:', error);
+        }
         setDeleteConfirmationDialogOpen(false);
         // ตรวจสอบและลบโรงพยาบาล
     };
@@ -296,41 +347,73 @@ const AddHospitalDialog = ({ open, handleClose, newHospitalData, setNewHospitalD
 };
 
 const EditHospitalDialog = ({ open, handleClose, hospital }) => {
-  const handleEdit = () => {
+  const [editedHospitalData, setEditedHospitalData] = useState({ hospital: hospital?.hospital || '', token: hospital?.token || '' });
+
+  const handleEdit = async () => {
     console.log("Editing hospital:", hospital);
+    console.log("New data:", editedHospitalData);
+
+    try {
+      const response = await axios.post(
+        'http://rpa-apiprd.inet.co.th:443/iClaim/edit/hospital',
+        {
+          hospital_name: editedHospitalData.hospital,
+          token_line: editedHospitalData.token,
+          id_hospital: hospital.id
+        },
+        {
+          headers: {
+            'Content-Type': 'application/json'
+          }
+        }
+      );
+
+      if (response.status === 200) {
+        console.log("Hospital edited successfully");
+        window.location.reload(); // หรือจะใช้วิธีการอื่นในการอัพเดทข้อมูลหน้าจอตามต้องการ
+      } else {
+        console.error("Failed to edit hospital");
+      }
+    } catch (error) {
+      console.error('Error editing hospital:', error);
+    }
+
     handleClose();
   };
-//แก้ไขรายการโรงพยาบาล
+
   return (
     <Dialog open={open} onClose={handleClose}>
-      <DialogTitle style={{textAlign:'center', fontFamily:"'Kanit', sans-serif",fontWeight:'400',}}>แก้ไขโรงพยาบาล</DialogTitle>
+      <DialogTitle style={{ textAlign: 'center', fontFamily: "'Kanit', sans-serif", fontWeight: '400' }}>แก้ไขโรงพยาบาล</DialogTitle>
       <DialogContent>
         <div style={{ marginBottom: '20px' }}>
-          <label style={{textAlign:'center', fontFamily:"'Kanit', sans-serif",padding:'0 10px'}} htmlFor="editHospitalName">ชื่อโรงพยาบาล : </label>
+          <label style={{ textAlign: 'center', fontFamily: "'Kanit', sans-serif", padding: '0 10px' }} htmlFor="editHospitalName">ชื่อโรงพยาบาล : </label>
           <input
-            style={{fontFamily:"'Kanit', sans-serif"}}
+            style={{ fontFamily: "'Kanit', sans-serif" }}
             id="editHospitalName"
             type="text"
             defaultValue={hospital?.hospital}
+            onChange={(e) => setEditedHospitalData({ ...editedHospitalData, hospital: e.target.value })}
           />
         </div>
-        <div style={{ marginBottom: '20px',marginLeft:'53px' }}>
-          <label style={{textAlign:'center', fontFamily:"'Kanit', sans-serif",padding:'0 10px'}}>Token : </label>
+        <div style={{ marginBottom: '20px', marginLeft: '53px' }}>
+          <label style={{ textAlign: 'center', fontFamily: "'Kanit', sans-serif", padding: '0 10px' }}>Token : </label>
           <input
-            style={{fontFamily:"'Kanit', sans-serif"}}
+            style={{ fontFamily: "'Kanit', sans-serif" }}
             id="editHospitalToken"
             type="text"
             defaultValue={hospital?.token}
+            onChange={(e) => setEditedHospitalData({ ...editedHospitalData, token: e.target.value })}
           />
         </div>
       </DialogContent>
       <DialogActions>
-        <Button style={{color:'white',background:'#CD6155',fontFamily:"'Kanit', sans-serif",borderRadius:'20px',}} onClick={handleClose}>ยกเลิก</Button>
-        <Button style={{color:'white',background:'#2E86C1',fontFamily:"'Kanit', sans-serif",borderRadius:'20px'}} onClick={handleEdit}>บันทึก</Button>
+        <Button style={{ color: 'white', background: '#CD6155', fontFamily: "'Kanit', sans-serif", borderRadius: '20px', }} onClick={handleClose}>ยกเลิก</Button>
+        <Button style={{ color: 'white', background: '#2E86C1', fontFamily: "'Kanit', sans-serif", borderRadius: '20px' }} onClick={handleEdit}>บันทึก</Button>
       </DialogActions>
     </Dialog>
   );
 };
+
 //ลบรายการโรงพยาบาล
 const DeleteConfirmationDialog = ({ open, handleClose, handleDelete }) => {
     return (

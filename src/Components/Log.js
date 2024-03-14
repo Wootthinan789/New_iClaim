@@ -20,6 +20,7 @@ import logo from './images-iclaim/download (2).png';
 import employee from './images-iclaim/employee.png'
 import HomeIcon from './images-iclaim/home-regular-60.png';
 import { useNavigate } from 'react-router-dom';
+import * as XLSX from 'xlsx';
 
 import FormControl from '@mui/material/FormControl';
 import Select from '@mui/material/Select';
@@ -119,6 +120,26 @@ const Log = () => {
         setSelectedType(event.target.value);
     };
 
+    const downloadExcel = () => {
+        const excelData = logData.map(log => ({
+            Date: log.Date_on,
+            List: log.List,
+            Status: log.Status,
+            User: log.User_name,
+            Remark: log.Remark,
+            DataType: log.Data_Type
+        }));
+    
+        const ws = XLSX.utils.json_to_sheet(excelData);
+        const wb = XLSX.utils.book_new();
+        XLSX.utils.book_append_sheet(wb, ws, "Sheet1");
+    
+        const formattedSelectedDate = selectedDate.toISOString().split('T')[0].replace(/-/g, '');
+        const year = selectedDate.getFullYear();
+        const month = String(selectedDate.getMonth() + 1).padStart(2, '0');
+        const day = String(selectedDate.getDate()).padStart(2, '0');
+        XLSX.writeFile(wb, `Log_Data_${year}-${month}-${day}_${selectedType}.xlsx`);
+    };
 
     return (
         <div className='containerStype'>
@@ -225,7 +246,7 @@ const Log = () => {
                         <CardContent>
                             <div>
                                 <h1 className='Text_Log' style={{ fontFamily: "'Kanit', sans-serif" }}>Log Dashboard {selectedType}</h1>
-                                <div><img src={File_export} alt="HomeIcon" className='file_export'/></div>
+                                <div><img src={File_export} alt="HomeIcon" className='file_export' onClick={downloadExcel}/></div>
                             </div>
                             <div className='background_log'>
                                 <p className='insert_date1' style={{ borderRadius: isSmallScreen ? '4px 0 0 4px' : '8px 0 0 8px' }}>Date</p>
@@ -238,7 +259,7 @@ const Log = () => {
                                     <p className='insert_date2'>{log.Date_on}</p>
                                     <p className='insert_date2'>{log.Status}</p>
                                     <p className='insert_date2'>{log.User_name}</p>
-                                    <p className='insert_date2'>{log.Data_Type}</p>
+                                    <p className='insert_date2'>{log.Remark}</p>
                                 </div>
                             ))}
                         </CardContent>
