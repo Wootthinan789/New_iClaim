@@ -27,12 +27,12 @@ import File_export from './images-iclaim/file-export24.png'
 
 const Log = () => {
 
-    const [logs, setLogs] = useState([]);
+    const [logData, setLogData] = useState(null);
+    const [selectedType, setSelectedType] = useState('External');
     const [loading, setLoading] = useState(true);
     const [selectedDate, setSelectedDate] = useState(new Date());
     const [putdate, setPutDate] = useState(selectedDate.toISOString().slice(0, 10));
     const [anchorElUser, setAnchorElUser] = useState(null);
-    const [nameLog, setNameLog] = useState("Dashboard External");
 
 
     const usernameJson = JSON.parse(localStorage.getItem('username'));
@@ -44,16 +44,16 @@ const Log = () => {
     const handleChange = (event) => {
         const selectedValue = event.target.value;
         if (selectedValue === 10) {
-            setNameLog("Dashboard External");
+            setSelectedType("External");
         } else if (selectedValue === 20) {
-            setNameLog("Dashboard Internal");
+            setSelectedType("Internal");
         }
     };
     
 
     useEffect(() => {
         fetchLogs();
-    }, []);
+    }, [selectedType, selectedDate]);
 
     const handleDateChange = (date) => {
         setSelectedDate(date);
@@ -85,6 +85,7 @@ const Log = () => {
     const handleLogout = () => {
         localStorage.removeItem("access_token");
         localStorage.removeItem("username");
+        localStorage.removeItem("account_id")
         window.location.href = "/";
     };
 
@@ -94,16 +95,30 @@ const Log = () => {
 
     const fetchLogs = async () => {
         try {
-            const response = await axios.get(`http://rpa-apiprd.inet.co.th:443/iClaim/list/log?date=${putdate}`);
-            setLogs(response.data);
-            setLoading(false);
+            setLoading(true); // เริ่มโหลดข้อมูล
+            // กำหนดวันที่ในรูปแบบ YYYY-MM-DD
+            const formattedDate = selectedDate.toISOString().split('T')[0];
+            const response = await axios.get(`http://rpa-apiprd.inet.co.th:443/iClaim/list/log?data_type=${selectedType}&date=${formattedDate}`);
+            if (response.status !== 200) {
+                throw new Error('Failed to fetch logs');
+            }
+            const data = response.data.filter(log => {
+                // ดึงวันที่จากข้อมูลและแปลงเป็นวันที่ใน JavaScript Date object
+                const logDate = new Date(log.Date_on);
+                // ทำการเปรียบเทียบเฉพาะวันที่ (ไม่สนใจเวลา)
+                return logDate.toISOString().split('T')[0] === formattedDate;
+            });
+            setLogData(data);
+            setLoading(false); // เมื่อโหลดข้อมูลเสร็จเปลี่ยนเป็น false
         } catch (error) {
-            console.error("Error fetching logs:", error);
-            setLoading(false);
+            console.error('Error fetching logs:', error);
+            setLoading(false); // เมื่อเกิด error เปลี่ยนเป็น false เช่นกัน
         }
     };
+    const handleTypeChange = (event) => {
+        setSelectedType(event.target.value);
+    };
 
-    const filteredLogs = logs.filter(log => log.Date_on.slice(0, 10) === putdate); // กรองข้อมูลเฉพาะที่มีวันที่ตรงกับวันที่ที่เลือกไว้
 
     return (
         <div className='containerStype'>
@@ -206,10 +221,10 @@ const Log = () => {
             <Card className='cardStyle_Log' style={{ backgroundColor: '#D9D9D9', boxShadow: 'none', borderRadius: '15px' }}>
                     {loading ? (
                         <p style={{ textAlign: "center" }}>Loading...</p>
-                    ) : filteredLogs && filteredLogs.length > 0 ? (
+                    ) : logData && logData.length > 0 ? (
                         <CardContent>
                             <div>
-                                <h1 className='Text_Log' style={{ fontFamily: "'Kanit', sans-serif" }}>Log {nameLog}</h1>
+                                <h1 className='Text_Log' style={{ fontFamily: "'Kanit', sans-serif" }}>Log Dashboard {selectedType}</h1>
                                 <div><img src={File_export} alt="HomeIcon" className='file_export'/></div>
                             </div>
                             <div className='background_log'>
@@ -218,12 +233,12 @@ const Log = () => {
                                 <p className='insert_date1'>Action By</p>
                                 <p className='insert_date1' style={{ borderRadius: isSmallScreen ? '0 4px 4px 0' : '0 8px 8px 0' }}>Comment</p>
                             </div>
-                            {filteredLogs.map((log, index) => (
+                            {logData.map((log, index) => (
                                 <div key={index} className='box_insert_data2'>
                                     <p className='insert_date2'>{log.Date_on}</p>
                                     <p className='insert_date2'>{log.Status}</p>
                                     <p className='insert_date2'>{log.User_name}</p>
-                                    <p className='insert_date2'>{log.Remark}</p>
+                                    <p className='insert_date2'>{log.Data_Type}</p>
                                 </div>
                             ))}
                         </CardContent>

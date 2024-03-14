@@ -67,6 +67,7 @@ const Edit_hospital = () => {
     const handleLogout = () => {
       localStorage.removeItem("access_token");
       localStorage.removeItem("username");
+      localStorage.removeItem("account_id")
       window.location.href = "/";
     };
   

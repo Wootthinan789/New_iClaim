@@ -105,6 +105,7 @@ const Internal = () => {
     const handleLogout = () => {
       localStorage.removeItem("access_token");
       localStorage.removeItem("username");
+      localStorage.removeItem("account_id")
       window.location.href = "/";
     };
 
@@ -344,7 +345,6 @@ const Internal = () => {
                       />
                       <span className='checkmark'></span>
                     </label>
-  
                   }
                   label={
                     <Typography
@@ -366,6 +366,7 @@ const Internal = () => {
             <p style={{ textAlign: "center", fontFamily: "'Kanit', sans-serif", fontSize: isSmallScreen ? '8px' : '20px', }}>ไม่มีข้อมูลสําหรับวันที่เลือก</p>
           )}
         </Card>
+        {!loading && countries && countries.length > 0 && (
         <div className='container-approve-reject'>
           <div className='Fixlocation-approve-reject'>
             <button className="button-Approve" onClick={handleApproveButtonClick}>Approve</button>
@@ -374,6 +375,7 @@ const Internal = () => {
             <button className="button-Reject" onClick={handleRejectButtonClick}>Reject</button>
           </div>
         </div>
+      )}
       </div>
     );
   };
