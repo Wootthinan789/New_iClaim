@@ -80,7 +80,7 @@ const Edit_hospital = () => {
     useEffect(() => {
       const fetchData = async () => {
         try {
-          const response = await axios.get('http://localhost:443/iClaim/list/hospital');
+          const response = await axios.get('http://rpa-apiprd.inet.co.th:443/iClaim/list/hospital');
           console.log("Data from API:", response.data);
           setListHospital(response.data);
           setLoading(false);
@@ -160,7 +160,7 @@ const Edit_hospital = () => {
       
           if (response.status === 200) {
             console.log("Hospital Delete successfully");
-            //window.location.reload();
+            window.location.reload();
           } else {
             console.error("Failed to Delete hospital");
           }
