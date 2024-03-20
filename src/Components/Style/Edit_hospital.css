@@ -93,11 +93,11 @@
 }
 
 .background-profile {
-    background-image: url();
+    background-image: url('../images-iclaim/blur-hospital.jpg');
   }
   /*แยก Style จาก*/
   .containerStype{
-    background-image: url('../images-iclaim/blur-hospital.jpg');
+    /*background-image: url('../images-iclaim/blur-hospital.jpg');*/
     background-size: cover;
     background-repeat: no-repeat;
     background-position: center;

@@ -11,7 +11,7 @@ import TestLog from './Components/Test_Log'
 import { BrowserRouter, Route, Routes } from 'react-router-dom'
 import Profiletest from './Components/test_Checkbox'
 import Teststyle from './Components/Test_style';
-import Download_File from './Components/DowloadFile';
+import DownloadFile from './Components/DowloadFile';
 
 const App = () =>{
   const token = localStorage.getItem("access_token");
@@ -54,7 +54,7 @@ const App = () =>{
             element={<Teststyle/>} 
         />
         <Route path="/Download/File" 
-            element={<Download_File/>} 
+            element={<DownloadFile/>} 
         />
         </Routes>
         </BrowserRouter>

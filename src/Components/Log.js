@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import './Style/Log.css'
 import axios from "axios";
 import AppBar from '@mui/material/AppBar';
@@ -32,9 +32,8 @@ const Log = () => {
     const [selectedType, setSelectedType] = useState('External');
     const [loading, setLoading] = useState(true);
     const [selectedDate, setSelectedDate] = useState(new Date());
-    const [putdate, setPutDate] = useState(selectedDate.toISOString().slice(0, 10));
+    const [, setPutDate] = useState(selectedDate.toISOString().slice(0, 10));
     const [anchorElUser, setAnchorElUser] = useState(null);
-
 
     const usernameJson = JSON.parse(localStorage.getItem('username'));
 
@@ -50,11 +49,30 @@ const Log = () => {
             setSelectedType("Internal");
         }
     };
-    
+
+    const fetchLogs = useCallback(async () => {
+        try {
+            setLoading(true);
+            const formattedDate = selectedDate.toISOString().split('T')[0];
+            const response = await axios.get(`http://rpa-apiprd.inet.co.th:443/iClaim/list/log?data_type=${selectedType}&date=${formattedDate}`);
+            if (response.status !== 200) {
+                throw new Error('Failed to fetch logs');
+            }
+            const data = response.data.filter(log => {
+                const logDate = new Date(log.Date_on);
+                return logDate.toISOString().split('T')[0] === formattedDate;
+            });
+            setLogData(data);
+            setLoading(false);
+        } catch (error) {
+            console.error('Error fetching logs:', error);
+            setLoading(false);
+        }
+    }, [selectedType, selectedDate]);
 
     useEffect(() => {
         fetchLogs();
-    }, [selectedType, selectedDate]);
+    }, [fetchLogs]);
 
     const handleDateChange = (date) => {
         setSelectedDate(date);
@@ -94,32 +112,6 @@ const Log = () => {
         navigate('/Dashboard/External')
     };
 
-    const fetchLogs = async () => {
-        try {
-            setLoading(true); // เริ่มโหลดข้อมูล
-            // กำหนดวันที่ในรูปแบบ YYYY-MM-DD
-            const formattedDate = selectedDate.toISOString().split('T')[0];
-            const response = await axios.get(`http://rpa-apiprd.inet.co.th:443/iClaim/list/log?data_type=${selectedType}&date=${formattedDate}`);
-            if (response.status !== 200) {
-                throw new Error('Failed to fetch logs');
-            }
-            const data = response.data.filter(log => {
-                // ดึงวันที่จากข้อมูลและแปลงเป็นวันที่ใน JavaScript Date object
-                const logDate = new Date(log.Date_on);
-                // ทำการเปรียบเทียบเฉพาะวันที่ (ไม่สนใจเวลา)
-                return logDate.toISOString().split('T')[0] === formattedDate;
-            });
-            setLogData(data);
-            setLoading(false); // เมื่อโหลดข้อมูลเสร็จเปลี่ยนเป็น false
-        } catch (error) {
-            console.error('Error fetching logs:', error);
-            setLoading(false); // เมื่อเกิด error เปลี่ยนเป็น false เช่นกัน
-        }
-    };
-    const handleTypeChange = (event) => {
-        setSelectedType(event.target.value);
-    };
-
     const downloadExcel = () => {
         const excelData = logData.map(log => ({
             Date: log.Date_on,
@@ -129,12 +121,11 @@ const Log = () => {
             Remark: log.Remark,
             DataType: log.Data_Type
         }));
-    
+
         const ws = XLSX.utils.json_to_sheet(excelData);
         const wb = XLSX.utils.book_new();
         XLSX.utils.book_append_sheet(wb, ws, "Sheet1");
-    
-        const formattedSelectedDate = selectedDate.toISOString().split('T')[0].replace(/-/g, '');
+
         const year = selectedDate.getFullYear();
         const month = String(selectedDate.getMonth() + 1).padStart(2, '0');
         const day = String(selectedDate.getDate()).padStart(2, '0');
@@ -153,10 +144,10 @@ const Log = () => {
                         <Tooltip>
                             <IconButton onClick={handleOpenUserMenu} sx={{ p: 0 }}>
                                 <Box className='Box2'>
-                                <Avatar
-                                            alt="employee.png"
-                                            src={employee}
-                                            className='Avatar-img'
+                                    <Avatar
+                                        alt="employee.png"
+                                        src={employee}
+                                        className='Avatar-img'
                                     />
                                     <Typography variant="body1" style={{ fontSize: isSmallScreen ? '8px' : '16px', fontWeight: 'bold', fontFamily: "'Kanit', sans-serif" }}>
                                         {usernameJson.username}
@@ -215,57 +206,57 @@ const Log = () => {
                     <DatePicker className='Dashboard-Internal-button-date' selected={selectedDate} onChange={handleDateChange} dateFormat="dd/MM/yyyy" />
                 </div>
                 <div className='Fixlocation'>
-                <FormControl sx={{ minWidth: 120}} size="small">
-                <Select 
-                    style={{
-                        fontFamily:"'Kanit', sans-serif",
-                        fontWeight:'700',
-                        width: isSmallScreen ? '100px':'auto',
-                        height:'34px',
-                        fontSize: isSmallScreen ? '7px':'16px',
-                        marginTop:'5px',
-                        borderRadius:'10px',
-                        background: '#c7c7c7',
-                        border: 'none',
-                    }}
-                    labelId="demo-select-small-label"
-                    id="demo-select-small"
-                    onChange={handleChange}
-                    defaultValue={10}
-                >
-                    <MenuItem value={10} className='DropDown_Log'>Dashboard External</MenuItem>
-                    <MenuItem value={20} className='DropDown_Log'>Dashboard Internal</MenuItem>
-                </Select>
-                </FormControl>
+                    <FormControl sx={{ minWidth: 120 }} size="small">
+                        <Select
+                            style={{
+                                fontFamily: "'Kanit', sans-serif",
+                                fontWeight: '700',
+                                width: isSmallScreen ? '100px' : 'auto',
+                                height: '34px',
+                                fontSize: isSmallScreen ? '7px' : '16px',
+                                marginTop: '5px',
+                                borderRadius: '10px',
+                                background: '#c7c7c7',
+                                border: 'none',
+                            }}
+                            labelId="demo-select-small-label"
+                            id="demo-select-small"
+                            onChange={handleChange}
+                            defaultValue={10}
+                        >
+                            <MenuItem value={10} className='DropDown_Log'>Dashboard External</MenuItem>
+                            <MenuItem value={20} className='DropDown_Log'>Dashboard Internal</MenuItem>
+                        </Select>
+                    </FormControl>
                 </div>
-                </div>
+            </div>
             <Card className='cardStyle_Log' style={{ backgroundColor: '#D9D9D9', boxShadow: 'none', borderRadius: '15px' }}>
-                    {loading ? (
-                        <p style={{ textAlign: "center" }}>Loading...</p>
-                    ) : logData && logData.length > 0 ? (
-                        <CardContent>
-                            <div>
-                                <h1 className='Text_Log' style={{ fontFamily: "'Kanit', sans-serif" }}>Log Dashboard {selectedType}</h1>
-                                <div><img src={File_export} alt="HomeIcon" className='file_export' onClick={downloadExcel}/></div>
+                {loading ? (
+                    <p style={{ textAlign: "center" }}>Loading...</p>
+                ) : logData && logData.length > 0 ? (
+                    <CardContent>
+                        <div>
+                            <h1 className='Text_Log' style={{ fontFamily: "'Kanit', sans-serif" }}>Log Dashboard {selectedType}</h1>
+                            <div><img src={File_export} alt="HomeIcon" className='file_export' onClick={downloadExcel} /></div>
+                        </div>
+                        <div className='background_log'>
+                            <p className='insert_date1' style={{ borderRadius: isSmallScreen ? '4px 0 0 4px' : '8px 0 0 8px' }}>Date</p>
+                            <p className='insert_date1'>Status</p>
+                            <p className='insert_date1'>Action By</p>
+                            <p className='insert_date1' style={{ borderRadius: isSmallScreen ? '0 4px 4px 0' : '0 8px 8px 0' }}>Comment</p>
+                        </div>
+                        {logData.map((log, index) => (
+                            <div key={index} className='box_insert_data2'>
+                                <p className='insert_date2'>{log.Date_on}</p>
+                                <p className='insert_date2'>{log.Status}</p>
+                                <p className='insert_date2'>{log.User_name}</p>
+                                <p className='insert_date2'>{log.Remark}</p>
                             </div>
-                            <div className='background_log'>
-                                <p className='insert_date1' style={{ borderRadius: isSmallScreen ? '4px 0 0 4px' : '8px 0 0 8px' }}>Date</p>
-                                <p className='insert_date1'>Status</p>
-                                <p className='insert_date1'>Action By</p>
-                                <p className='insert_date1' style={{ borderRadius: isSmallScreen ? '0 4px 4px 0' : '0 8px 8px 0' }}>Comment</p>
-                            </div>
-                            {logData.map((log, index) => (
-                                <div key={index} className='box_insert_data2'>
-                                    <p className='insert_date2'>{log.Date_on}</p>
-                                    <p className='insert_date2'>{log.Status}</p>
-                                    <p className='insert_date2'>{log.User_name}</p>
-                                    <p className='insert_date2'>{log.Remark}</p>
-                                </div>
-                            ))}
-                        </CardContent>
-                    ) : (
-                        <p style={{ textAlign: "center", fontFamily: "'Kanit', sans-serif", fontSize: isSmallScreen ? '8px' : '20px' }}>ไม่มีข้อมูลสําหรับวันที่เลือก</p>
-                    )}
+                        ))}
+                    </CardContent>
+                ) : (
+                    <p style={{ textAlign: "center", fontFamily: "'Kanit', sans-serif", fontSize: isSmallScreen ? '8px' : '20px' }}>ไม่มีข้อมูลสําหรับวันที่เลือก</p>
+                )}
             </Card>
 
         </div>

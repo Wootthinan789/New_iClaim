@@ -30,7 +30,7 @@ const settings = ['กำหนดสิทธิ์','แก้ไขโรง�
 const Edit_hospital = () => {
     const [anchorElUser, setAnchorElUser] = useState(null);
     const [ListHospital, setListHospital] = useState([]);
-    const [loading, setLoading] = useState(true);
+    const [, setLoading] = useState(true);
     const [searchTerm, setSearchTerm] = useState('');
     const [selectedHospital, setSelectedHospital] = useState(null);
     const [openAddDialog, setOpenAddDialog] = useState(false);
@@ -38,7 +38,7 @@ const Edit_hospital = () => {
     const [deleteConfirmationDialogOpen, setDeleteConfirmationDialogOpen] = useState(false);
     const [hospitalToDelete, setHospitalToDelete] = useState(null);
     
-    const [editedHospitalData, setEditedHospitalData] = useState({ hospital: '', token: '' });
+    //const [editedHospitalData, setEditedHospitalData] = useState({ hospital: '', token: '' });
 
 
     const theme = useTheme();
