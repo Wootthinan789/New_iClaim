@@ -4,6 +4,7 @@ import axios from "axios";
 const Test_Log = () => {
     const [hospitalList, setHospitalList] = useState([]);
     const [selectedHospitals, setSelectedHospitals] = useState({});
+    const [selectAll, setSelectAll] = useState(false);
 
     const fetchHospitalList = async () => {
         try {
@@ -41,23 +42,50 @@ const Test_Log = () => {
             }
         });
     };
+    const handleSelectAll = () => {
+        setSelectAll(prevState => !prevState);
+        setSelectedHospitals(prevState => {
+            if (!selectAll) {
+                console.log(hospitalList)
+                return hospitalList;
+            } else {
+                return {};
+            }
+        });
+    };
+
     
 
     const handleSend = async () => {
         try {
             // ทำการแปลง object เป็น array เพื่อนำไปใช้งานหรือส่งข้อมูล
-            const selectedHospitalsArray = Object.values(selectedHospitals).flat();
+            const selectedHospitalsArray = Object.values(selectedHospitals);
             // ส่งข้อมูลตามต้องการ
-            console.log("Object to Array : ",selectedHospitalsArray);
+            const data = {
+                message: selectedHospitalsArray
+            };
+            console.log(data)
+            // ส่งข้อมูลไปยัง API
+            await axios.post("http://localhost:443/send-message", data);
+            console.log("Data sent successfully");
         } catch (error) {
             console.error('Error sending data:', error.message);
         }
     };
+    
 
     return (
         <div>
             <h1 style={{ textAlign: "center" }}>TEST API LOG</h1>
             <button onClick={handleSend}>Send</button>
+            <label>
+                <input
+                    type="checkbox"
+                    onChange={handleSelectAll}
+                    checked={selectAll}
+                />
+                Select All
+            </label>
             <table style={{ margin: "auto" }}>
                 <thead>
                     <tr>
@@ -75,7 +103,7 @@ const Test_Log = () => {
                                 <input
                                     type="checkbox"
                                     onChange={() => handleCheckboxChange(id)}
-                                    checked={selectedHospitals[id] ? true : false}
+                                    checked={!!selectedHospitals[id]}
                                 />
                             </td>
                         </tr>
