@@ -48,7 +48,10 @@ const Profile = () => {
   const usernameJson = JSON.parse(localStorage.getItem('username'));
   const [keyIds, setKeyIds] = useState([]);
   const [id_hospital, setIdHospital] = useState(null);
+  const [selectedCheckboxes, setSelectedCheckboxes] = useState({});
 
+  const [selectAll, setSelectAll] = useState(false);
+  
   const theme = useTheme();
   const isSmallScreen = useMediaQuery(theme.breakpoints.down('sm'));
 
@@ -96,34 +99,36 @@ const Profile = () => {
     setAnchorElUser(null);
   };
 
-  const handleApproveButtonClick = () => {
-    setNotification({ message: 'ยืนยันเรียบร้อยแล้ว', show: true });
-    setDarkBackground(true);
+const handleApproveButtonClick = async () => {
+  if (Object.keys(selectedCheckboxes).length === 0) {
+    console.error('ไม่ได้เลือกข้อมูลใด ๆ เพื่อดำเนินการ');
+    return;
+  }
 
-      const selectedData = [];
-    // Iterate over checkedItems to gather selected checkbox data
-    for (const index in checkedItems) {
-      if (checkedItems[index]) {
-        const checkboxData = countries[index];
-        selectedData.push({
-          id_hospital: checkboxData.id_hospital,
-          img_6_Array: checkboxData.img_6_Array,
-          token: keyIds.find(hospital => hospital.id === checkboxData.id_hospital)?.token
-        });
-      }
-    }
+  setNotification({ message: 'ยืนยันเรียบร้อยแล้ว', show: true });
+  setDarkBackground(true);
 
-    // Prepare message for Line Notify
-    const message = 'ข้อมูลที่เลือกไว้สำหรับการอนุมัติ';
+  try {
+    // ทำการแปลง object เป็น array เพื่อนำไปใช้งานหรือส่งข้อมูล
+    const selectedHospitalsArray = Object.values(selectedCheckboxes);
+    // ส่งข้อมูลตามต้องการ
+    const data = {
+      message: selectedHospitalsArray
+    };
+    console.log(data)
+    // ส่งข้อมูลไปยัง API
+    await axios.post("http://localhost:443/send-message", data);
+    console.log("Data sent successfully");
+  } catch (error) {
+    console.error('Error sending data:', error.message);
+  }
 
-    // Send data to Line Notify
-    sendToLineNotify(message, selectedData);
+  setTimeout(() => {
+    setNotification({ message: '', show: false });
+    setDarkBackground(false);
+  }, 2500);
+};
 
-    setTimeout(() => {
-      setNotification({ message: '', show: false });
-      setDarkBackground(false);
-    }, 2500);
-  };
 
   const handleLogout = () => {
     localStorage.removeItem("access_token");
@@ -141,20 +146,49 @@ const Profile = () => {
   }
 
   const handleCheckboxChange = (event, index) => {
-    setCheckedItems({
-      ...checkedItems,
-      [index]: event.target.checked
-    });
-    if ((event.target.checked) === true) {
+    const isChecked = event.target.checked;
+    setCheckedItems(prevState => ({
+      ...prevState,
+      [index]: isChecked
+    }));
+    
+    if (isChecked) {
       const checkboxData = countries[index];
       const id_hospital = checkboxData.id_hospital;
       const img_6_Array = checkboxData.img_6;
+      const title = checkboxData.title;
       const token = keyIds.find((hospital) => hospital.id === id_hospital)?.token;
-      console.log('id_hospital : ',id_hospital);
-      console.log('img_6_Array : ',img_6_Array);
-      console.log('Token : ', token);
+      // console.log('id_hospital : ', id_hospital);
+      // console.log('img_6_Array : ', img_6_Array);
+      // console.log('Token : ', token);
+      // console.log('title : ', title);
+  
+      // Create a new object representing the selected checkbox data
+      const selectedCheckbox = {
+        id_hospital: id_hospital,
+        img_6_Array: img_6_Array,
+        token: token,
+        title:title
+      };
+  
+      // Add the selected checkbox data to the state
+      setSelectedCheckboxes(prevState => ({
+        ...prevState,
+        [index]: selectedCheckbox
+      }));
+    } else {
+      // Remove the unselected checkbox data from the state
+      setSelectedCheckboxes(prevState => {
+        const newState = { ...prevState };
+        delete newState[index];
+        return newState;
+      });
     }
   };
+  useEffect(() => {
+  // ทำอะไรก็ตามที่ต้องการเมื่อมีการเปลี่ยนแปลงใน selectedCheckboxes
+  console.log('Selected checkboxes:', selectedCheckboxes);
+}, [selectedCheckboxes]);
 
   useEffect(() => {
     // สร้างฟังก์ชันเพื่อดึงข้อมูลจาก API
@@ -166,7 +200,7 @@ const Profile = () => {
             setKeyIds(data.map(hospital => ({
                 id: hospital.id,
                 matched: hospital.id === id_hospital,
-                token: hospital.token
+                token: hospital.token,
             })));
         } catch (error) {
             console.error("เกิดข้อผิดพลาดในการดึงข้อมูลจาก API:", error);
@@ -178,46 +212,30 @@ const Profile = () => {
 
 }, [id_hospital]);
 
-const sendToLineNotify = async (message, selectedData) => {
-  try {
-    // Format message with selected data
-    const formattedMessage = `${message}\n\nSelected Data:\n${selectedData.map(data => `ID Hospital: ${data.id_hospital}, Images: ${data.img_6_Array.join(', ')}, Token: ${data.token}`).join('\n')}`;
-
-    // Send data to Line Notify
-    const response = await axios.post(
-      'https://notify-api.line.me/api/notify',
-      { message: formattedMessage },
-      {
-        headers: {
-          'Content-Type': 'application/json',
-          Authorization: `Bearer ddbTkjedZq6q2YH9Vm7MHWahzGkTSAkDTp0rXmCgX0H`,
-        },
-      }
-    );
-    console.log('Line Notify response:', response.data);
-    setNotification({ message: 'Data sent to Line Notify successfully', show: true });
-  } catch (error) {
-    console.error('Error sending data to Line Notify:', error);
-    setNotification({ message: 'Failed to send data to Line Notify', show: true });
-  }
-};
-
-  
 const handleSelectAllCheckboxChange = (event) => {
-  const newCheckedItems = {};
-  countries.forEach((country, index) => {
-    newCheckedItems[index] = event.target.checked;
-    if (event.target.checked) {
-      const { id_hospital, img_6: img_6_Array } = country;
-      const token = keyIds.find((hospital) => hospital.id === id_hospital)?.token;
-      console.log('id_hospital : ', id_hospital);
-      console.log('img_6_Array : ', img_6_Array);
-      console.log('Token : ', token);
-      // ทำการจัดเก็บข้อมูลหรือทำอย่างอื่นตามที่ต้องการที่นี่
-    }
+  const isChecked = event.target.checked;
+  const newSelectedCheckboxes = isChecked ? countries.map((country, index) => {
+    const { id_hospital, img_6: img_6_Array, title } = country;
+    const token = keyIds.find((hospital) => hospital.id === id_hospital)?.token;
+    return {
+      id_hospital,
+      img_6_Array,
+      token,
+      title
+    };
+  }) : [];
+
+  setSelectedCheckboxes(isChecked ? newSelectedCheckboxes : {});
+  setSelectAll(isChecked);
+
+  // Update checkedItems for all checkboxes
+  const updatedCheckedItems = {};
+  countries.forEach((_, index) => {
+    updatedCheckedItems[index] = isChecked;
   });
-  setCheckedItems(newCheckedItems);
+  setCheckedItems(updatedCheckedItems);
 };
+
 
   const handleReload = () => {
     window.location.reload();
