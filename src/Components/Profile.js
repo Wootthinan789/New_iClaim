@@ -127,6 +127,7 @@ const handleApproveButtonClick = async () => {
     setNotification({ message: '', show: false });
     setDarkBackground(false);
   }, 2500);
+  //window.location.reload();
 };
 
 
