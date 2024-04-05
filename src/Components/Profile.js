@@ -99,36 +99,53 @@ const Profile = () => {
     setAnchorElUser(null);
   };
 
-const handleApproveButtonClick = async () => {
-  if (Object.keys(selectedCheckboxes).length === 0) {
-    console.error('ไม่ได้เลือกข้อมูลใด ๆ เพื่อดำเนินการ');
-    return;
-  }
+  const handleApproveButtonClick = async () => {
+    if (Object.keys(selectedCheckboxes).length === 0) {
+      console.error('ไม่ได้เลือกข้อมูลใด ๆ เพื่อดำเนินการ');
+      return;
+    }
+  
+    setNotification({ message: 'ยืนยันเรียบร้อยแล้ว', show: true });
+    setDarkBackground(true);
+  
+    try {
+      // ทำการแปลง object เป็น array เพื่อนำไปใช้งานหรือส่งข้อมูล
+      const selectedHospitalsArray = Object.values(selectedCheckboxes);
+      // ส่งข้อมูลตามต้องการ
+      const data = {
+        message: selectedHospitalsArray
+      };
+      console.log(data)
+      // ส่งข้อมูลไปยัง API
+      await axios.post("http://localhost:443/send-message", data);
+      console.log("Data sent successfully send message");
 
-  setNotification({ message: 'ยืนยันเรียบร้อยแล้ว', show: true });
-  setDarkBackground(true);
+      // ส่งข้อมูลไปยัง API insert log
+      const logData = {
+        doc_name: "-",
+        status: "Approved",
+        user_name: usernameJson.username, // นำ username จาก local storage มาใช้งาน
+        remark: "-",
+        data_type: "External"
+      };
+  
+      await axios.post("http://rpa-apiprd.inet.co.th:443/iClaim/insert/log", logData);
+      console.log("Log data inserted successfully");
 
-  try {
-    // ทำการแปลง object เป็น array เพื่อนำไปใช้งานหรือส่งข้อมูล
-    const selectedHospitalsArray = Object.values(selectedCheckboxes);
-    // ส่งข้อมูลตามต้องการ
-    const data = {
-      message: selectedHospitalsArray
-    };
-    console.log(data)
-    // ส่งข้อมูลไปยัง API
-    await axios.post("http://localhost:443/send-message", data);
-    console.log("Data sent successfully");
-  } catch (error) {
-    console.error('Error sending data:', error.message);
-  }
+      await axios.post("http://localhost:443/send-message/alert", data);
+      console.log("Data sent successfully send message alert");
 
-  setTimeout(() => {
-    setNotification({ message: '', show: false });
-    setDarkBackground(false);
-  }, 2500);
-  //window.location.reload();
-};
+    } catch (error) {
+      console.error('Error sending data:', error.message);
+    }
+  
+    setTimeout(() => {
+      setNotification({ message: '', show: false });
+      setDarkBackground(false);
+    }, 2500);
+    //window.location.reload();
+  };
+  
 
 
   const handleLogout = () => {
@@ -169,6 +186,8 @@ const handleApproveButtonClick = async () => {
         id_hospital: id_hospital,
         img_6_Array: img_6_Array,
         token: token,
+        user_name: usernameJson.username,
+        menu : "External",
         title:title
       };
   
@@ -222,6 +241,8 @@ const handleSelectAllCheckboxChange = (event) => {
       id_hospital,
       img_6_Array,
       token,
+      user_name: usernameJson.username,
+      menu : "External",
       title
     };
   }) : [];
