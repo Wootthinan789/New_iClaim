@@ -132,6 +132,23 @@ button {
   transition: all 0.0s ease;
   font-family: 'Kanit', sans-serif;
 }
+.modalStyle {
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 70%; /* กำหนดความกว้างเป็น 70% */
+  height: 90%; /* กำหนดความยาวเป็น 70% */
+  max-width: 880px; /* กำหนดความกว้างสูงสุด */
+  max-height: auto; /* กำหนดความยาวสูงสุด */
+  background-color: #ffffff; /* กำหนดสีพื้นหลัง */
+  border-radius: 8px;
+  overflow: auto; /* เพิ่ม scrollbar ในกรณีที่ข้อมูลยาวเกินกำหนด */
+  display: flex; /* ใช้ flexbox layout */
+  flex-direction: column; /* จัดเรียงส่วนในแนวดิ่ง */
+  align-items: center;
+  justify-content: center;
+}
 
 .Dashboard-Internal-button:hover {
   transform: scale(1.10);
@@ -258,14 +275,22 @@ button {
   font-family: 'Kanit', sans-serif;
   font-weight: 700;
 }
-
+.imageInModal_Internal {
+  margin: 20px;
+  width: 820px; /* กำหนดความกว้างของรูปภาพ */
+  height: auto; /* ให้ความสูงปรับตามอัตราส่วนของรูปภาพ */
+}
 .SuccessIcon-img {
   position: fixed;
   top: 20%;
   max-width: 50%;
   max-height: 50%;
 }
-
+.rejectReasonInput_Internal{
+  margin-left: 30px;
+  width: 800px;
+  padding: 5px;
+}
 .modalStyle p {
   position: fixed;
   top: 25%;
