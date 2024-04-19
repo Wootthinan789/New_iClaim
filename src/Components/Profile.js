@@ -76,20 +76,74 @@ const Profile = () => {
     setOpenModal(false);
   };
 
-  const handleRejectConfirm = () => {
-    if (!rejectReason) {
-      console.error('Reject Reason is required');
-      return;
-    }
-    if (!rejectedImage) {
-      console.error('Rejected Image is required');
-      return;
-    }
+  const handleRejectReasonChange = (event, index) => {
+    const value = event.target.value;
+    setSelectedCheckboxes(prevState => ({
+      ...prevState,
+      [index]: {
+        ...prevState[index],
+        rejectReason: value
+      }
+    }));
+  };
+  
+  const handleRejectConfirm = async () => {
+    // สร้าง Array ใหม่เพื่อเก็บข้อมูลที่จะส่งไปยัง API หรือทำงานอื่น ๆ
+    const newDataArray = Object.keys(selectedCheckboxes).map((index) => ({
+      id_hospital: selectedCheckboxes[index].id_hospital,
+      img_6_Array: selectedCheckboxes[index].img_6_Array,
+      token: selectedCheckboxes[index].token,
+      user_name: selectedCheckboxes[index].user_name,
+      menu: selectedCheckboxes[index].menu,
+      title: selectedCheckboxes[index].title,
+      rejectReason: selectedCheckboxes[index].rejectReason // ข้อความจาก textarea
+    }));
+    
+    console.log(newDataArray);
+  
+    try {
+      // ทำการแปลง object เป็น array เพื่อนำไปใช้งานหรือส่งข้อมูล
+      const selectedHospitalsArrayReject = Object.values(newDataArray);
+      // ส่งข้อมูลตามต้องการ
+      const data = {
+        message: selectedHospitalsArrayReject
+      };
+      console.log(data)
+      // ส่งข้อมูลไปยัง API
+      await axios.post("http://localhost:443/send-message/Reject", data);
+      console.log("Data sent successfully send message Reject");
 
-    setRejectReason('');
-    setRejectedImage(null);
+      // ส่งข้อมูลไปยัง API insert log
+      const logData = {
+        doc_name: "-",
+        status: "Reject",
+        user_name: usernameJson.username, // นำ username จาก local storage มาใช้งาน
+        remark: "-",
+        data_type: "External"
+      };
+  
+      await axios.post("http://rpa-apiprd.inet.co.th:443/iClaim/insert/log", logData);
+      console.log("Log data inserted successfully");
+
+      await axios.post("http://localhost:443/send-message/alertReject", data);
+      console.log("Data sent successfully send message alert Reject");
+
+    } catch (error) {
+      console.error('Error sending data:', error.message);
+    }
+    // เคลียร์ข้อมูลของ textarea และปิด Modal
+    setSelectedCheckboxes({});
     setOpenModal(false);
   };
+  
+
+  // ตรวจสอบว่ามี img_6_Array ที่ถูกเลือกหรือไม่ ถ้ามีให้แสดงใน Modal
+  const renderSelectedImages = () => {
+    return Object.values(selectedCheckboxes).map((checkbox, index) => (
+      <div key={index}><img src={checkbox.img_6_Array} alt={`Image ${index + 1}`} className="imageInModal" /></div>
+    ));
+  };
+  
 
   const handleOpenUserMenu = (event) => {
     setAnchorElUser(event.currentTarget);
@@ -116,7 +170,7 @@ const Profile = () => {
         message: selectedHospitalsArray
       };
       console.log(data)
-      // ส่งข้อมูลไปยัง API
+      // ส่งข้อมูลไปยัง API ส่งรูปไปยัง Line notify
       await axios.post("http://localhost:443/send-message", data);
       console.log("Data sent successfully send message");
 
@@ -128,10 +182,10 @@ const Profile = () => {
         remark: "-",
         data_type: "External"
       };
-  
+      // ส่งข้อมูลเข้า log
       await axios.post("http://rpa-apiprd.inet.co.th:443/iClaim/insert/log", logData);
       console.log("Log data inserted successfully");
-
+      // ส่ง Alert ไปยัง line notify Group team
       await axios.post("http://localhost:443/send-message/alert", data);
       console.log("Data sent successfully send message alert");
 
@@ -368,18 +422,40 @@ const handleSelectAllCheckboxChange = (event) => {
         aria-labelledby="modal-modal-title"
         aria-describedby="modal-modal-description"
       >
-        <Box className="modalStyle">
-          <img src={FailIcon} alt="Fail Icon" style={{ marginRight: '10px' }} className='FailIcon-img' />
-          <p>ปฎิเสธ</p>
-          <input type="text" value={rejectReason} onChange={(e) => setRejectReason(e.target.value)} />
-          <input type="file" accept="image/*" onChange={(e) => setRejectedImage(e.target.files[0])} />
-          {rejectedImage && <img src={URL.createObjectURL(rejectedImage)} alt="Rejected" style={{ width: '100px', height: '100px' }} />}
-          <div style={{ marginTop: '10px' }}>
-            <Button variant="contained" onClick={handleRejectConfirm} style={{ marginRight: '10px' }} >Confirm</Button>
-            <Button variant="contained" onClick={handleCloseModal}>Cancel</Button>
+        <div className="modalStyle">
+          <div className="contentContainer">
+            {Object.keys(selectedCheckboxes).map((index) => (
+              <div key={index}>
+                <img src={selectedCheckboxes[index].img_6_Array} alt={`Image ${index + 1}`} className="imageInModal" />
+                <textarea
+                  placeholder="เพิ่มรายละเอียดสำหรับรูปภาพนี้"
+                  value={selectedCheckboxes[index].rejectReason || ''} // ใช้ค่า rejectReason ของแต่ละรายการ
+                  onChange={(e) => handleRejectReasonChange(e, index)} // เพิ่มการเรียกใช้ฟังก์ชัน handleRejectReasonChange
+                  className="rejectReasonInput"
+                  style={{fontFamily:"'Kanit', sans-serif"}}
+                />
+              </div>
+            ))}
           </div>
-        </Box>
+          <div className="buttonContainer">
+            <Button
+              variant="contained"
+              style={{ backgroundColor: '#9c0606', color: 'white', fontFamily: "'Kanit', sans-serif" }}
+              onClick={handleCloseModal}
+            >
+              Cancel
+            </Button>
+            <Button
+              variant="contained"
+              style={{ backgroundColor: '#1095c6', color: 'white', fontFamily: "'Kanit', sans-serif" }}
+              onClick={handleRejectConfirm}
+            >
+              Confirm
+            </Button>
+          </div>
+        </div>
       </Modal>
+
       {notification.show && (
         <div className="notification">
           <img src={SuccessIcon} alt="Success Icon" className='SuccessIcon-img' />
