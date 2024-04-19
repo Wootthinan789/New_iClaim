@@ -134,13 +134,14 @@ const Profile = () => {
     // เคลียร์ข้อมูลของ textarea และปิด Modal
     setSelectedCheckboxes({});
     setOpenModal(false);
+    window.location.reload();
   };
   
 
   // ตรวจสอบว่ามี img_6_Array ที่ถูกเลือกหรือไม่ ถ้ามีให้แสดงใน Modal
   const renderSelectedImages = () => {
     return Object.values(selectedCheckboxes).map((checkbox, index) => (
-      <div key={index}><img src={checkbox.img_6_Array} alt={`Image ${index + 1}`} className="imageInModal" /></div>
+      <div key={index}><img src={checkbox.img_6_Array} alt={`Image ${index + 1}`} className="imageInModal_External" /></div>
     ));
   };
   
@@ -197,7 +198,7 @@ const Profile = () => {
       setNotification({ message: '', show: false });
       setDarkBackground(false);
     }, 2500);
-    //window.location.reload();
+    window.location.reload();
   };
   
 
@@ -426,12 +427,12 @@ const handleSelectAllCheckboxChange = (event) => {
           <div className="contentContainer">
             {Object.keys(selectedCheckboxes).map((index) => (
               <div key={index}>
-                <img src={selectedCheckboxes[index].img_6_Array} alt={`Image ${index + 1}`} className="imageInModal" />
+                <img src={selectedCheckboxes[index].img_6_Array} alt={`Image ${index + 1}`} className="imageInModal_External" />
                 <textarea
                   placeholder="เพิ่มรายละเอียดสำหรับรูปภาพนี้"
                   value={selectedCheckboxes[index].rejectReason || ''} // ใช้ค่า rejectReason ของแต่ละรายการ
                   onChange={(e) => handleRejectReasonChange(e, index)} // เพิ่มการเรียกใช้ฟังก์ชัน handleRejectReasonChange
-                  className="rejectReasonInput"
+                  className="rejectReasonInput_External"
                   style={{fontFamily:"'Kanit', sans-serif"}}
                 />
               </div>

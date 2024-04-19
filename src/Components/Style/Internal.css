@@ -336,6 +336,17 @@ button {
 }
 
 @media (max-width: 480px) {
+  .rejectReasonInput_Internal{
+    margin-left: 30px;
+    width: 80%;
+    margin-bottom: 30px;
+    padding: 5px;
+  }
+  .imageInModal_Internal {
+    margin: 20px;
+    width: 300px; /* กำหนดความกว้างของรูปภาพ */
+    height: auto; /* ให้ความสูงปรับตามอัตราส่วนของรูปภาพ */
+  }
   .containerStype{
     background-image: url('../images-iclaim/blur-hospital.jpg');
     background-size: cover;

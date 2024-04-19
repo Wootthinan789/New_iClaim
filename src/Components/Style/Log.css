@@ -400,7 +400,15 @@
     
   }
   
-  @media (max-width: 480px) {
+  @media only screen and (max-width: 480px) {
+    .file_export{
+      display: flex;
+      bottom: 0;
+      left: 95%;
+      cursor: pointer;
+      width: 5%;
+    }
+
     .containerStype{
       background-image: url('../images-iclaim/blur-hospital.jpg');
       background-size: cover;
@@ -415,8 +423,9 @@
     position: absolute;
     top: 0;
     background: none;
-    margin: 109px 2px;
-    font-size: 12px;
+    margin: 130px 0 0 0;
+    margin-bottom: 600px;
+    font-size: 8px;
     font-weight: 900;
   }
 
@@ -425,7 +434,7 @@
     font-family: 'Kanit', sans-serif;
     font-weight: 700;
     text-align: center;
-    font-size: 7px;
+    font-size: 6px;
   }
   
    .background_log{
@@ -491,11 +500,11 @@
       max-height: 10px;
     }
     .homeicon {
-      margin-top: 4.5px;
+      margin-top: 4px;
       position: static;
       border: none;
       padding: 0;
-      width: 25%;
+      width: 30%;
       cursor: pointer;
       margin-left: 70%;
     }
@@ -526,12 +535,12 @@
         padding: 10px 20px;
     }
     .Dashboard-Internal-button {
-      margin: 3.8px 0px 2px;
-      width: auto;
+      /* margin: 3.8px 0px 2px; */
+      width: 74px;
       height: 22.1px;
       display: flex;
       padding: 4px 10px;
-      font-size: 8px;
+      font-size: 6px;
       line-height: 1.25rem;
       font-weight: 700;
       text-align: center;
@@ -551,11 +560,11 @@
     }
     .Dashboard-Internal-button-date {
       margin: 3px 0px 5px;
-      width:40%;
+      width:40px;
       height: 22px;
       display: flex;
-      padding: 0px 10px;
-      font-size: 8px;
+      padding: 0 5px;
+      font-size: 6px;
       line-height: 1.25rem;
       font-weight: 700;
       text-align: center;
@@ -749,9 +758,8 @@
         padding: 10px 20px;
     }
     .Dashboard-Internal-button {
-      margin: 3.8px 0px 2px;
-      width: auto;
-      height: 22.5px;
+      width: 74px;
+      height: 22.1px;
       display: flex;
       padding: 4px 10px;
       font-size: 6px;
@@ -774,11 +782,11 @@
     }
     .Dashboard-Internal-button-date {
       margin: 3px 0px 5px;
-      width:40%;
+      width:40px;
       height: 22px;
       display: flex;
-      padding: 0px 10px;
-      font-size: 7px;
+      padding: 0 5px;
+      font-size: 6px;
       line-height: 1.25rem;
       font-weight: 700;
       text-align: center;

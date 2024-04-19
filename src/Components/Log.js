@@ -212,8 +212,8 @@ const Log = () => {
                                 fontFamily: "'Kanit', sans-serif",
                                 fontWeight: '700',
                                 width: isSmallScreen ? '100px' : 'auto',
-                                height: '34px',
-                                fontSize: isSmallScreen ? '7px' : '16px',
+                                height: isSmallScreen ? '22.1px' : '34px',
+                                fontSize: isSmallScreen ? '6px' : '16px',
                                 marginTop: '5px',
                                 borderRadius: '10px',
                                 background: '#c7c7c7',
@@ -224,8 +224,24 @@ const Log = () => {
                             onChange={handleChange}
                             defaultValue={10}
                         >
-                            <MenuItem value={10} className='DropDown_Log'>Dashboard External</MenuItem>
-                            <MenuItem value={20} className='DropDown_Log'>Dashboard Internal</MenuItem>
+                            <MenuItem value={10} 
+                            style={{
+                                fontFamily: "'Kanit', sans-serif",
+                                fontWeight: '700',
+                                textAlign:'center',
+                                fontSize: isSmallScreen ? '6px' : '16px',
+                                margin: '0',
+                            }}
+                            >Dashboard External</MenuItem>
+                            <MenuItem value={20}
+                            style={{
+                                fontFamily: "'Kanit', sans-serif",
+                                fontWeight: '700',
+                                textAlign:'center',
+                                fontSize: isSmallScreen ? '6px' : '16px',
+                                margin: '0',
+                            }}
+                            >Dashboard Internal</MenuItem>
                         </Select>
                     </FormControl>
                 </div>

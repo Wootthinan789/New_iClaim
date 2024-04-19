@@ -2,12 +2,12 @@
   background-image: url('../images-iclaim/blur-hospital.jpg');
 } */
 /*แยก Style จาก*/
-.rejectReasonInput{
+.rejectReasonInput_External{
   margin-left: 30px;
   width: 800px;
   padding: 5px;
 }
-.imageInModal {
+.imageInModal_External {
   margin: 20px;
   width: 820px; /* กำหนดความกว้างของรูปภาพ */
   height: auto; /* ให้ความสูงปรับตามอัตราส่วนของรูปภาพ */
@@ -308,7 +308,7 @@ button {
   justify-content: flex-end;
   margin-top: auto; /* ทำให้ div นี้ไปอยู่ด้านล่างของ Modal */
   padding-bottom: 20px;
-  
+ 
 }
 .buttonContainer .MuiButton-root {
   padding: 5px;
@@ -386,6 +386,42 @@ button {
 }
 
 @media (max-width: 480px) {
+  .buttonContainer {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 140px;
+    justify-content: flex-end;
+    margin-top: auto; /* ทำให้ div นี้ไปอยู่ด้านล่างของ Modal */
+    padding-bottom: 20px; 
+  }
+  .modalStyle {
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 70%; /* กำหนดความกว้างเป็น 70% */
+    height: 90%; /* กำหนดความยาวเป็น 70% */
+    max-width: 380px; /* กำหนดความกว้างสูงสุด */
+    max-height: 600px; /* กำหนดความยาวสูงสุด */
+    background-color: #ffffff; /* กำหนดสีพื้นหลัง */
+    border-radius: 8px;
+    overflow: auto; /* เพิ่ม scrollbar ในกรณีที่ข้อมูลยาวเกินกำหนด */
+    display: flex; /* ใช้ flexbox layout */
+    flex-direction: column; /* จัดเรียงส่วนในแนวดิ่ง */
+    align-items: center;
+    justify-content: center;
+  }
+  .rejectReasonInput_External{
+    margin-left: 30px;
+    width: 80%;
+    margin-bottom: 30px;
+    padding: 5px;
+  }
+  .imageInModal_External {
+    margin: 20px;
+    width: 300px; /* กำหนดความกว้างของรูปภาพ */
+    height: auto; /* ให้ความสูงปรับตามอัตราส่วนของรูปภาพ */
+  }
   .containerStype{
     background-image: url('../images-iclaim/blur-hospital.jpg');
     background-size: cover;

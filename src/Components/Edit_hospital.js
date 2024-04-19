@@ -266,8 +266,8 @@ const Edit_hospital = () => {
               <table className='table_Style'>
                 <thead>
                   <tr>
-                    <th className='Name_Hospital_Style' style={{ padding: '5px' }}>Name Hospital</th>
-                    <th className='Token_Style' style={{ padding: '5px' }}>Token</th>
+                    <th className='Name_Hospital_Style' style={{ padding: isSmallScreen ? '0px 30px 0px 30px' : '5px' }}>Hospital</th>
+                    <th className='Token_Style' style={{ padding: isSmallScreen ? '0' : '5px' }}>Token</th>
                     <th>
                       <button className='button_Add_Hospital' onClick={handleOpenAddDialog}>เพิ่ม</button>
                     </th>

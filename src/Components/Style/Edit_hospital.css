@@ -489,6 +489,84 @@
   }
   
   @media (max-width: 480px) {
+    .button_Edit{
+      background-color: #1480d3;
+      border-radius: 10px;
+      width: 30px;
+      color: #ffffff;
+      cursor: pointer;
+      font-size: 8px;
+      font-family: 'Kanit', sans-serif;
+    }
+    .button_Delete{
+      background-color: #d31414;
+      color: #ffffff;
+      cursor: pointer;
+      border-radius: 10px;
+      font-family: 'Kanit', sans-serif;
+      font-size: 8px;
+      width: 30px;
+    }
+    .button_Add_Hospital{
+      background-color: rgb(13, 107, 21);
+      font-family: 'Kanit', sans-serif;
+      border-radius: 10px;
+      margin-left: auto; /* จัดตำแหน่งข้อความให้อยู่กึ่งกลาง */
+      margin-right: auto; /* จัดตำแหน่งข้อความให้อยู่กึ่งกลาง */
+      cursor: pointer;
+      width:  30px;
+      color: #ffffff;
+      height: 15px;
+      font-size: 8px;
+    }
+    .data_Style{
+      font-size: 6px;
+      padding: 10px;
+      text-align: center;
+      background-color: none;
+      font-family: 'Kanit', sans-serif;
+    }
+    .Token_Style{
+      font-size: 10px;
+      background-color: #F2F2F2;
+      border-radius: 0 8px 8px 0;;
+      font-family: 'Kanit', sans-serif;
+      font-weight: 700;
+    }
+    .Name_Hospital_Style{
+      font-size: 10px;
+      background-color: #F2F2F2;
+      border-radius: 8px 0 0 8px;
+      width: auto;
+      font-weight: 700;
+      font-family: 'Kanit', sans-serif;
+    }
+    .hard_title {
+      font-size: 12px;
+      text-align: center; /* จัดข้อความให้อยู่ตรงกลาง */
+      margin-top: 20px; /* เพิ่มระยะห่างด้านบน */
+      margin-bottom: 20px; /* เพิ่มระยะห่างด้านล่าง */
+      background-color: #F2F2F2; /* กำหนดสีพื้นหลัง */
+      padding: 10px; /* เพิ่มช่องว่างรอบข้อความ */
+      border-radius: 10px; /* กำหนดขอบมน */
+      width: 40%; /* กำหนดความกว้างของข้อความ */
+      margin-left: auto; /* จัดตำแหน่งข้อความให้อยู่กึ่งกลาง */
+      margin-right: auto; /* จัดตำแหน่งข้อความให้อยู่กึ่งกลาง */
+      word-wrap: break-word; /* แบ่งข้อความที่ยาวเกินไป */
+      font-family: 'Kanit', sans-serif;
+    }
+    .Search_Style {
+      text-align: center;
+      margin-left: 23.5%;
+      border: none; /* ลบขอบ */
+      outline: none; /* ลบขอบนอก */
+      border-radius: 10px;
+      width: 200px; /* ปรับขนาดความกว้างตามที่ต้องการ */
+      height: 15px; /* ปรับขนาดความสูงตามที่ต้องการ */
+      font-size: 8px; /* ปรับขนาดตัวอักษรตามที่ต้องการ */
+      font-family: 'Kanit', sans-serif;
+      font-weight: 600;
+    }
     .containerStype{
       background-image: url('../images-iclaim/blur-hospital.jpg');
       background-size: cover;
@@ -605,12 +683,11 @@
         padding: 10px 20px;
     }
     .Dashboard-Internal-button {
-      margin: 3.8px 0px 2px;
-      width: auto;
+      width: 74px;
       height: 22.1px;
       display: flex;
       padding: 4px 10px;
-      font-size: 8px;
+      font-size: 6px;
       line-height: 1.25rem;
       font-weight: 700;
       text-align: center;
