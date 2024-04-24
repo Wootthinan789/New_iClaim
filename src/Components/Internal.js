@@ -101,6 +101,38 @@ const Internal = () => {
       }
     }));
   };
+
+  // Function to handle log out after 10 minutes of inactivity
+  useEffect(() => {
+    let lastActivityTime = new Date().getTime();
+
+    const checkInactivity = () => {
+      const currentTime = new Date().getTime();
+      const inactiveTime = currentTime - lastActivityTime;
+      const twoMinutes = 1 * 60 * 1000; // 10 minutes in milliseconds
+
+      if (inactiveTime > twoMinutes) {
+        // Log out if inactive for more than 10 minutes
+        handleLogout();
+      }
+    };
+
+    const handleActivity = () => {
+      lastActivityTime = new Date().getTime();
+    };
+
+    const activityInterval = setInterval(checkInactivity, 60000); // Check every minute for inactivity
+
+    // Listen for user activity events
+    window.addEventListener('mousemove', handleActivity);
+    window.addEventListener('keydown', handleActivity);
+
+    return () => {
+      clearInterval(activityInterval);
+      window.removeEventListener('mousemove', handleActivity);
+      window.removeEventListener('keydown', handleActivity);
+    };
+  }, []);
   
   const handleRejectConfirm = async () => {
     // สร้าง Array ใหม่เพื่อเก็บข้อมูลที่จะส่งไปยัง API หรือทำงานอื่น ๆ
@@ -154,11 +186,11 @@ const Internal = () => {
   
 
   // ตรวจสอบว่ามี img_7_Array ที่ถูกเลือกหรือไม่ ถ้ามีให้แสดงใน Modal
-  const renderSelectedImages = () => {
-    return Object.values(selectedCheckboxes).map((checkbox, index) => (
-      <div key={index}><img src={checkbox.img_7_Array} alt={`Image ${index + 1}`} className="imageInModal_Internal" /></div>
-    ));
-  };
+  // const renderSelectedImages = () => {
+  //   return Object.values(selectedCheckboxes).map((checkbox, index) => (
+  //     <div key={index}><img src={checkbox.img_7_Array} alt={`Image ${index + 1}`} className="imageInModal_Internal" /></div>
+  //   ));
+  // };
   
 
   const handleOpenUserMenu = (event) => {

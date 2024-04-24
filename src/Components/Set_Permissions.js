@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useCallback } from 'react';
+import React, { useState,useEffect } from 'react';
 import './Style/Log.css'
 import './Style/Set_Permissions.css'
 import axios from "axios";
@@ -61,6 +61,7 @@ const Set_Permissions = () => {
         });
     };
     
+    
 
     const [anchorElUser, setAnchorElUser] = useState(null);
     const usernameJson = JSON.parse(localStorage.getItem('username'));
@@ -74,6 +75,9 @@ const Set_Permissions = () => {
     const handleOpenUserMenu = (event) => {
         setAnchorElUser(event.currentTarget);
     };
+    const handleLogClick = () => {
+        navigate('/Log')
+      }
 
     const handleEdithospitalClick = () => {
         navigate('/Edit/Hospital')
@@ -91,6 +95,38 @@ const Set_Permissions = () => {
         localStorage.removeItem("role")
         window.location.href = "/";
     };
+
+         // Function to handle log out after 10 minutes of inactivity
+  useEffect(() => {
+    let lastActivityTime = new Date().getTime();
+
+    const checkInactivity = () => {
+      const currentTime = new Date().getTime();
+      const inactiveTime = currentTime - lastActivityTime;
+      const twoMinutes = 1 * 60 * 1000; // 10 minutes in milliseconds
+
+      if (inactiveTime > twoMinutes) {
+        // Log out if inactive for more than 10 minutes
+        handleLogout();
+      }
+    };
+
+    const handleActivity = () => {
+      lastActivityTime = new Date().getTime();
+    };
+
+    const activityInterval = setInterval(checkInactivity, 60000); // Check every minute for inactivity
+
+    // Listen for user activity events
+    window.addEventListener('mousemove', handleActivity);
+    window.addEventListener('keydown', handleActivity);
+
+    return () => {
+      clearInterval(activityInterval);
+      window.removeEventListener('mousemove', handleActivity);
+      window.removeEventListener('keydown', handleActivity);
+    };
+  }, []);
 
     const handleReload = () => {
         navigate('/Dashboard/External')
@@ -144,7 +180,7 @@ const Set_Permissions = () => {
                             }}
                         >
                             {['กำหนดสิทธิ์', 'แก้ไขโรงพยาบาล', 'Log', 'ออกจากระบบ'].map((setting) => (
-                                <MenuItem key={setting} style={{ padding: isSmallScreen ? '0 5px' : '8px 12px' }} onClick={setting === 'ออกจากระบบ' ? handleLogout : setting === 'แก้ไขโรงพยาบาล' ? handleEdithospitalClick : null}>
+                                <MenuItem key={setting} style={{ padding: isSmallScreen ? '0 5px' : '8px 12px' }} onClick={setting === 'ออกจากระบบ' ? handleLogout : setting === 'แก้ไขโรงพยาบาล' ? handleEdithospitalClick : setting === 'Log' ? handleLogClick : null}>
                                     <Typography style={{ fontFamily: "'Kanit', sans-serif", padding: isSmallScreen ? '0 12px' : '0 10px', fontSize: isSmallScreen ? '12px' : '16px', margin: isSmallScreen ? '1px 0' : '0 0' }}>
                                         {setting}
                                     </Typography>

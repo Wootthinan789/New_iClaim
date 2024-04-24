@@ -14,7 +14,7 @@ import SetPermissions from './Components/Set_Permissions';
 
 const App = () =>{
   const token = localStorage.getItem("access_token");
-  const user_role = localStorage.getItem("user_role")
+  //const user_role = localStorage.getItem("user_role")
   const role = localStorage.getItem("role")
 
   if (!token){

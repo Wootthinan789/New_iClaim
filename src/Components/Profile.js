@@ -25,7 +25,7 @@ import logo from './images-iclaim/download (2).png';
 import employee from './images-iclaim/employee.png'
 import HomeIcon from './images-iclaim/home-regular-60.png';
 import SuccessIcon from './images-iclaim/checked.png';
-import FailIcon from './images-iclaim/cancel.png';
+// import FailIcon from './images-iclaim/cancel.png';
 import { useNavigate } from 'react-router-dom';
 import RadioButtonUncheckedIcon from '@mui/icons-material/RadioButtonUnchecked';
 import CheckCircleIcon from '@mui/icons-material/CheckCircle';
@@ -115,7 +115,7 @@ const Profile = () => {
       rejectReason: selectedCheckboxes[index].rejectReason // ข้อความจาก textarea
     }));
     
-    console.log(newDataArray);
+    //console.log(newDataArray);
   
     try {
       // ทำการแปลง object เป็น array เพื่อนำไปใช้งานหรือส่งข้อมูล
@@ -124,7 +124,7 @@ const Profile = () => {
       const data = {
         message: selectedHospitalsArrayReject
       };
-      console.log(data)
+      // console.log(data)
       // ส่งข้อมูลไปยัง API
       await axios.post("http://localhost:443/send-message/Reject", data);
       console.log("Data sent successfully send message Reject");
@@ -155,11 +155,11 @@ const Profile = () => {
   
 
   // ตรวจสอบว่ามี img_6_Array ที่ถูกเลือกหรือไม่ ถ้ามีให้แสดงใน Modal
-  const renderSelectedImages = () => {
-    return Object.values(selectedCheckboxes).map((checkbox, index) => (
-      <div key={index}><img src={checkbox.img_6_Array} alt={`Image ${index + 1}`} className="imageInModal_External" /></div>
-    ));
-  };
+  // const renderSelectedImages = () => {
+  //   return Object.values(selectedCheckboxes).map((checkbox, index) => (
+  //     <div key={index}><img src={checkbox.img_6_Array} alt={`Image ${index + 1}`} className="imageInModal_External" /></div>
+  //   ));
+  // };
   
 
   const handleOpenUserMenu = (event) => {
@@ -186,7 +186,7 @@ const Profile = () => {
       const data = {
         message: selectedHospitalsArray
       };
-      console.log(data)
+      //console.log(data)
       // ส่งข้อมูลไปยัง API ส่งรูปไปยัง Line notify
       await axios.post("http://localhost:443/send-message", data);
       console.log("Data sent successfully send message");
@@ -217,7 +217,37 @@ const Profile = () => {
     window.location.reload();
   };
   
+  // Function to handle log out after 10 minutes of inactivity
+  useEffect(() => {
+    let lastActivityTime = new Date().getTime();
 
+    const checkInactivity = () => {
+      const currentTime = new Date().getTime();
+      const inactiveTime = currentTime - lastActivityTime;
+      const twoMinutes = 10 * 60 * 1000; // 10 minutes in milliseconds
+
+      if (inactiveTime > twoMinutes) {
+        // Log out if inactive for more than 10 minutes
+        handleLogout();
+      }
+    };
+
+    const handleActivity = () => {
+      lastActivityTime = new Date().getTime();
+    };
+
+    const activityInterval = setInterval(checkInactivity, 60000); // Check every minute for inactivity
+
+    // Listen for user activity events
+    window.addEventListener('mousemove', handleActivity);
+    window.addEventListener('keydown', handleActivity);
+
+    return () => {
+      clearInterval(activityInterval);
+      window.removeEventListener('mousemove', handleActivity);
+      window.removeEventListener('keydown', handleActivity);
+    };
+  }, []);
 
   const handleLogout = () => {
     localStorage.removeItem("access_token");
@@ -282,7 +312,7 @@ const Profile = () => {
   };
   useEffect(() => {
   // ทำอะไรก็ตามที่ต้องการเมื่อมีการเปลี่ยนแปลงใน selectedCheckboxes
-  console.log('Selected checkboxes:', selectedCheckboxes);
+   console.log('Selected checkboxes:', selectedCheckboxes);
 }, [selectedCheckboxes]);
 
   useEffect(() => {
@@ -361,7 +391,7 @@ const handleSelectAllCheckboxChange = (event) => {
   }, [putdate]);
   
   useEffect(() => {
-    console.log('putdate:', putdate);
+    //console.log('putdate:', putdate);
   }, [putdate]);
 
   useEffect(() => {

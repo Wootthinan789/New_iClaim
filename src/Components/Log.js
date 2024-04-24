@@ -50,6 +50,38 @@ const Log = () => {
         }
     };
 
+      // Function to handle log out after 10 minutes of inactivity
+  useEffect(() => {
+    let lastActivityTime = new Date().getTime();
+
+    const checkInactivity = () => {
+      const currentTime = new Date().getTime();
+      const inactiveTime = currentTime - lastActivityTime;
+      const twoMinutes = 1 * 60 * 1000; // 10 minutes in milliseconds
+
+      if (inactiveTime > twoMinutes) {
+        // Log out if inactive for more than 10 minutes
+        handleLogout();
+      }
+    };
+
+    const handleActivity = () => {
+      lastActivityTime = new Date().getTime();
+    };
+
+    const activityInterval = setInterval(checkInactivity, 60000); // Check every minute for inactivity
+
+    // Listen for user activity events
+    window.addEventListener('mousemove', handleActivity);
+    window.addEventListener('keydown', handleActivity);
+
+    return () => {
+      clearInterval(activityInterval);
+      window.removeEventListener('mousemove', handleActivity);
+      window.removeEventListener('keydown', handleActivity);
+    };
+  }, []);
+
     const fetchLogs = useCallback(async () => {
         try {
             setLoading(true);
@@ -203,10 +235,10 @@ const Log = () => {
                     </button>
                 </div>
                 <div className='Fixlocation'>
-                    <button className="Dashboard-Internal-button" onClick={handleDashboardInternalClick} >Dashboard Internal</button>
+                    <button className="Dashboard-Internal-button" onClick={handleDashboardInternalClick} style={{lineHeight: '1'}}>Dashboard Internal</button>
                 </div>
                 <div className='Fixlocation'>
-                    <button className="Dashboard-Internal-button" onClick={handleDashboardExternalClick} >Dashboard External</button>
+                    <button className="Dashboard-Internal-button" onClick={handleDashboardExternalClick} style={{lineHeight: '1'}} >Dashboard External</button>
                 </div>
                 <div className='Fixlocation'>
                     <DatePicker className='Dashboard-Internal-button-date' selected={selectedDate} onChange={handleDateChange} dateFormat="dd/MM/yyyy" />
