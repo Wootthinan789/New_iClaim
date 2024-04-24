@@ -51,6 +51,7 @@ const Internal = () => {
   const [selectedCheckboxes, setSelectedCheckboxes] = useState({});
 
   const [selectAll, setSelectAll] = useState(false);
+  const role = localStorage.getItem("role")
   
   const theme = useTheme();
   const isSmallScreen = useMediaQuery(theme.breakpoints.down('sm'));
@@ -60,6 +61,20 @@ const Internal = () => {
     const formattedDate = date.toISOString().slice(0, 10);
     setPutDate(formattedDate);
   };
+  useEffect(() => {
+    // เมื่อ selectedDate เปลี่ยนแปลง กำหนดค่า putdate ใหม่
+    const formattedDate = selectedDate.toISOString().slice(0, 10);
+    setPutDate(formattedDate);
+  }, [selectedDate]);
+  useEffect(() => {
+    // สร้างฟังก์ชันเพื่อกำหนดวันที่ลดลง 1 วันจากวันปัจจุบัน
+    const currentDate = new Date();
+    const previousDay = new Date(currentDate);
+    previousDay.setDate(currentDate.getDate() - 1);
+
+    // กำหนดวันที่ลดลงให้กับ state
+    setSelectedDate(previousDay);
+  }, []);
 
   const navigate = useNavigate();
   const handleDashboardExternalClick = () => {
@@ -207,6 +222,8 @@ const Internal = () => {
     localStorage.removeItem("access_token");
     localStorage.removeItem("username");
     localStorage.removeItem("account_id")
+    localStorage.removeItem("user_role")
+    localStorage.removeItem("role")
     window.location.href = "/";
   };
 
@@ -217,6 +234,9 @@ const Internal = () => {
   const handleEdithospitalClick = () => {
     navigate('/Edit/Hospital')
   }
+  const handleSetPermissions = () => {
+    navigate('/Set/Permission')
+}
 
   const handleCheckboxChange = (event, index) => {
     const isChecked = event.target.checked;
@@ -400,7 +420,7 @@ const handleSelectAllCheckboxChange = (event) => {
                 //className='Menu-list-icon'
                 style={{    
                   padding: isSmallScreen ? '0 5px' : '8px 12px',}} // ปรับขนาดของ MenuItem
-                onClick={setting === 'ออกจากระบบ' ? handleLogout : setting === 'Log' ? handleLogClick : setting === 'แก้ไขโรงพยาบาล' ? handleEdithospitalClick : null}
+                onClick={setting === 'ออกจากระบบ' ? handleLogout : setting === 'Log' ? handleLogClick : setting === 'แก้ไขโรงพยาบาล' ? handleEdithospitalClick : setting === 'กำหนดสิทธิ์' ? handleSetPermissions : null}
                 
               >
                 <Typography       
@@ -571,7 +591,7 @@ const handleSelectAllCheckboxChange = (event) => {
           <p style={{ textAlign: "center", fontFamily: "'Kanit', sans-serif", fontSize: isSmallScreen ? '8px' : '20px', }}>ไม่มีข้อมูลสําหรับวันที่เลือก</p>
         )}
       </Card>
-      {!loading && countries && countries.length > 0 && (
+      {!loading && countries && countries.length > 0 && (role === 'admin' || role === 'user' || role === 'Admin' || role === 'User') && (
         <div className='container-approve-reject'>
           <div className='Fixlocation-approve-reject'>
             <button className="button-Approve" onClick={handleApproveButtonClick}>Approve</button>

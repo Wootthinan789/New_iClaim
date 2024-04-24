@@ -70,12 +70,17 @@ const Edit_hospital = () => {
       localStorage.removeItem("access_token");
       localStorage.removeItem("username");
       localStorage.removeItem("account_id")
+      localStorage.removeItem("user_role")
+      localStorage.removeItem("role")
       window.location.href = "/";
     };
   
     const handleReload = () => {
         navigate('/Dashboard/External')
     };
+    const handleSetPermissions = () => {
+      navigate('/Set/Permission')
+  }
 
     useEffect(() => {
       const fetchData = async () => {
@@ -222,7 +227,7 @@ const Edit_hospital = () => {
                   style={{    
                     padding: isSmallScreen ? '0 5px' : '8px 12px',}
                 }
-                  onClick={setting === 'ออกจากระบบ' ? handleLogout : setting === 'Log' ? handleLogClick : null}>
+                  onClick={setting === 'ออกจากระบบ' ? handleLogout : setting === 'Log' ? handleLogClick : setting === 'กำหนดสิทธิ์' ? handleSetPermissions : null}>
                 <Typography       
                 style={{
                   fontFamily: "'Kanit', sans-serif",

@@ -1,0 +1,62 @@
+.cardStyle_Set_Permissons {
+    width: 40%;
+    height: 500px;
+
+  }
+.Text_SetPermissons{
+    background: none;
+    font-size: 16px;
+    font-weight: 900;
+    text-align: center;
+}
+.form-set{
+  font-family: 'Kanit', sans-serif;
+  font-weight: 700px;
+  font-size: 20px;
+  margin: 20px;
+  margin-top: 16px;
+}
+.text-role{
+  font-size: 14px;
+  margin: 0;
+}
+.p-style{
+  margin-left: 8px;
+}
+
+  @media (max-width: 768px) {
+
+  }
+  
+  @media only screen and (max-width: 480px) {
+    .cardStyle_Set_Permissons {
+      width: 50%;
+      height: 300px;
+  
+    }
+    .Text_SetPermissons{
+      background: none;
+      font-size: 6px;
+      font-weight: 900;
+      text-align: center;
+      margin: 15px;
+    }
+    .form-set{
+      font-family: 'Kanit', sans-serif;
+      font-weight: 700px;
+      font-size: 8px;
+      margin: 10px;
+      margin-top: 8px;
+      margin-bottom: 10px; /* เพิ่มระยะห่างระหว่าง input */
+    }
+    .text-role{
+      font-size: 8px;
+      margin: 0;
+    }
+    .p-style{
+      margin-left: 8px;
+    }
+  }
+  @media (max-width: 420px) {
+  }
+  

@@ -97,6 +97,10 @@ const Log = () => {
         navigate('/Edit/Hospital')
     };
 
+    const handleSetPermissions = () => {
+        navigate('/Set/Permission')
+    }
+
     const handleCloseUserMenu = () => {
         setAnchorElUser(null);
     };
@@ -105,6 +109,8 @@ const Log = () => {
         localStorage.removeItem("access_token");
         localStorage.removeItem("username");
         localStorage.removeItem("account_id")
+        localStorage.removeItem("user_role")
+        localStorage.removeItem("role")
         window.location.href = "/";
     };
 
@@ -180,7 +186,7 @@ const Log = () => {
                             }}
                         >
                             {['กำหนดสิทธิ์', 'แก้ไขโรงพยาบาล', 'Log', 'ออกจากระบบ'].map((setting) => (
-                                <MenuItem key={setting} style={{ padding: isSmallScreen ? '0 5px' : '8px 12px' }} onClick={setting === 'ออกจากระบบ' ? handleLogout : setting === 'แก้ไขโรงพยาบาล' ? handleEdithospitalClick : null}>
+                                <MenuItem key={setting} style={{ padding: isSmallScreen ? '0 5px' : '8px 12px' }} onClick={setting === 'ออกจากระบบ' ? handleLogout : setting === 'แก้ไขโรงพยาบาล' ? handleEdithospitalClick :setting === 'กำหนดสิทธิ์' ? handleSetPermissions : null}>
                                     <Typography style={{ fontFamily: "'Kanit', sans-serif", padding: isSmallScreen ? '0 12px' : '0 10px', fontSize: isSmallScreen ? '12px' : '16px', margin: isSmallScreen ? '1px 0' : '0 0' }}>
                                         {setting}
                                     </Typography>
