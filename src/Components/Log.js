@@ -57,7 +57,7 @@ const Log = () => {
     const checkInactivity = () => {
       const currentTime = new Date().getTime();
       const inactiveTime = currentTime - lastActivityTime;
-      const twoMinutes = 1 * 60 * 1000; // 10 minutes in milliseconds
+      const twoMinutes = 10 * 60 * 1000; // 10 minutes in milliseconds
 
       if (inactiveTime > twoMinutes) {
         // Log out if inactive for more than 10 minutes
