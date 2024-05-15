@@ -157,7 +157,8 @@ const Internal = () => {
       };
       console.log(data)
       // ส่งข้อมูลไปยัง API
-      await axios.post("http://localhost:443/send-message/Reject", data);
+      //await axios.post("http://localhost:443/send-message/Reject", data);
+      await axios.post("http://rpa-apiprd.inet.co.th:443/send-message/Reject", data);
       console.log("Data sent successfully send message Reject");
 
       // ส่งข้อมูลไปยัง API insert log
@@ -172,7 +173,8 @@ const Internal = () => {
       await axios.post("http://rpa-apiprd.inet.co.th:443/iClaim/insert/log", logData);
       console.log("Log data inserted successfully");
 
-      await axios.post("http://localhost:443/send-message/alertReject", data);
+      //await axios.post("http://localhost:443/send-message/alertReject", data);
+      await axios.post("http://rpa-apiprd.inet.co.th:443/send-message/alertReject", data);
       console.log("Data sent successfully send message alert Reject");
 
     } catch (error) {
@@ -219,22 +221,34 @@ const Internal = () => {
       };
       console.log(data)
       // ส่งข้อมูลไปยัง API ส่งรูปไปยัง Line notify
-      await axios.post("http://localhost:443/send-message", data);
+      //await axios.post("http://localhost:443/send-message", data);
+      await axios.post("http://rpa-apiprd.inet.co.th:443/send-message", data);
       console.log("Data sent successfully send message");
 
       // ส่งข้อมูลไปยัง API insert log
-      const logData = {
-        doc_name: "-",
-        status: "Approved",
-        user_name: usernameJson.username, // นำ username จาก local storage มาใช้งาน
-        remark: "-",
-        data_type: "Internal"
-      };
+      // const logData = {
+      //   doc_name: "-",
+      //   status: "Approved",
+      //   user_name: usernameJson.username, // นำ username จาก local storage มาใช้งาน
+      //   remark: "-",
+      //   data_type: "Internal"
+      // };
+      const logPromises = selectedHospitalsArray.map(async (checkbox) => {
+        const logData = {
+          doc_name: "-",
+          status: "Approved",
+          user_name: usernameJson.username,
+          remark: checkbox.title, // Use the checkbox title as the remark
+          data_type: "Internal"
+        };
       // ส่งข้อมูลเข้า log
       await axios.post("http://rpa-apiprd.inet.co.th:443/iClaim/insert/log", logData);
-      console.log("Log data inserted successfully");
+      console.log("Log data inserted successfully for", checkbox.title);
+    });
+    await Promise.all(logPromises);
       // ส่ง Alert ไปยัง line notify Group team
-      await axios.post("http://localhost:443/send-message/alert", data);
+      //await axios.post("http://localhost:443/send-message/alert", data);
+      await axios.post("http://rpa-apiprd.inet.co.th:443/send-message/alert", data);
       console.log("Data sent successfully send message alert");
 
     } catch (error) {

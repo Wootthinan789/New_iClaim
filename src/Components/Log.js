@@ -43,12 +43,15 @@ const Log = () => {
 
     const handleChange = (event) => {
         const selectedValue = event.target.value;
+        console.log('Selected value:', selectedValue); // เพิ่ม console.log เพื่อตรวจสอบค่าที่ถูกเลือก
         if (selectedValue === 10) {
             setSelectedType("External");
         } else if (selectedValue === 20) {
             setSelectedType("Internal");
         }
+        console.log('Selected type:', selectedType); // เพิ่ม console.log เพื่อตรวจสอบค่า selectedType หลังจากการเปลี่ยนแปลง
     };
+    
 
       // Function to handle log out after 10 minutes of inactivity
   useEffect(() => {
@@ -82,25 +85,39 @@ const Log = () => {
     };
   }, []);
 
-    const fetchLogs = useCallback(async () => {
-        try {
-            setLoading(true);
-            const formattedDate = selectedDate.toISOString().split('T')[0];
-            const response = await axios.get(`http://rpa-apiprd.inet.co.th:443/iClaim/list/log?data_type=${selectedType}&date=${formattedDate}`);
-            if (response.status !== 200) {
-                throw new Error('Failed to fetch logs');
-            }
-            const data = response.data.filter(log => {
-                const logDate = new Date(log.Date_on);
-                return logDate.toISOString().split('T')[0] === formattedDate;
-            });
-            setLogData(data);
-            setLoading(false);
-        } catch (error) {
-            console.error('Error fetching logs:', error);
-            setLoading(false);
+  const fetchLogs = useCallback(async () => {
+    try {
+        setLoading(true);
+        const formattedDate = selectedDate.toISOString().split('T')[0];
+        console.log('Formatted date:', formattedDate);
+        const response = await axios.get(`http://rpa-apiprd.inet.co.th:443/iClaim/list/log?data_type=${selectedType}&date=${formattedDate}`);
+        if (response.status !== 200) {
+            throw new Error('Failed to fetch logs');
         }
-    }, [selectedType, selectedDate]);
+        let data = response.data || [];
+        if (!Array.isArray(data)) {
+            throw new Error('Invalid data format');
+        }
+        if (data.length === 0) {
+            throw new Error('No data available for selected date');
+        }
+        data = data.filter(log => {
+            const logDate = new Date(log.Date_on);
+            return logDate.toISOString().split('T')[0] === formattedDate && log.Data_Type === selectedType;
+        });
+        console.log('Fetched data:', data);
+        setLogData(data);
+        setLoading(false);
+    } catch (error) {
+        console.error('Error fetching logs:', error.message);
+        setLoading(false);
+        if (error.message === 'Invalid data format' || error.message === 'No data available for selected date') {
+            setLogData([]); // กำหนด logData เป็นอาร์เรย์ว่างเมื่อไม่มีข้อมูลสำหรับวันที่เลือกหรือข้อมูลไม่ถูกต้อง
+        }
+    }
+}, [selectedType, selectedDate]);
+
+
 
     useEffect(() => {
         fetchLogs();

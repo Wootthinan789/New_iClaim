@@ -86,7 +86,13 @@ const Signin = () => {
       // Extract username from localStorage
       const usernameRole = localStorage.getItem('user_role');
       // Call the role user API
-      fetch(`http://localhost:443/Role-user?username_role=${usernameRole }`, {
+    //   fetch(`http://localhost:443/Role-user?username_role=${usernameRole }`, {
+    //   method: 'GET',
+    //   headers: {
+    //     'Content-Type': 'application/json'
+    //   },
+    // })
+    fetch(`http://rpa-apiprd.inet.co.th:443/Role-user?username_role=${usernameRole }`, {
       method: 'GET',
       headers: {
         'Content-Type': 'application/json'

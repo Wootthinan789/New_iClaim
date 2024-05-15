@@ -126,7 +126,8 @@ const Profile = () => {
       };
       // console.log(data)
       // ส่งข้อมูลไปยัง API
-      await axios.post("http://localhost:443/send-message/Reject", data);
+      await axios.post("http://rpa-apiprd.inet.co.th:443/send-message/Reject", data);
+      //await axios.post("http://localhost:443/send-message/Reject", data);
       console.log("Data sent successfully send message Reject");
 
       // ส่งข้อมูลไปยัง API insert log
@@ -141,7 +142,8 @@ const Profile = () => {
       await axios.post("http://rpa-apiprd.inet.co.th:443/iClaim/insert/log", logData);
       console.log("Log data inserted successfully");
 
-      await axios.post("http://localhost:443/send-message/alertReject", data);
+      //await axios.post("http://localhost:443/send-message/alertReject", data);
+      await axios.post("http://rpa-apiprd.inet.co.th:443/send-message/alertReject", data);
       console.log("Data sent successfully send message alert Reject");
 
     } catch (error) {
@@ -172,50 +174,58 @@ const Profile = () => {
 
   const handleApproveButtonClick = async () => {
     if (Object.keys(selectedCheckboxes).length === 0) {
-      console.error('ไม่ได้เลือกข้อมูลใด ๆ เพื่อดำเนินการ');
+      console.error('No data selected for processing');
       return;
     }
-  
-    setNotification({ message: 'ยืนยันเรียบร้อยแล้ว', show: true });
-    setDarkBackground(true);
+      setNotification({ message: 'Successfully approved', show: true });
+      setDarkBackground(true);
+
   
     try {
-      // ทำการแปลง object เป็น array เพื่อนำไปใช้งานหรือส่งข้อมูล
       const selectedHospitalsArray = Object.values(selectedCheckboxes);
-      // ส่งข้อมูลตามต้องการ
       const data = {
         message: selectedHospitalsArray
       };
-      //console.log(data)
+      console.log(data)
       // ส่งข้อมูลไปยัง API ส่งรูปไปยัง Line notify
-      await axios.post("http://localhost:443/send-message", data);
+      //await axios.post("http://localhost:443/send-message", data);
+      await axios.post("http://rpa-apiprd.inet.co.th:443/send-message", data);
       console.log("Data sent successfully send message");
 
-      // ส่งข้อมูลไปยัง API insert log
-      const logData = {
-        doc_name: "-",
-        status: "Approved",
-        user_name: usernameJson.username, // นำ username จาก local storage มาใช้งาน
-        remark: "-",
-        data_type: "External"
-      };
-      // ส่งข้อมูลเข้า log
-      await axios.post("http://rpa-apiprd.inet.co.th:443/iClaim/insert/log", logData);
-      console.log("Log data inserted successfully");
-      // ส่ง Alert ไปยัง line notify Group team
-      await axios.post("http://localhost:443/send-message/alert", data);
-      console.log("Data sent successfully send message alert");
-
+      const logPromises = selectedHospitalsArray.map(async (checkbox) => {
+        const logData = {
+          doc_name: "-",
+          status: "Approved",
+          user_name: usernameJson.username,
+          remark: checkbox.title, // Use the checkbox title as the remark
+          data_type: "External"
+        };
+        // Send log data for this checkbox item
+        await axios.post("http://rpa-apiprd.inet.co.th:443/iClaim/insert/log", logData);
+        console.log("Log data inserted successfully for", checkbox.title);
+      });
+  
+      // Wait for all log promises to resolve
+      await Promise.all(logPromises);
+  
+      // Send alert message
+      //await axios.post("http://localhost:443/send-message/alert", data);
+      await axios.post("http://rpa-apiprd.inet.co.th:443/send-message/alert", data);
+      console.log("Data sent successfully for alert message");
     } catch (error) {
-      console.error('Error sending data:', error.message);
+      console.error('Error:', error.message);
     }
   
+    // Clear selected checkboxes and hide notification after 2.5 seconds
     setTimeout(() => {
       setNotification({ message: '', show: false });
       setDarkBackground(false);
     }, 2500);
-    window.location.reload();
+    setTimeout(() =>{
+      window.location.reload(); // Reload the page
+    },2500);
   };
+  
   
   // Function to handle log out after 10 minutes of inactivity
   useEffect(() => {
@@ -495,17 +505,17 @@ const handleSelectAllCheckboxChange = (event) => {
           <div className="buttonContainer">
             <Button
               variant="contained"
-              style={{ backgroundColor: '#9c0606', color: 'white', fontFamily: "'Kanit', sans-serif" }}
-              onClick={handleCloseModal}
-            >
-              Cancel
-            </Button>
-            <Button
-              variant="contained"
               style={{ backgroundColor: '#1095c6', color: 'white', fontFamily: "'Kanit', sans-serif" }}
               onClick={handleRejectConfirm}
             >
               Confirm
+            </Button>
+            <Button
+              variant="contained"
+              style={{ backgroundColor: '#9c0606', color: 'white', fontFamily: "'Kanit', sans-serif" }}
+              onClick={handleCloseModal}
+            >
+              Cancel
             </Button>
           </div>
         </div>

@@ -38,7 +38,8 @@ const Set_Permissions = () => {
             username: username,
             role: role
         };
-        axios.post('http://localhost:443/Role-user/insert', data)
+        //axios.post('http://localhost:443/Role-user/insert', data)
+        axios.post('http://rpa-apiprd.inet.co.th:443/Role-user/insert', data)
         .then(response => {
             console.log(response.data);
             const delayInMilliseconds = 1500;
