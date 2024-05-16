@@ -3,6 +3,13 @@
     height: 500px;
 
   }
+  .Select-root {
+    font-size: 16px; /* ปรับขนาดตามที่ต้องการ */
+  }
+  
+  .Select-select {
+    border-radius: 8px; /* ปรับขนาดของมุม */
+  }
 .Text_SetPermissons{
     background: none;
     font-size: 16px;
@@ -31,7 +38,7 @@
   @media only screen and (max-width: 480px) {
     .cardStyle_Set_Permissons {
       width: 50%;
-      height: 300px;
+      height: 330px;
   
     }
     .Text_SetPermissons{
@@ -55,6 +62,13 @@
     }
     .p-style{
       margin-left: 8px;
+    }
+    .Select-root {
+      font-size: 5px; /* ปรับขนาดตามที่ต้องการ */
+    }
+    
+    .Select-select {
+      border-radius: 8px; /* ปรับขนาดของมุม */
     }
   }
   @media (max-width: 420px) {

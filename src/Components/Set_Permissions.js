@@ -215,14 +215,14 @@ const Set_Permissions = () => {
                             onChange={(e) => setUsername(e.target.value)}
                         />
                         <Typography style={{ fontFamily: "'Kanit', sans-serif", fontSize: isSmallScreen ? '8px' : '16px', marginTop: '10px' }}>กรอกสิทธิ์</Typography>
-                        <FormControl variant="outlined" margin="normal" required fullWidth size="small">
+                        <FormControl variant="outlined" margin="normal" required fullWidth size="small" style={{}}>
                             <InputLabel style={{ fontSize: isSmallScreen ? '8px' : '16px' }}>Select Role</InputLabel>
                             <Select
                                 id="Role"
                                 value={role}
                                 onChange={(e) => setRole(e.target.value)}
                                 label="Select Role"
-                                inputProps={{ style: { borderRadius: 15, fontSize: isSmallScreen ? '8px' : '16px' } }}
+                                inputProps={{className:"Select-root"}}
                             >
                                 <MenuItem value="admin" style={{ fontSize: isSmallScreen ? '8px' : '16px' }}>admin</MenuItem>
                                 <MenuItem value="user" style={{ fontSize: isSmallScreen ? '8px' : '16px' }}>user</MenuItem>
