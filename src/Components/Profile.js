@@ -80,6 +80,7 @@ const Profile = () => {
   const navigate = useNavigate();
   const handleDashboardInternalClick = () => {
       navigate('/Dashboard/Internal')
+      window.location.reload();
     };
 
   const handleRejectButtonClick = () => {
@@ -276,9 +277,11 @@ const Profile = () => {
 
   const handleEdithospitalClick = () => {
     navigate('/Edit/Hospital')
+    window.location.reload();
   }
   const handleSetPermissions = () => {
     navigate('/Set/Permission')
+    window.location.reload();
   }
   const handleCheckboxChange = (event, index) => {
     const isChecked = event.target.checked;

@@ -79,6 +79,7 @@ const Internal = () => {
   const navigate = useNavigate();
   const handleDashboardExternalClick = () => {
       navigate('/Dashboard/External')
+      window.location.reload();
     };
 
   const handleRejectButtonClick = () => {
@@ -278,13 +279,16 @@ const Internal = () => {
 
   const handleLogClick = () => {
     navigate('/Log')
+    window.location.reload();
   }
 
   const handleEdithospitalClick = () => {
     navigate('/Edit/Hospital')
+    window.location.reload();
   }
   const handleSetPermissions = () => {
     navigate('/Set/Permission')
+    window.location.reload();
 }
 
   const handleCheckboxChange = (event, index) => {

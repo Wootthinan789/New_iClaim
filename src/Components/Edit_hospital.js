@@ -48,10 +48,12 @@ const Edit_hospital = () => {
 
     const handleDashboardInternalClick = () => {
         navigate('/Dashboard/Internal')
+        window.location.reload();
     };
     
     const handleDashboardExternalClick = () => {
         navigate('/Dashboard/External')
+        window.location.reload();
     };
   
     const handleOpenUserMenu = (event) => {
@@ -77,9 +79,11 @@ const Edit_hospital = () => {
   
     const handleReload = () => {
         navigate('/Dashboard/External')
+        window.location.reload();
     };
     const handleSetPermissions = () => {
       navigate('/Set/Permission')
+      window.location.reload();
   }
 
     useEffect(() => {

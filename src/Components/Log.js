@@ -132,10 +132,12 @@ const Log = () => {
 
     const handleDashboardInternalClick = () => {
         navigate('/Dashboard/Internal')
+        window.location.reload();
     };
 
     const handleDashboardExternalClick = () => {
         navigate('/Dashboard/External')
+        window.location.reload();
     };
 
     const handleOpenUserMenu = (event) => {
@@ -144,10 +146,12 @@ const Log = () => {
 
     const handleEdithospitalClick = () => {
         navigate('/Edit/Hospital')
+        window.location.reload();
     };
 
     const handleSetPermissions = () => {
         navigate('/Set/Permission')
+        window.location.reload();
     }
 
     const handleCloseUserMenu = () => {
