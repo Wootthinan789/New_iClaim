@@ -131,17 +131,19 @@ const Profile = () => {
       console.log("Data sent successfully send message Reject");
 
       // ส่งข้อมูลไปยัง API insert log
-      const logData = {
-        doc_name: "-",
-        status: "Reject",
-        user_name: usernameJson.username, // นำ username จาก local storage มาใช้งาน
-        remark: "-",
-        data_type: "External"
-      };
+      const logPromises = selectedHospitalsArrayReject.map(async (checkbox) => {
+        const logData = {
+          doc_name: "-",
+          status: "Reject",
+          user_name: usernameJson.username,
+          remark: checkbox.title, // Use the checkbox title as the remark
+          data_type: "External"
+        };
   
       await axios.post("http://rpa-apiprd.inet.co.th:443/iClaim/insert/log", logData);
       console.log("Log data inserted successfully");
-
+    });
+    await Promise.all(logPromises);
       //await axios.post("http://localhost:443/send-message/alertReject", data);
       await axios.post("http://rpa-apiprd.inet.co.th:443/send-message/alertReject", data);
       console.log("Data sent successfully send message alert Reject");

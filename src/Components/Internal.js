@@ -162,16 +162,19 @@ const Internal = () => {
       console.log("Data sent successfully send message Reject");
 
       // ส่งข้อมูลไปยัง API insert log
-      const logData = {
-        doc_name: "-",
-        status: "Reject",
-        user_name: usernameJson.username, // นำ username จาก local storage มาใช้งาน
-        remark: "-",
-        data_type: "Internal"
-      };
+      const logPromises = selectedHospitalsArrayReject.map(async (checkbox) => {
+        const logData = {
+          doc_name: "-",
+          status: "Reject",
+          user_name: usernameJson.username,
+          remark: checkbox.title, // Use the checkbox title as the remark
+          data_type: "Internal"
+        };
   
       await axios.post("http://rpa-apiprd.inet.co.th:443/iClaim/insert/log", logData);
       console.log("Log data inserted successfully");
+    });
+    await Promise.all(logPromises);
 
       //await axios.post("http://localhost:443/send-message/alertReject", data);
       await axios.post("http://rpa-apiprd.inet.co.th:443/send-message/alertReject", data);
@@ -505,19 +508,19 @@ const handleSelectAllCheckboxChange = (event) => {
             ))}
           </div>
           <div className="buttonContainer">
+          <Button
+              variant="contained"
+              style={{ backgroundColor: '#1095c6', color: 'white', fontFamily: "'Kanit', sans-serif" }}
+              onClick={handleRejectConfirm}
+            >
+              Confirm
+            </Button>
             <Button
               variant="contained"
               style={{ backgroundColor: '#9c0606', color: 'white', fontFamily: "'Kanit', sans-serif" }}
               onClick={handleCloseModal}
             >
               Cancel
-            </Button>
-            <Button
-              variant="contained"
-              style={{ backgroundColor: '#1095c6', color: 'white', fontFamily: "'Kanit', sans-serif" }}
-              onClick={handleRejectConfirm}
-            >
-              Confirm
             </Button>
           </div>
         </div>
