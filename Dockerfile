@@ -1,14 +1,24 @@
-# Use the official Nginx image as the base image
-FROM nginx:alpine
+# Step 1: Build the React app
+FROM node:16 as build
 
-# Copy the build files to the Nginx HTML directory
-COPY build /usr/share/nginx/html
+WORKDIR /app
 
-# Copy custom Nginx configuration file
+COPY package.json /app/package.json
+COPY package-lock.json /app/package-lock.json
+
+RUN npm install --force
+
+COPY . /app
+
+RUN npm run build
+
+# Step 2: Serve the React app with Nginx
+FROM nginx:1.18
+
+COPY --from=build /app/build /usr/share/nginx/html
+
 COPY nginx.conf /etc/nginx/conf.d/default.conf
 
-# Expose port 80
 EXPOSE 80
 
-# Start Nginx when the container launches
 CMD ["nginx", "-g", "daemon off;"]

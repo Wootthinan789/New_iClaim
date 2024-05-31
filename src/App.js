@@ -38,7 +38,7 @@ const App = () =>{
             )
           } 
           />
-          <Route path="/Test_Checkbox" element={<Profiletest/>} />
+          {/* <Route path="/Test_Checkbox" element={<Profiletest/>} /> */}
           <Route 
             path="/Log" 
             element={
@@ -49,7 +49,7 @@ const App = () =>{
               )
             } 
             />
-          <Route path="/Home" element={<Home/>} />
+          {/* <Route path="/Home" element={<Home/>} /> */}
           <Route
             path="/Edit/Hospital"
             element={
@@ -60,8 +60,8 @@ const App = () =>{
               )
             }
           />
-          <Route path="/Test/Style" element={<Teststyle/>} />
-          <Route path="/Download/File" element={<DownloadFile/>} />
+          {/* <Route path="/Test/Style" element={<Teststyle/>} />
+          <Route path="/Download/File" element={<DownloadFile/>} /> */}
         </Routes>
       </BrowserRouter>
     </div>
