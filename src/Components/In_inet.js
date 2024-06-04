@@ -16,51 +16,102 @@ import CardContent from '@mui/material/CardContent';
 import { useMediaQuery, useTheme } from '@mui/material';
 import 'react-datepicker/dist/react-datepicker.css';
 import logo from './images-iclaim/download (2).png';
+import Modal from '@mui/material/Modal';
+import Button from '@mui/material/Button';
 import employee from './images-iclaim/employee.png'
 import HomeIcon from './images-iclaim/home-regular-60.png';
 import { useNavigate } from 'react-router-dom';
+import SuccessIcon from './images-iclaim/checked.png';
+import swal from 'sweetalert';
 
 const Ininet = () => {
 
     const [anchorElUser, setAnchorElUser] = useState(null);
-
+    const [notification, setNotification] = useState({ message: '', show: false });
+    const [darkBackground, setDarkBackground] = useState(false);
     const usernameJson = JSON.parse(localStorage.getItem('username'));
+    const [openModal, setOpenModal] = useState(false);
+    const [rejectReason, setRejectReason] = useState('');
 
     const theme = useTheme();
     const isSmallScreen = useMediaQuery(theme.breakpoints.down('sm'));
     const navigate = useNavigate();
-      // Function to handle log out after 10 minutes of inactivity
-  useEffect(() => {
-    let lastActivityTime = new Date().getTime();
 
-    const checkInactivity = () => {
-      const currentTime = new Date().getTime();
-      const inactiveTime = currentTime - lastActivityTime;
-      const twoMinutes = 10 * 60 * 1000; // 10 minutes in milliseconds
+    const handleApproveButtonClick = async () => {
+        setNotification(swal({
+            text: 'Login Success',
+            icon: 'success',
+            buttons: false,
+            show: true
+        }));
+        setDarkBackground(true);
 
-      if (inactiveTime > twoMinutes) {
-        // Log out if inactive for more than 10 minutes
-        handleLogout();
-      }
+        try {
+            await axios.post("http://203.154.39.190:5000/rpa/iclaim/send-image/Internal")
+        } catch (error) {
+            console.error('Error:', error.message);
+        }
+
+        // Clear selected checkboxes and hide notification after 2.5 seconds
+        setTimeout(() => {
+        }, 2500);
+        setTimeout(() => {
+            window.location.reload(); // Reload the page
+        }, 2500);
     };
 
-    const handleActivity = () => {
-      lastActivityTime = new Date().getTime();
+    const handleRejectButtonClick = () => {
+        setOpenModal(true);
     };
 
-    const activityInterval = setInterval(checkInactivity, 60000); // Check every minute for inactivity
-
-    // Listen for user activity events
-    window.addEventListener('mousemove', handleActivity);
-    window.addEventListener('keydown', handleActivity);
-
-    return () => {
-      clearInterval(activityInterval);
-      window.removeEventListener('mousemove', handleActivity);
-      window.removeEventListener('keydown', handleActivity);
+    const handleCloseModal = () => {
+        setRejectReason('');
+        setOpenModal(false);
     };
-  }, []);
 
+    const handleRejectConfirm = async () => {
+        console.log(rejectReason)
+        const data = {
+            message: rejectReason,
+        };
+        try {
+            await axios.post("http://203.154.39.190:5000/rpa/iclaim/reject-image/Internal", data);
+            setRejectReason(''); // Clear the textarea
+        } catch (error) {
+            console.error('Error:', error.message);
+        }
+        setOpenModal(false);
+    };
+
+    useEffect(() => {
+        let lastActivityTime = new Date().getTime();
+
+        const checkInactivity = () => {
+            const currentTime = new Date().getTime();
+            const inactiveTime = currentTime - lastActivityTime;
+            const twoMinutes = 10 * 60 * 1000; // 10 minutes in milliseconds
+
+            if (inactiveTime > twoMinutes) {
+                // Log out if inactive for more than 10 minutes
+                handleLogout();
+            }
+        };
+        const handleActivity = () => {
+            lastActivityTime = new Date().getTime();
+        };
+
+        const activityInterval = setInterval(checkInactivity, 60000); // Check every minute for inactivity
+
+        // Listen for user activity events
+        window.addEventListener('mousemove', handleActivity);
+        window.addEventListener('keydown', handleActivity);
+
+        return () => {
+            clearInterval(activityInterval);
+            window.removeEventListener('mousemove', handleActivity);
+            window.removeEventListener('keydown', handleActivity);
+        };
+    }, []);
 
     const handleDashboardInternalClick = () => {
         navigate('/Dashboard/Internal')
@@ -84,10 +135,12 @@ const Ininet = () => {
     const handleLogClick = () => {
         navigate('/Log')
     };
+
     const handleInternaliNetClick = () => {
         navigate('/Internal/inet')
         window.location.reload();
     }
+
     const handleSetPermissions = () => {
         navigate('/Set/Permission')
         window.location.reload();
@@ -100,15 +153,16 @@ const Ininet = () => {
     const handleLogout = () => {
         localStorage.removeItem("access_token");
         localStorage.removeItem("username");
-        localStorage.removeItem("account_id")
-        localStorage.removeItem("user_role")
-        localStorage.removeItem("role")
+        localStorage.removeItem("account_id");
+        localStorage.removeItem("user_role");
+        localStorage.removeItem("role");
         window.location.href = "/";
     };
 
     const handleReload = () => {
         navigate('/Dashboard/External')
     };
+
     return (
         <div className='containerStype'>
             <AppBar position="static" className='appBarStyle' style={{ backgroundColor: 'white', boxShadow: 'none', }}>
@@ -150,14 +204,13 @@ const Ininet = () => {
                             onClose={handleCloseUserMenu}
                             PaperProps={{
                                 style: {
-
                                     maxHeight: isSmallScreen ? '' : '200px',
                                     width: isSmallScreen ? '108px' : '150px',
                                 },
                             }}
                         >
-                            {['กำหนดสิทธิ์','แก้ไขโรงพยาบาล' , 'Log','Internal INET', 'ออกจากระบบ'].map((setting) => (
-                                <MenuItem key={setting} style={{ padding: isSmallScreen ? '0 5px' : '5px 12px' }} onClick={setting === 'ออกจากระบบ' ? handleLogout : setting === 'แก้ไขโรงพยาบาล' ? handleEdithospitalClick :setting === 'กำหนดสิทธิ์' ? handleSetPermissions : setting === 'Log' ? handleLogClick : setting === 'Internal INET' ? handleInternaliNetClick : null}>
+                            {['กำหนดสิทธิ์', 'แก้ไขโรงพยาบาล', 'Log', 'Internal INET', 'ออกจากระบบ'].map((setting) => (
+                                <MenuItem key={setting} style={{ padding: isSmallScreen ? '0 5px' : '5px 12px' }} onClick={setting === 'ออกจากระบบ' ? handleLogout : setting === 'แก้ไขโรงพยาบาล' ? handleEdithospitalClick : setting === 'กำหนดสิทธิ์' ? handleSetPermissions : setting === 'Log' ? handleLogClick : setting === 'Internal INET' ? handleInternaliNetClick : null}>
                                     <Typography style={{ fontFamily: "'Kanit', sans-serif", padding: isSmallScreen ? '0 12px' : '0 10px', fontSize: isSmallScreen ? '12px' : '16px', margin: isSmallScreen ? '1px 0' : '0 0' }}>
                                         {setting}
                                     </Typography>
@@ -167,6 +220,46 @@ const Ininet = () => {
                     </Box>
                 </Toolbar>
             </AppBar>
+            <Modal
+                open={openModal}
+                onClose={handleCloseModal}
+                aria-labelledby="modal-modal-title"
+                aria-describedby="modal-modal-description"
+            >
+                <div className="modalStyle-inet">
+                    <div className="contentContainer-inet">
+                        <textarea
+                            placeholder="เพิ่มรายละเอียด" // Add placeholder text
+                            className="rejectReasonInput_External-inet"
+                            style={{ fontFamily: "'Kanit', sans-serif" }}
+                            value={rejectReason} // Set the value to the state variable
+                            onChange={(e) => setRejectReason(e.target.value)} // Update state on change
+                        />
+                    </div>
+                    <div className="buttonContainer">
+                        <Button
+                            variant="contained"
+                            style={{ backgroundColor: '#1095c6', color: 'white', fontFamily: "'Kanit', sans-serif" }}
+                            onClick={handleRejectConfirm}
+                        >
+                            Confirm
+                        </Button>
+                        <Button
+                            variant="contained"
+                            style={{ backgroundColor: '#9c0606', color: 'white', fontFamily: "'Kanit', sans-serif" }}
+                            onClick={handleCloseModal}
+                        >
+                            Cancel
+                        </Button>
+                    </div>
+                </div>
+            </Modal>
+            {notification.show && (
+                <div className="notification">
+                    <img src={SuccessIcon} alt="Success Icon" className='SuccessIcon-img' />
+                    <p>{notification.message}</p>
+                </div>
+            )}
             <div className='container'>
                 <div className='Fixlocation'>
                     <button onClick={handleReload}>
@@ -174,27 +267,26 @@ const Ininet = () => {
                     </button>
                 </div>
                 <div className='Fixlocation'>
-                    <button className="Dashboard-Internal-button" onClick={handleDashboardInternalClick} style={{lineHeight: '1'}}>Dashboard Internal</button>
+                    <button className="Dashboard-Internal-button" onClick={handleDashboardInternalClick} style={{ lineHeight: '1' }}>Dashboard Internal</button>
                 </div>
                 <div className='Fixlocation'>
-                    <button className="Dashboard-Internal-button" onClick={handleDashboardExternalClick} style={{lineHeight: '1'}} >Dashboard External</button>
+                    <button className="Dashboard-Internal-button" onClick={handleDashboardExternalClick} style={{ lineHeight: '1' }} >Dashboard External</button>
                 </div>
             </div>
             <Card className='cardStyle_Log' style={{ backgroundColor: '#D9D9D9', boxShadow: 'none', borderRadius: '15px' }}>
-                    <CardContent>
+                <CardContent>
                     <div className='Title-inet'>Report กลุ่มผู้บริหาร</div>
                     <div className='Title2-inet'>สามารถตรวจสอบ Report ได้ที่กลุ่ม Line : Dashboard iClaim OD</div>
                     <div className='container-approve-reject-inet'>
                         <div className='Fixlocation-approve-reject-inet'>
-                            <button className="button-Approve-inet">Approve</button>
+                            <button className="button-Approve-inet" onClick={handleApproveButtonClick} >Approve</button>
                         </div>
                         <div className='Fixlocation-approve-reject-inet'>
-                            <button className="button-Reject-inet">Reject</button>
+                            <button className="button-Reject-inet" onClick={handleRejectButtonClick}>Reject</button>
                         </div>
                     </div>
-                    </CardContent>
+                </CardContent>
             </Card>
-
         </div>
     );
 };

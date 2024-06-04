@@ -69,3 +69,30 @@
     color: #9c0606;
     padding-bottom: 50px;
   }
+  .rejectReasonInput_External-inet{
+    width: 600px;
+    height: 250px;
+    font-size: 16px;
+    padding: 5px;
+  }
+.contentContainer-inet{
+    margin-top: 60px;
+
+}
+.modalStyle-inet {
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 50%; /* กำหนดความกว้างเป็น 70% */
+    height: 60%; /* กำหนดความยาวเป็น 70% */
+    max-width: 880px; /* กำหนดความกว้างสูงสุด */
+    max-height: auto; /* กำหนดความยาวสูงสุด */
+    background-color: #ffffff; /* กำหนดสีพื้นหลัง */
+    border-radius: 8px;
+    overflow: auto; /* เพิ่ม scrollbar ในกรณีที่ข้อมูลยาวเกินกำหนด */
+    display: flex; /* ใช้ flexbox layout */
+    flex-direction: column; /* จัดเรียงส่วนในแนวดิ่ง */
+    align-items: center;
+    justify-content: center;
+  }
