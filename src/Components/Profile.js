@@ -78,7 +78,7 @@ const Profile = () => {
   }, []);
 
   const navigate = useNavigate();
-  
+
   const handleDashboardInternalClick = () => {
       navigate('/Dashboard/Internal')
       window.location.reload();
@@ -162,7 +162,7 @@ const Profile = () => {
     // เคลียร์ข้อมูลของ textarea และปิด Modal
     setSelectedCheckboxes({});
     setOpenModal(false);
-    // window.location.reload();
+    window.location.reload();
   };
   
 
