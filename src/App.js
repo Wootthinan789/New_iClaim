@@ -4,13 +4,13 @@ import { Route, Routes, BrowserRouter, Navigate } from 'react-router-dom';
 import Signin from './Components/Signin';
 import Internal from './Components/Internal';
 import Edithospital from './Components/Edit_hospital';
-import Home from './Components/Home';
 import Log from './Components/Log';
 import Profile from './Components/Profile';
-import Profiletest from './Components/test_Checkbox';
-import Teststyle from './Components/Test_style';
-import DownloadFile from './Components/DowloadFile';
+// import Profiletest from './Components/test_Checkbox';
+// import Teststyle from './Components/Test_style';
+// import DownloadFile from './Components/DowloadFile';
 import SetPermissions from './Components/Set_Permissions';
+import Ininet from './Components/In_inet';
 
 const App = () =>{
   const token = localStorage.getItem("access_token");
@@ -38,7 +38,6 @@ const App = () =>{
             )
           } 
           />
-          {/* <Route path="/Test_Checkbox" element={<Profiletest/>} /> */}
           <Route 
             path="/Log" 
             element={
@@ -49,7 +48,6 @@ const App = () =>{
               )
             } 
             />
-          {/* <Route path="/Home" element={<Home/>} /> */}
           <Route
             path="/Edit/Hospital"
             element={
@@ -60,6 +58,16 @@ const App = () =>{
               )
             }
           />
+          <Route 
+            path="/Internal/inet" 
+            element={
+              (role === "admin" || role === "user" || role === "Admin" || role === "User") ? (
+                <Ininet/>
+              ) : (
+                <HospitalEditNotAllowed />
+              )
+            } 
+            />
           {/* <Route path="/Test/Style" element={<Teststyle/>} />
           <Route path="/Download/File" element={<DownloadFile/>} /> */}
         </Routes>

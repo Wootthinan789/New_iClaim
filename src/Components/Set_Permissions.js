@@ -77,12 +77,19 @@ const Set_Permissions = () => {
         navigate('/Log');
         window.location.reload();
     };
+    const handleSetPermissions = () => {
+        navigate('/Set/Permission')
+        window.location.reload();
+    }
 
     const handleEdithospitalClick = () => {
         navigate('/Edit/Hospital');
         window.location.reload();
     };
-
+    const handleInternaliNetClick = () => {
+        navigate('/Internal/inet')
+        window.location.reload();
+      }
     const handleCloseUserMenu = () => {
         setAnchorElUser(null);
     };
@@ -176,8 +183,8 @@ const Set_Permissions = () => {
                                 },
                             }}
                         >
-                            {['กำหนดสิทธิ์', 'แก้ไขโรงพยาบาล', 'Log', 'ออกจากระบบ'].map((setting) => (
-                                <MenuItem key={setting} style={{ padding: isSmallScreen ? '0 5px' : '8px 12px' }} onClick={setting === 'ออกจากระบบ' ? handleLogout : setting === 'แก้ไขโรงพยาบาล' ? handleEdithospitalClick : setting === 'Log' ? handleLogClick : null}>
+                            {['กำหนดสิทธิ์','แก้ไขโรงพยาบาล' , 'Log','Internal INET', 'ออกจากระบบ'].map((setting) => (
+                                <MenuItem key={setting} style={{ padding: isSmallScreen ? '0 5px' : '5px 12px' }} onClick={setting === 'ออกจากระบบ' ? handleLogout : setting === 'แก้ไขโรงพยาบาล' ? handleEdithospitalClick :setting === 'กำหนดสิทธิ์' ? handleSetPermissions : setting === 'Log' ? handleLogClick : setting === 'Internal INET' ? handleInternaliNetClick : null}>
                                     <Typography style={{ fontFamily: "'Kanit', sans-serif", padding: isSmallScreen ? '0 12px' : '0 10px', fontSize: isSmallScreen ? '12px' : '16px', margin: isSmallScreen ? '1px 0' : '0 0' }}>
                                         {setting}
                                     </Typography>

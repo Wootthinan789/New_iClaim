@@ -31,7 +31,7 @@ import RadioButtonUncheckedIcon from '@mui/icons-material/RadioButtonUnchecked';
 import CheckCircleIcon from '@mui/icons-material/CheckCircle';
 
 //let username = "วุฒินันท์ ปรางมาศ";
-const settings = ['กำหนดสิทธิ์','แก้ไขโรงพยาบาล' , 'Log', 'ออกจากระบบ'];
+const settings = ['กำหนดสิทธิ์','แก้ไขโรงพยาบาล' , 'Log','Internal INET', 'ออกจากระบบ'];
 
 const Profile = () => {
   const [countries, setCountries] = useState([]);
@@ -78,6 +78,7 @@ const Profile = () => {
   }, []);
 
   const navigate = useNavigate();
+  
   const handleDashboardInternalClick = () => {
       navigate('/Dashboard/Internal')
       window.location.reload();
@@ -285,6 +286,14 @@ const Profile = () => {
     navigate('/Edit/Hospital')
     window.location.reload();
   }
+  const handleDashboardExternalClick = () => {
+    navigate('/Dashboard/External')
+    window.location.reload();
+};
+  const handleInternaliNetClick = () => {
+    navigate('/Internal/inet')
+    window.location.reload();
+  }
   const handleSetPermissions = () => {
     navigate('/Set/Permission')
     window.location.reload();
@@ -474,8 +483,8 @@ const handleSelectAllCheckboxChange = (event) => {
                 <MenuItem key={setting} 
                 //className='Menu-list-icon'
                 style={{    
-                  padding: isSmallScreen ? '0 5px' : '8px 12px',}} // ปรับขนาดของ MenuItem
-                onClick={setting === 'ออกจากระบบ' ? handleLogout : setting === 'Log' ? handleLogClick : setting === 'แก้ไขโรงพยาบาล' ? handleEdithospitalClick : setting === 'กำหนดสิทธิ์' ? handleSetPermissions : null}
+                  padding: isSmallScreen ? '0 5px' : '5px 12px',}} // ปรับขนาดของ MenuItem
+                onClick={setting === 'ออกจากระบบ' ? handleLogout : setting === 'Log' ? handleLogClick : setting === 'แก้ไขโรงพยาบาล' ? handleEdithospitalClick : setting === 'กำหนดสิทธิ์' ? handleSetPermissions : setting === 'Internal INET' ? handleInternaliNetClick : null}
                 
               >
                 <Typography       
@@ -549,7 +558,7 @@ const handleSelectAllCheckboxChange = (event) => {
           <button className="Dashboard-Internal-button" onClick={handleDashboardInternalClick}>Dashboard Internal</button>
         </div>
         <div className='Fixlocation'>
-          <button className="Dashboard-Internal-button" style={{ background: '#2D7951' }}>Dashboard External</button>
+          <button className="Dashboard-Internal-button" onClick={handleDashboardExternalClick} style={{ background: '#2D7951' }}>Dashboard External</button>
         </div>
         <div className='Fixlocation'>
           <DatePicker className='Dashboard-Internal-button-date'

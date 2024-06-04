@@ -25,7 +25,7 @@ import DialogActions from '@mui/material/DialogActions';
 import Button from '@mui/material/Button';
 
 const usernameJson = JSON.parse(localStorage.getItem('username'));
-const settings = ['กำหนดสิทธิ์','แก้ไขโรงพยาบาล' , 'Log', 'ออกจากระบบ'];
+const settings = ['กำหนดสิทธิ์','แก้ไขโรงพยาบาล' , 'Log','Internal INET', 'ออกจากระบบ'];
 
 const Edit_hospital = () => {
     const [anchorElUser, setAnchorElUser] = useState(null);
@@ -50,6 +50,10 @@ const Edit_hospital = () => {
         navigate('/Dashboard/Internal')
         window.location.reload();
     };
+    const handleInternaliNetClick = () => {
+      navigate('/Internal/inet')
+      window.location.reload();
+    }
     
     const handleDashboardExternalClick = () => {
         navigate('/Dashboard/External')
@@ -63,6 +67,10 @@ const Edit_hospital = () => {
     const handleLogClick = () => {
         navigate('/Log')
     };
+    const handleEdithospitalClick = () => {
+      navigate('/Edit/Hospital')
+      window.location.reload();
+  };
   
     const handleCloseUserMenu = () => {
       setAnchorElUser(null);
@@ -259,11 +267,7 @@ const Edit_hospital = () => {
                   }}
               >
                 {settings.map((setting) => (
-                  <MenuItem key={setting} 
-                  style={{    
-                    padding: isSmallScreen ? '0 5px' : '8px 12px',}
-                }
-                  onClick={setting === 'ออกจากระบบ' ? handleLogout : setting === 'Log' ? handleLogClick : setting === 'กำหนดสิทธิ์' ? handleSetPermissions : null}>
+                  <MenuItem key={setting} style={{ padding: isSmallScreen ? '0 5px' : '5px 12px' }} onClick={setting === 'ออกจากระบบ' ? handleLogout : setting === 'แก้ไขโรงพยาบาล' ? handleEdithospitalClick :setting === 'กำหนดสิทธิ์' ? handleSetPermissions : setting === 'Log' ? handleLogClick : setting === 'Internal INET' ? handleInternaliNetClick : null}>
                 <Typography       
                 style={{
                   fontFamily: "'Kanit', sans-serif",
