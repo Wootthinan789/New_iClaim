@@ -169,13 +169,13 @@
       padding-bottom: 50px;
     }
     .rejectReasonInput_External-inet{
-      width: 300px;
+      width: 250px;
       height: 250px;
       font-size: 16px;
       padding: 5px;
     }
   .contentContainer-inet{
-      margin-top: 10px;
+      margin-top: 40px;
   
   }
   .modalStyle-inet {
@@ -186,7 +186,7 @@
       width: 80%; /* กำหนดความกว้างเป็น 70% */
       height: 50%; /* กำหนดความยาวเป็น 70% */
       max-width: 100%; /* กำหนดความกว้างสูงสุด */
-      max-height: 40%; /* กำหนดความยาวสูงสุด */
+      max-height: 80%; /* กำหนดความยาวสูงสุด */
       background-color: #ffffff; /* กำหนดสีพื้นหลัง */
       border-radius: 8px;
       overflow: auto; /* เพิ่ม scrollbar ในกรณีที่ข้อมูลยาวเกินกำหนด */
