@@ -134,8 +134,8 @@ const Profile = () => {
 
       
       // ส่งข้อมูลไปยัง API
-      //await axios.post("http://rpa-apiprd.inet.co.th:443/send-message/Reject", data);
-      await axios.post("http://localhost:443/send-message/Reject", data);
+      await axios.post("http://rpa-apiprd.inet.co.th:443/send-message/Reject", data);
+      //await axios.post("http://localhost:443/send-message/Reject", data);
       console.log("Data sent successfully send message Reject");
 
       // ส่งข้อมูลไปยัง API insert log

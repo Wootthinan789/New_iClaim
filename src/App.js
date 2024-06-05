@@ -61,7 +61,7 @@ const App = () =>{
           <Route 
             path="/Internal/inet" 
             element={
-              (role === "admin" || role === "user" || role === "Admin" || role === "User") ? (
+              (role === "admin" || role === "Admin") ? (
                 <Ininet/>
               ) : (
                 <HospitalEditNotAllowed />
