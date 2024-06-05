@@ -555,10 +555,10 @@ const handleSelectAllCheckboxChange = (event) => {
           </button>
         </div>
         <div className='Fixlocation'>
-          <button className="Dashboard-Internal-button" onClick={handleDashboardInternalClick}>Dashboard Internal</button>
+          <button className="Dashboard-Internal-button" onClick={handleDashboardInternalClick}>Internal</button>
         </div>
         <div className='Fixlocation'>
-          <button className="Dashboard-Internal-button" onClick={handleDashboardExternalClick} style={{ background: '#2D7951' }}>Dashboard External</button>
+          <button className="Dashboard-Internal-button" onClick={handleDashboardExternalClick} style={{ background: '#2D7951' }}>External</button>
         </div>
         <div className='Fixlocation'>
           <DatePicker className='Dashboard-Internal-button-date'

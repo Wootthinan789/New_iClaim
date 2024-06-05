@@ -96,3 +96,103 @@
     align-items: center;
     justify-content: center;
   }
+  @media (max-width: 480px) {
+    .container-approve-reject-inet {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100%;
+  }
+  
+  .button-container {
+      display: flex;
+      flex-direction: column; /* จัดเรียงในแนวตั้ง */
+      gap: 10px; /* ระยะห่างระหว่างปุ่ม */
+      justify-content: center; /* จัดปุ่มให้อยู่กลางในแนวตั้ง */
+      align-items: center; /* จัดปุ่มให้อยู่กลางในแนวนอน */
+      height: 100%; /* เพื่อให้ใช้พื้นที่ในแนวตั้งทั้งหมด */
+  }
+  
+  .button-Approve-inet, .button-Reject-inet {
+      width: 80px; /* กำหนดความกว้างเป็น 80% ของคอนเทนเนอร์ */
+      max-width: 320px; /* ความกว้างสูงสุด */
+      display: flex;
+      justify-content: center; /* จัดข้อความให้อยู่กลางในแนวนอน */
+      align-items: center; /* จัดข้อความให้อยู่กลางในแนวตั้ง */
+      padding: 0.6rem 1.4rem;
+      font-size: 12px;
+      line-height: 0.25rem;
+      font-weight: 700;
+      text-align: center;
+      border-radius: 0.5rem;
+      gap: 0.75rem;
+      color: rgb(255, 255, 255);
+      cursor: pointer;
+      transition: all 0.0s ease;
+      font-family: 'Kanit', sans-serif;
+      padding: 10px 0; /* ปรับ Padding ซ้ายและขวาเป็น 0 */
+  }
+  
+  .button-Approve-inet {
+      background-color: #1095c6;
+  }
+  
+  .button-Reject-inet {
+      background-color: #9c0606;
+  }
+  
+  .button-Approve-inet:hover, .button-Reject-inet:hover {
+      transform: scale(1.02);
+  }
+  .Fixlocation-approve-reject-inet {
+      position: static;
+      left: 50%;
+      top: 10%;
+      margin-right: 20px;
+      margin-left: 20px;
+      border: none;
+      display: flex;
+    }
+    .Title-inet{
+      font-size: 24px;
+      font-family: 'Kanit', sans-serif;
+      text-align: center;
+      padding-bottom: 10px;
+      font-weight: 700;
+    }
+    .Title2-inet{
+      font-size: 12px;
+      font-family: 'Kanit', sans-serif;
+      text-align: center;
+      padding-bottom: 10px;
+      color: #9c0606;
+      padding-bottom: 50px;
+    }
+    .rejectReasonInput_External-inet{
+      width: 300px;
+      height: 250px;
+      font-size: 16px;
+      padding: 5px;
+    }
+  .contentContainer-inet{
+      margin-top: 10px;
+  
+  }
+  .modalStyle-inet {
+      position: fixed;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      width: 80%; /* กำหนดความกว้างเป็น 70% */
+      height: 50%; /* กำหนดความยาวเป็น 70% */
+      max-width: 100%; /* กำหนดความกว้างสูงสุด */
+      max-height: 40%; /* กำหนดความยาวสูงสุด */
+      background-color: #ffffff; /* กำหนดสีพื้นหลัง */
+      border-radius: 8px;
+      overflow: auto; /* เพิ่ม scrollbar ในกรณีที่ข้อมูลยาวเกินกำหนด */
+      display: flex; /* ใช้ flexbox layout */
+      flex-direction: column; /* จัดเรียงส่วนในแนวดิ่ง */
+      align-items: center;
+      justify-content: center;
+  }
+}

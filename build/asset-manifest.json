@@ -1,21 +1,19 @@
 {
   "files": {
-    "main.css": "/static/css/main.b347ee0b.css",
-    "main.js": "/static/js/main.b7782796.js",
+    "main.css": "/static/css/main.c230c5c0.css",
+    "main.js": "/static/js/main.1bbc8f97.js",
     "static/js/787.c168b2e8.chunk.js": "/static/js/787.c168b2e8.chunk.js",
     "static/media/blur-hospital.jpg": "/static/media/blur-hospital.56218ec70094b7f8ffa7.jpg",
-    "static/media/2.png": "/static/media/2.a5eb8d7191f9798f981c.png",
-    "static/media/messageImage_1707382667071.jpg": "/static/media/messageImage_1707382667071.f69a1dde68cb6e67869a.jpg",
     "static/media/employee.png": "/static/media/employee.fee7b9c3aaf7aee5c248.png",
     "static/media/cancel.png": "/static/media/cancel.1583723861a66fb05605.png",
     "static/media/checked.png": "/static/media/checked.6f298cca57a5a8b36055.png",
     "index.html": "/index.html",
-    "main.b347ee0b.css.map": "/static/css/main.b347ee0b.css.map",
-    "main.b7782796.js.map": "/static/js/main.b7782796.js.map",
+    "main.c230c5c0.css.map": "/static/css/main.c230c5c0.css.map",
+    "main.1bbc8f97.js.map": "/static/js/main.1bbc8f97.js.map",
     "787.c168b2e8.chunk.js.map": "/static/js/787.c168b2e8.chunk.js.map"
   },
   "entrypoints": [
-    "static/css/main.b347ee0b.css",
-    "static/js/main.b7782796.js"
+    "static/css/main.c230c5c0.css",
+    "static/js/main.1bbc8f97.js"
   ]
 }
