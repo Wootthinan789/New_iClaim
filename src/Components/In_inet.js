@@ -39,7 +39,7 @@ const Ininet = () => {
 
     const handleApproveButtonClick = async () => {
         setNotification(swal({
-            text: 'Login Success',
+            text: 'ส่ง report Success',
             icon: 'success',
             buttons: false,
             show: true

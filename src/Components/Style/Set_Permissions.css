@@ -1,8 +1,27 @@
 .cardStyle_Set_Permissons {
     width: 40%;
-    height: 500px;
+    height: 520px;
 
   }
+  .modalContent {
+    max-height: 410px; /* กำหนดความสูงสูงสุดของตารางที่เป็นส่วนของ .modalContent เมื่อข้อมูลมีมากเกินไป scrollbar จะแสดงขึ้นมาเพื่อให้สามารถเลื่อนข้อมูลได้ */
+    overflow-y: auto; /* กำหนดให้มีการแสดง scrollbar เมื่อข้อมูลเกินความสูงที่กำหนด */
+  }
+  
+  .modalContent table {
+    width: 100%; /* กำหนดให้ตารางทำการขยายตามความกว้างของพื้นที่ที่มีอยู่ */
+  }
+  
+  .modalContent table th,
+  .modalContent table td {
+    padding: 5px; /* ปรับขนาดของ padding สำหรับช่องว่างภายในเซลล์ของตาราง */
+    border-bottom: none;
+  }
+  
+  .modalContent table th {
+    background-color: #f2f2f2; /* เพิ่มสีพื้นหลังให้กับส่วนหัวของตารางเพื่อเน้นความแตกต่างระหว่างส่วนหัวและข้อมูลในตาราง */
+  }
+
   .Select-root {
     font-size: 16px; /* ปรับขนาดตามที่ต้องการ */
   }
@@ -38,7 +57,7 @@
   @media only screen and (max-width: 480px) {
     .cardStyle_Set_Permissons {
       width: 50%;
-      height: 330px;
+      height: 380px;
   
     }
     .Text_SetPermissons{

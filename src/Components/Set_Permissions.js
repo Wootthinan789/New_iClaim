@@ -17,6 +17,14 @@ import MenuItem from '@mui/material/MenuItem';
 import KeyboardArrowDownIcon from '@mui/icons-material/KeyboardArrowDown';
 import Card from '@mui/material/Card';
 import CardContent from '@mui/material/CardContent';
+import Modal from '@mui/material/Modal';
+import DialogTitle from '@mui/material/DialogTitle';
+import DialogContent from '@mui/material/DialogContent';
+import Table from '@mui/material/Table';
+import TableBody from '@mui/material/TableBody';
+import TableCell from '@mui/material/TableCell';
+import TableHead from '@mui/material/TableHead';
+import TableRow from '@mui/material/TableRow';
 import { useMediaQuery, useTheme } from '@mui/material';
 import 'react-datepicker/dist/react-datepicker.css';
 import logo from './images-iclaim/download (2).png';
@@ -30,7 +38,9 @@ import InputLabel from '@mui/material/InputLabel';
 const Set_Permissions = () => {
     const [username, setUsername] = useState('');
     const [role, setRole] = useState('');
-
+    const [usernames, setUsernames] = useState([]);
+    const [modalOpen, setModalOpen] = useState(false);
+    
     const handleSubmit = (e) => {
         e.preventDefault();
         console.log('Username:', username);
@@ -135,6 +145,25 @@ const Set_Permissions = () => {
     const handleReload = () => {
         navigate('/Dashboard/External');
         window.location.reload();
+    };
+
+    const fetchUsernames = () => {
+        axios.get('http://rpa-apiprd.inet.co.th:443/Role-user')
+        .then(response => {
+            setUsernames(response.data);
+        })
+        .catch(error => {
+            console.error(error);
+        });
+    };
+
+    const handleOpenModal = () => {
+        fetchUsernames();
+        setModalOpen(true);
+    };
+
+    const handleCloseModal = () => {
+        setModalOpen(false);
     };
 
     return (
@@ -251,17 +280,65 @@ const Set_Permissions = () => {
                                 marginLeft: '25%',
                                 marginRight: 'auto',
                                 borderRadius: '15px',
+                                backgroundColor:'#2347AC',
+                                color: 'white'
                             }}
                             type="submit"
                             variant="contained"
-                            color="primary"
-                            disableElevation
                         >
                             ตกลง
                         </Button>
                     </form>
+                    <Button
+                        style={{
+                            fontSize: isSmallScreen ? '8px' : '16px',
+                            fontWeight: 'bold',
+                            marginTop: '2px',
+                            fontFamily: "'Kanit', sans-serif",
+                            width: isSmallScreen ? '60%' : '50%',
+                            padding: '5px',
+                            marginLeft: isSmallScreen ? '20%' :'25%',
+                            marginRight: 'auto',
+                            borderRadius: '15px',
+                            backgroundColor: '#f0ad4e',
+                            color: 'white'
+                        }}
+                        onClick={handleOpenModal}
+                    >
+                        ดูรายการ Username ที่มีอยู่
+                    </Button>
                 </CardContent>
             </Card>
+            <Modal open={modalOpen} onClose={handleCloseModal} sx={{ display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                <Box sx={{ width: '50%', height: '80%', bgcolor: 'background.paper', boxShadow: 24, p: 4 }}>
+                    <DialogTitle style={{fontSize:'32px',fontFamily:"'Kanit', sans-serif",fontWeight:'700'}}>รายการ Username ที่มีอยู่</DialogTitle>
+                    <Table>
+                        <TableHead>
+                        <TableRow>
+                            <TableCell style={{fontSize:'18px',fontFamily:"'Kanit', sans-serif",fontWeight:'600'}} >Username</TableCell>
+                            <TableCell style={{fontSize:'18px',fontFamily:"'Kanit', sans-serif",fontWeight:'600'}} >Role</TableCell>
+                        </TableRow>
+                        </TableHead>
+                    </Table>
+                    <DialogContent className="modalContent"> {/* เพิ่ม className ที่กำหนดไว้ใน CSS */}
+                    <Table>
+                    <TableBody>
+                            {usernames.map((user) => (
+                                <TableRow key={user.username_role}>
+                                    <TableCell style={{fontSize:'14px',fontFamily:"'Kanit', sans-serif"}}>{user.username_role}</TableCell>
+                                    <TableCell style={{ display: 'flex',marginLeft:'250px',padding:'6px',fontSize:'14px' }}>
+                                        <span>{user.role}</span>
+                                        <Button style={{fontFamily:"'Kanit', sans-serif", marginLeft: 'auto', padding: '2px 8px', minWidth: '30%',backgroundColor:'#d31414',color:'white'}}>
+                                            ลบ
+                                        </Button>
+                                    </TableCell>
+                                </TableRow>
+                            ))}
+                        </TableBody>
+                        </Table>
+                    </DialogContent>
+                </Box>
+                </Modal>
         </div>
     );
 };
