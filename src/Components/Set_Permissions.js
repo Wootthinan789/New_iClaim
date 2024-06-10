@@ -18,8 +18,10 @@ import KeyboardArrowDownIcon from '@mui/icons-material/KeyboardArrowDown';
 import Card from '@mui/material/Card';
 import CardContent from '@mui/material/CardContent';
 import Modal from '@mui/material/Modal';
+import Dialog from '@mui/material/Dialog';
 import DialogTitle from '@mui/material/DialogTitle';
 import DialogContent from '@mui/material/DialogContent';
+import DialogActions from '@mui/material/DialogActions';
 import Table from '@mui/material/Table';
 import TableBody from '@mui/material/TableBody';
 import TableCell from '@mui/material/TableCell';
@@ -35,12 +37,29 @@ import Select from '@mui/material/Select';
 import FormControl from '@mui/material/FormControl';
 import InputLabel from '@mui/material/InputLabel';
 
+const DeleteConfirmationDialog = ({ open, handleClose, handleDelete }) => {
+    return (
+        <Dialog open={open} onClose={handleClose}>
+            <DialogTitle style={{fontFamily:"'Kanit', sans-serif"}}>ยืนยันการลบ</DialogTitle>
+            <DialogContent>
+                <Typography style={{fontFamily:"'Kanit', sans-serif"}}>คุณต้องการลบชื่อผู้ใช้นี้ใช่หรือไม่?</Typography>
+            </DialogContent>
+            <DialogActions>
+                <Button style={{fontFamily:"'Kanit', sans-serif"}} onClick={handleClose}>ยกเลิก</Button>
+                <Button style={{fontFamily:"'Kanit', sans-serif"}} onClick={handleDelete} color="error">ลบ</Button>
+            </DialogActions>
+        </Dialog>
+    );
+};
+
 const Set_Permissions = () => {
     const [username, setUsername] = useState('');
     const [role, setRole] = useState('');
     const [usernames, setUsernames] = useState([]);
     const [modalOpen, setModalOpen] = useState(false);
-    
+    const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
+    const [selectedUser, setSelectedUser] = useState(null);
+
     const handleSubmit = (e) => {
         e.preventDefault();
         console.log('Username:', username);
@@ -164,6 +183,30 @@ const Set_Permissions = () => {
 
     const handleCloseModal = () => {
         setModalOpen(false);
+    };
+
+    const handleDeleteClick = (user) => {
+        setSelectedUser(user);
+        setDeleteDialogOpen(true);
+    };
+
+    const handleDelete = () => {
+        /*axios.delete('http://localhost:443/Role-user/del/user', { data: { username_role: selectedUser.username_role } })*/
+        axios.delete('http://rpa-apiprd.inet.co.th:443/Role-user/del/user', { data: { username_role: selectedUser.username_role } })
+        .then(response => {
+            console.log(response.data);
+            setDeleteDialogOpen(false);
+            fetchUsernames(); // Refresh the usernames list
+            swal({
+                text: 'Deleted Successfully',
+                icon: 'success',
+                buttons: false,
+                timer: 2000,
+            });
+        })
+        .catch(error => {
+            console.error(error);
+        });
     };
 
     return (
@@ -310,8 +353,18 @@ const Set_Permissions = () => {
                 </CardContent>
             </Card>
             <Modal open={modalOpen} onClose={handleCloseModal} sx={{ display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                <Box sx={{ width: '50%', height: '80%', bgcolor: 'background.paper', boxShadow: 24, p: 4 }}>
-                    <DialogTitle style={{fontSize:'32px',fontFamily:"'Kanit', sans-serif",fontWeight:'700'}}>รายการ Username ที่มีอยู่</DialogTitle>
+                <Box sx={{ 
+                    width: isSmallScreen ? '70%' : '50%', 
+                    height: isSmallScreen ? '60%' : '80%', 
+                    bgcolor: 'background.paper', 
+                    boxShadow: 24, p: 4 }}>
+                    <DialogTitle 
+                    style={{
+                        fontSize:  isSmallScreen ? '16px' :'32px',
+                        fontFamily:"'Kanit', sans-serif"
+                        ,fontWeight:'700'
+
+                    }}>รายการ Username ที่มีอยู่</DialogTitle>
                     <Table>
                         <TableHead>
                         <TableRow>
@@ -320,7 +373,7 @@ const Set_Permissions = () => {
                         </TableRow>
                         </TableHead>
                     </Table>
-                    <DialogContent className="modalContent"> {/* เพิ่ม className ที่กำหนดไว้ใน CSS */}
+                    <DialogContent className="modalContent">
                     <Table>
                     <TableBody>
                             {usernames.map((user) => (
@@ -328,7 +381,10 @@ const Set_Permissions = () => {
                                     <TableCell style={{fontSize:'14px',fontFamily:"'Kanit', sans-serif"}}>{user.username_role}</TableCell>
                                     <TableCell style={{ display: 'flex',marginLeft:'250px',padding:'6px',fontSize:'14px' }}>
                                         <span>{user.role}</span>
-                                        <Button style={{fontFamily:"'Kanit', sans-serif", marginLeft: 'auto', padding: '2px 8px', minWidth: '30%',backgroundColor:'#d31414',color:'white'}}>
+                                        <Button
+                                            style={{fontFamily:"'Kanit', sans-serif", marginLeft: 'auto', padding: '2px 8px', minWidth: '30%',backgroundColor:'#d31414',color:'white'}}
+                                            onClick={() => handleDeleteClick(user)}
+                                        >
                                             ลบ
                                         </Button>
                                     </TableCell>
@@ -338,7 +394,12 @@ const Set_Permissions = () => {
                         </Table>
                     </DialogContent>
                 </Box>
-                </Modal>
+            </Modal>
+            <DeleteConfirmationDialog
+                open={deleteDialogOpen}
+                handleClose={() => setDeleteDialogOpen(false)}
+                handleDelete={handleDelete}
+            />
         </div>
     );
 };
