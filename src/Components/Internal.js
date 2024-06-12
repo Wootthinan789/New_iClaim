@@ -163,10 +163,10 @@ const Internal = () => {
       console.log(data)
       // ส่งข้อมูลไปยัง API
       //await axios.post("http://localhost:443/send-message/Reject", data);
-      await axios.post("http://rpa-apiprd.inet.co.th:443/send-message/Reject", data);
+      await axios.post("https://rpa-apiprd.inet.co.th:443/send-message/Reject", data);
       console.log("Data sent successfully send message Reject");
 
-      const response = await axios.post('http://203.154.39.190:5000/rpa/iclaim/InsertRequest', data);
+      const response = await axios.post('https://203.154.39.190:5000/rpa/iclaim/InsertRequest', data);
       console.log("Data sent successfully ake : ", response.data);
 
       // ส่งข้อมูลไปยัง API insert log
@@ -179,13 +179,13 @@ const Internal = () => {
           data_type: "Internal"
         };
   
-      await axios.post("http://rpa-apiprd.inet.co.th:443/iClaim/insert/log", logData);
+      await axios.post("https://rpa-apiprd.inet.co.th:443/iClaim/insert/log", logData);
       console.log("Log data inserted successfully");
     });
     await Promise.all(logPromises);
 
       //await axios.post("http://localhost:443/send-message/alertReject", data);
-      await axios.post("http://rpa-apiprd.inet.co.th:443/send-message/alertReject", data);
+      await axios.post("https://rpa-apiprd.inet.co.th:443/send-message/alertReject", data);
       console.log("Data sent successfully send message alert Reject");
 
     } catch (error) {
@@ -233,7 +233,7 @@ const Internal = () => {
       console.log(data)
       // ส่งข้อมูลไปยัง API ส่งรูปไปยัง Line notify
       //await axios.post("http://localhost:443/send-message", data);
-      await axios.post("http://rpa-apiprd.inet.co.th:443/send-message", data);
+      await axios.post("https://rpa-apiprd.inet.co.th:443/send-message", data);
       console.log("Data sent successfully send message");
 
       // ส่งข้อมูลไปยัง API insert log
@@ -253,13 +253,13 @@ const Internal = () => {
           data_type: "Internal"
         };
       // ส่งข้อมูลเข้า log
-      await axios.post("http://rpa-apiprd.inet.co.th:443/iClaim/insert/log", logData);
+      await axios.post("https://rpa-apiprd.inet.co.th:443/iClaim/insert/log", logData);
       console.log("Log data inserted successfully for", checkbox.title);
     });
     await Promise.all(logPromises);
       // ส่ง Alert ไปยัง line notify Group team
       //await axios.post("http://localhost:443/send-message/alert", data);
-      await axios.post("http://rpa-apiprd.inet.co.th:443/send-message/alert", data);
+      await axios.post("https://rpa-apiprd.inet.co.th:443/send-message/alert", data);
       console.log("Data sent successfully send message alert");
 
     } catch (error) {
@@ -352,7 +352,7 @@ const Internal = () => {
     // สร้างฟังก์ชันเพื่อดึงข้อมูลจาก API
     const fetchData = async () => {
         try {
-            const response = await axios.get(`http://rpa-apiprd.inet.co.th:443/iClaim/list/hospital`);
+            const response = await axios.get(`https://rpa-apiprd.inet.co.th:443/iClaim/list/hospital`);
             const data = response.data;
             // นำ key id ทั้งหมดมาเก็บไว้ใน state
             setKeyIds(data.map(hospital => ({
@@ -404,7 +404,7 @@ const handleSelectAllCheckboxChange = (event) => {
   useEffect(() => {
     const fetchCountries = async () => {
       try {
-        const response = await fetch(`http://rpa-apiprd.inet.co.th:443/iClaim/list?date_on=${putdate}`);
+        const response = await fetch(`https://rpa-apiprd.inet.co.th:443/iClaim/list?date_on=${putdate}`);
         const data = await response.json();
         if (!Array.isArray(data) || data.length === 0) {
           setCountries([]);

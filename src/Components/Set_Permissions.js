@@ -70,7 +70,7 @@ const Set_Permissions = () => {
             role: role
         };
 
-        axios.post('http://rpa-apiprd.inet.co.th:443/Role-user/insert', data)
+        axios.post('https://rpa-apiprd.inet.co.th:443/Role-user/insert', data)
         .then(response => {
             console.log(response.data);
             const delayInMilliseconds = 1500;
@@ -167,7 +167,7 @@ const Set_Permissions = () => {
     };
 
     const fetchUsernames = () => {
-        axios.get('http://rpa-apiprd.inet.co.th:443/Role-user')
+        axios.get('https://rpa-apiprd.inet.co.th:443/Role-user')
         .then(response => {
             setUsernames(response.data);
         })
@@ -192,7 +192,7 @@ const Set_Permissions = () => {
 
     const handleDelete = () => {
         /*axios.delete('http://localhost:443/Role-user/del/user', { data: { username_role: selectedUser.username_role } })*/
-        axios.delete('http://rpa-apiprd.inet.co.th:443/Role-user/del/user', { data: { username_role: selectedUser.username_role } })
+        axios.delete('https://rpa-apiprd.inet.co.th:443/Role-user/del/user', { data: { username_role: selectedUser.username_role } })
         .then(response => {
             console.log(response.data);
             setDeleteDialogOpen(false);

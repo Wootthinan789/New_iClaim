@@ -89,7 +89,7 @@ const Log = () => {
         setLoading(true);
         const formattedDate = selectedDate.toISOString().split('T')[0];
         console.log('Formatted date:', formattedDate);
-        const response = await axios.get(`http://rpa-apiprd.inet.co.th:443/iClaim/list/log?data_type=${selectedType}&date=${formattedDate}`);
+        const response = await axios.get(`https://rpa-apiprd.inet.co.th:443/iClaim/list/log?data_type=${selectedType}&date=${formattedDate}`);
         if (response.status !== 200) {
             throw new Error('Failed to fetch logs');
         }

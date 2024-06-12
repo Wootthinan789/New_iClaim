@@ -92,7 +92,7 @@ const Signin = () => {
     //     'Content-Type': 'application/json'
     //   },
     // })
-    fetch(`http://rpa-apiprd.inet.co.th:443/Role-user?username_role=${usernameRole }`, {
+    fetch(`https://rpa-apiprd.inet.co.th:443/Role-user?username_role=${usernameRole }`, {
       method: 'GET',
       headers: {
         'Content-Type': 'application/json'
