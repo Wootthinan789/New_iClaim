@@ -1,19 +1,19 @@
 {
   "files": {
-    "main.css": "/static/css/main.f7ca42ca.css",
-    "main.js": "/static/js/main.68866bd5.js",
+    "main.css": "/static/css/main.62489677.css",
+    "main.js": "/static/js/main.01b44132.js",
     "static/js/787.c168b2e8.chunk.js": "/static/js/787.c168b2e8.chunk.js",
     "static/media/blur-hospital.jpg": "/static/media/blur-hospital.56218ec70094b7f8ffa7.jpg",
     "static/media/employee.png": "/static/media/employee.fee7b9c3aaf7aee5c248.png",
     "static/media/cancel.png": "/static/media/cancel.1583723861a66fb05605.png",
     "static/media/checked.png": "/static/media/checked.6f298cca57a5a8b36055.png",
     "index.html": "/index.html",
-    "main.f7ca42ca.css.map": "/static/css/main.f7ca42ca.css.map",
-    "main.68866bd5.js.map": "/static/js/main.68866bd5.js.map",
+    "main.62489677.css.map": "/static/css/main.62489677.css.map",
+    "main.01b44132.js.map": "/static/js/main.01b44132.js.map",
     "787.c168b2e8.chunk.js.map": "/static/js/787.c168b2e8.chunk.js.map"
   },
   "entrypoints": [
-    "static/css/main.f7ca42ca.css",
-    "static/js/main.68866bd5.js"
+    "static/css/main.62489677.css",
+    "static/js/main.01b44132.js"
   ]
 }
