@@ -399,7 +399,7 @@ button {
     top: 50%;
     left: 50%;
     transform: translate(-50%, -50%);
-    width: 70%; /* กำหนดความกว้างเป็น 70% */
+    width: 90%; /* กำหนดความกว้างเป็น 70% */
     height: 90%; /* กำหนดความยาวเป็น 70% */
     max-width: 380px; /* กำหนดความกว้างสูงสุด */
     max-height: 600px; /* กำหนดความยาวสูงสุด */
@@ -412,14 +412,14 @@ button {
     justify-content: center;
   }
   .rejectReasonInput_External{
-    margin-left: 30px;
-    width: 80%;
+    margin-left: 50px;
+    width: 70%;
     margin-bottom: 30px;
     padding: 5px;
   }
   .imageInModal_External {
-    margin: 20px;
-    width: 300px; /* กำหนดความกว้างของรูปภาพ */
+    margin: 20px 55px;
+    width: 280px; /* กำหนดความกว้างของรูปภาพ */
     height: auto; /* ให้ความสูงปรับตามอัตราส่วนของรูปภาพ */
   }
   .containerStype{

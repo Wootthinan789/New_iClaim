@@ -338,14 +338,17 @@ const Set_Permissions = () => {
                             fontWeight: 'bold',
                             marginTop: '2px',
                             fontFamily: "'Kanit', sans-serif",
-                            width: isSmallScreen ? '60%' : '50%',
+                            width: isSmallScreen ? '70%' : '50%',
                             padding: '5px',
-                            marginLeft: isSmallScreen ? '20%' :'25%',
+                            marginLeft: isSmallScreen ? '15%' :'25%',
                             marginRight: 'auto',
                             borderRadius: '15px',
                             backgroundColor: '#f0ad4e',
-                            color: 'white'
+                            color: 'white',
+                            textTransform: 'none' 
                         }}
+                        type="submit"
+                        variant="contained"
                         onClick={handleOpenModal}
                     >
                         ดูรายการ Username ที่มีอยู่

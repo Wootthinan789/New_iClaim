@@ -592,7 +592,7 @@ const handleSelectAllCheckboxChange = (event) => {
                           background: checkedItems[index] ? '#1768C4' : '#FFFF',
                           borderRadius: '10px',
                           borderWidth: '10px',
-                          fontFamily: "'Kanit', sans-serif",
+                          fontFamily: isSmallScreen ? "'Bai Jamjuree', sans-serif" : "'Kanit', sans-serif",
                           marginTop: '5px',
                           padding: isSmallScreen ? '5px' : '10px',
                           margin: isSmallScreen ? '0px 5px' : '0px 15px',
