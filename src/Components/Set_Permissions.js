@@ -361,15 +361,27 @@ const Set_Permissions = () => {
                     <DialogTitle 
                     style={{
                         fontSize:  isSmallScreen ? '16px' :'32px',
-                        fontFamily:"'Kanit', sans-serif"
-                        ,fontWeight:'700'
+                        fontFamily: isSmallScreen ? '"Bai Jamjuree", sans-serif':"'Kanit', sans-serif",
+                        fontWeight:'700'
 
                     }}>รายการ Username ที่มีอยู่</DialogTitle>
                     <Table>
                         <TableHead>
                         <TableRow>
-                            <TableCell style={{fontSize:'18px',fontFamily:"'Kanit', sans-serif",fontWeight:'600'}} >Username</TableCell>
-                            <TableCell style={{fontSize:'18px',fontFamily:"'Kanit', sans-serif",fontWeight:'600'}} >Role</TableCell>
+                            <TableCell 
+                            style={{
+                                fontSize:isSmallScreen ? '12px' : '18px',
+                                fontFamily: isSmallScreen ? '"Bai Jamjuree", sans-serif': "'Kanit', sans-serif",
+                                fontWeight:'600'
+                                }} 
+                                >Username</TableCell>
+                            <TableCell 
+                            style={{
+                                fontSize:isSmallScreen ? '12px' : '18px',
+                                fontFamily: isSmallScreen ? '"Bai Jamjuree", sans-serif': "'Kanit', sans-serif",
+                                fontWeight:'600'
+                                }} 
+                                >Role</TableCell>
                         </TableRow>
                         </TableHead>
                     </Table>
@@ -378,11 +390,30 @@ const Set_Permissions = () => {
                     <TableBody>
                             {usernames.map((user) => (
                                 <TableRow key={user.username_role}>
-                                    <TableCell style={{fontSize:'14px',fontFamily:"'Kanit', sans-serif"}}>{user.username_role}</TableCell>
-                                    <TableCell style={{ display: 'flex',marginLeft:'250px',padding:'6px',fontSize:'14px' }}>
+                                    <TableCell 
+                                    style={{
+                                        fontSize:isSmallScreen ? '10px' : '14px',
+                                        fontFamily: isSmallScreen ? '"Bai Jamjuree", sans-serif': "'Kanit', sans-serif",
+                                        }}
+                                        >{user.username_role}
+                                        </TableCell>
+                                    <TableCell 
+                                    style={{ 
+                                        display: 'flex',
+                                        marginLeft: isSmallScreen ? '40px' : '220px',
+                                        padding: isSmallScreen ? '1px':'6px',
+                                        fontSize: isSmallScreen ? '10px' : '14px',
+                                        }}>
                                         <span>{user.role}</span>
                                         <Button
-                                            style={{fontFamily:"'Kanit', sans-serif", marginLeft: 'auto', padding: '2px 8px', minWidth: '30%',backgroundColor:'#d31414',color:'white'}}
+                                            style={{
+                                                fontFamily:"'Kanit', sans-serif", 
+                                                fontSize : isSmallScreen ? '8px':'12px',
+                                                marginLeft: 'auto', 
+                                                padding: isSmallScreen ? '1px 8px' : '2px 8px', 
+                                                minWidth: isSmallScreen ? '10%' : '30%',
+                                                backgroundColor:'#d31414',
+                                                color:'white'}}
                                             onClick={() => handleDeleteClick(user)}
                                         >
                                             ลบ
