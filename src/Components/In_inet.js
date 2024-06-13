@@ -47,7 +47,8 @@ const Ininet = () => {
         setDarkBackground(true);
 
         try {
-            await axios.post("http://203.154.39.190:5000/rpa/iclaim/send-image/Internal")
+            //await axios.post("http://203.154.39.190:5000/rpa/iclaim/send-image/Internal")
+            await axios.post("https://rpa-apiprd.inet.co.th:443/rpa/iclaim/sendImageInternal")
         } catch (error) {
             console.error('Error:', error.message);
         }
@@ -75,7 +76,8 @@ const Ininet = () => {
             message: rejectReason,
         };
         try {
-            await axios.post("http://203.154.39.190:5000/rpa/iclaim/reject-image/Internal", data);
+            // await axios.post("http://203.154.39.190:5000/rpa/iclaim/reject-image/Internal", data);
+            await axios.post("https://rpa-apiprd.inet.co.th:443/rpa/iclaim/RejectImageInternal", data);
             setRejectReason(''); // Clear the textarea
         } catch (error) {
             console.error('Error:', error.message);

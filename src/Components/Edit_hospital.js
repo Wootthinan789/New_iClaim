@@ -97,7 +97,7 @@ const Edit_hospital = () => {
     useEffect(() => {
       const fetchData = async () => {
         try {
-          const response = await axios.get('http://rpa-apiprd.inet.co.th:443/iClaim/list/hospital');
+          const response = await axios.get('https://rpa-apiprd.inet.co.th:443/iClaim/list/hospital');
           console.log("Data from API:", response.data);
           setListHospital(response.data);
           setLoading(false);
@@ -161,7 +161,7 @@ const Edit_hospital = () => {
 
       try {
         const response = await axios.post(
-          'http://rpa-apiprd.inet.co.th:443/iClaim/add/hospital',
+          'https://rpa-apiprd.inet.co.th:443/iClaim/add/hospital',
           {
             hospital_name: newHospitalData.hospital,
             token_line: newHospitalData.token
@@ -196,7 +196,7 @@ const Edit_hospital = () => {
         console.log("Deleting hospital:", hospitalToDelete.id);
         try {
           const response = await axios.post(
-            'http://rpa-apiprd.inet.co.th:443/iClaim/del/hospital',
+            'https://rpa-apiprd.inet.co.th:443/iClaim/del/hospital',
             {
               id_hospital: hospitalToDelete.id,
             },
@@ -400,7 +400,7 @@ const EditHospitalDialog = ({ open, handleClose, hospital }) => {
 
     try {
       const response = await axios.post(
-        'http://rpa-apiprd.inet.co.th:443/iClaim/edit/hospital',
+        'https://rpa-apiprd.inet.co.th:443/iClaim/edit/hospital',
         {
           hospital_name: editedHospitalData.hospital,
           token_line: editedHospitalData.token,

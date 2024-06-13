@@ -166,7 +166,8 @@ const Internal = () => {
       await axios.post("https://rpa-apiprd.inet.co.th:443/send-message/Reject", data);
       console.log("Data sent successfully send message Reject");
 
-      const response = await axios.post('https://203.154.39.190:5000/rpa/iclaim/InsertRequest', data);
+      // const response = await axios.post('https://203.154.39.190:5000/rpa/iclaim/InsertRequest', data);
+      const response = await axios.post('https://rpa-apiprd.inet.co.th:443/rpa/iclaim/InsertRequest', data);
       console.log("Data sent successfully ake : ", response.data);
 
       // ส่งข้อมูลไปยัง API insert log

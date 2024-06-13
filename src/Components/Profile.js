@@ -129,7 +129,8 @@ const Profile = () => {
       console.log("data : ",data)
 
       //send API to API AKE
-      const response = await axios.post('https://203.154.39.190:5000/rpa/iclaim/InsertRequest', data);
+      //const response = await axios.post('https://203.154.39.190:5000/rpa/iclaim/InsertRequest', data);
+      const response = await axios.post('https://rpa-apiprd.inet.co.th:443/rpa/iclaim/InsertRequest', data);
       console.log("Data sent successfully ake : ", response.data);
 
       
