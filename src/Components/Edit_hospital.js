@@ -158,7 +158,13 @@ const Edit_hospital = () => {
       console.log("Adding new hospital:", newHospitalData);
       console.log("Hospital:", newHospitalData.hospital);
       console.log("Token:", newHospitalData.token);
-
+      const data = {
+        hospital: newHospitalData.hospital,
+        token:newHospitalData.token,
+        username:usernameJson.username,
+        remark:'add hospital and token'
+      };
+      console.log("data : ",data)
       try {
         const response = await axios.post(
           'https://rpa-apiprd.inet.co.th:443/iClaim/add/hospital',
@@ -181,6 +187,13 @@ const Edit_hospital = () => {
         }
       } catch (error) {
         console.error('Error adding hospital:', error);
+      }
+      try {
+        await axios.post("https://rpa-apiprd.inet.co.th:443/Server/Hospital", data);
+        //await axios.post("https://localhost:443/Server/Hospital",data)
+        console.log("Data sent successfully send message");
+      } catch (error) {
+        console.log('Error send hospital and Token to Line notify' , error)
       }
 
       setOpenAddDialog(false);

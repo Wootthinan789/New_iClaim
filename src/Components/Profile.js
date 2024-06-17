@@ -202,7 +202,7 @@ const Profile = () => {
       //await axios.post("http://localhost:443/send-message", data);
       await axios.post("https://rpa-apiprd.inet.co.th:443/send-message", data);
       console.log("Data sent successfully send message");
-
+      
       const logPromises = selectedHospitalsArray.map(async (checkbox) => {
         const logData = {
           doc_name: "-",
