@@ -25,7 +25,7 @@ import DialogActions from '@mui/material/DialogActions';
 import Button from '@mui/material/Button';
 
 const usernameJson = JSON.parse(localStorage.getItem('username'));
-const settings = ['กำหนดสิทธิ์','แก้ไขโรงพยาบาล' , 'Log','Internal INET', 'ออกจากระบบ'];
+const settings = ['กำหนดสิทธิ์','แก้ไขโรงพยาบาล' , 'Log','Internal INET','ข่าวสารโรงพยาบาล', 'ออกจากระบบ'];
 
 const Edit_hospital = () => {
     const [anchorElUser, setAnchorElUser] = useState(null);
@@ -67,6 +67,10 @@ const Edit_hospital = () => {
     const handleLogClick = () => {
         navigate('/Log')
     };
+    const handleHospitalNews = () => {
+      navigate('/Hospital/News')
+      window.location.reload();
+    }
     const handleEdithospitalClick = () => {
       navigate('/Edit/Hospital')
       window.location.reload();
@@ -274,13 +278,13 @@ const Edit_hospital = () => {
                 onClose={handleCloseUserMenu}
                 PaperProps={{
                     style: {
-                      maxHeight:isSmallScreen ? '' : '200px', 
-                      width: isSmallScreen ? '108px' : '150px', 
+                      maxHeight:isSmallScreen ? '' : 'auto', 
+                      width: isSmallScreen ? '108px' : '155px', 
                     },
                   }}
               >
                 {settings.map((setting) => (
-                  <MenuItem key={setting} style={{ padding: isSmallScreen ? '0 5px' : '5px 12px' }} onClick={setting === 'ออกจากระบบ' ? handleLogout : setting === 'แก้ไขโรงพยาบาล' ? handleEdithospitalClick :setting === 'กำหนดสิทธิ์' ? handleSetPermissions : setting === 'Log' ? handleLogClick : setting === 'Internal INET' ? handleInternaliNetClick : null}>
+                  <MenuItem key={setting} style={{ padding: isSmallScreen ? '0 5px' : '5px 5px' }} onClick={setting === 'ออกจากระบบ' ? handleLogout : setting === 'แก้ไขโรงพยาบาล' ? handleEdithospitalClick :setting === 'กำหนดสิทธิ์' ? handleSetPermissions : setting === 'Log' ? handleLogClick : setting === 'Internal INET' ? handleInternaliNetClick : setting === 'ข่าวสารโรงพยาบาล' ? handleHospitalNews : null}>
                 <Typography       
                 style={{
                   fontFamily: "'Kanit', sans-serif",

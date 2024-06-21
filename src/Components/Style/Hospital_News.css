@@ -1,0 +1,69 @@
+.newsTitle {
+    font-family: 'Kanit', sans-serif;
+    text-align: center;
+    font-size: 32px;
+    font-weight: 700;
+    color: #000;
+}
+.textFieldStyle {
+    margin-top: 20px;
+    background-color: rgb(238, 239, 239);
+    width: 50%;
+    height: 50%;
+    font-size: 16px;
+    justify-items: center;
+    border-radius: 10px;
+}
+.textFieldInput {
+    font-size: 16px; /* Adjust the input text size */
+    width: auto;
+}
+.leftRotate {
+    display: inline-block;
+    transform: scaleX(-1); /* This will flip the emoji horizontally */
+    animation: leftMovement 2s infinite;
+}
+
+.rightRotate {
+    display: inline-block;
+    animation: rightMovement 2s infinite;
+}
+.scrollable-container {
+    margin: 10px;
+    max-height: 300px;
+    overflow-y: auto;
+}
+
+.tableStyle {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+.tableStyle th, .tableStyle td {
+    padding: 6px 10px;
+    text-align: left;
+    border: none;
+}
+input[type="checkbox"] {
+    transform: scale(1.5); /* ขยาย checkbox เป็น 1.5 เท่าของขนาดปกติ */
+    color : aqua
+}
+
+
+@keyframes leftMovement {
+    0%, 100% {
+        transform: scaleX(-1) rotate(15deg);
+    }
+    50% {
+        transform: scaleX(-1) rotate(-20deg);
+    }
+}
+
+@keyframes rightMovement {
+    0%, 100% {
+        transform: rotate(15deg);
+    }
+    50% {
+        transform: rotate(-20deg);
+    }
+}

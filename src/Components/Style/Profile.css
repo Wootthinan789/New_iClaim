@@ -31,8 +31,18 @@
 }
 .cardStyle {
   width: 90%;
-  height: 60%;
+}
+.CardScrallber{
+  max-height: 450px;
   overflow-y: auto;
+}
+.SelectallStyle{
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-right: 75%;
+  padding: 20px 2px 2px 2px;
+  
 }
 .BoxStyle {
   position: absolute;
@@ -83,9 +93,8 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  padding: 20px;
   width: 80%;
-  height: 60%;
+  
 }
 
 button {
@@ -367,9 +376,18 @@ button {
   font-size: 0.75rem;
   color: #007bff;
 }
-
+@media (max-width: 1030px) {
+  .CardScrallber{
+    max-height: 1000px;
+    overflow-y: auto;
+  }
+}
 @media (max-width: 768px) {
   .container,
+  .CardScrallber{
+    max-height: 640px;
+    overflow-y: auto;
+  }
   .container-approve-reject {
       width: 100%;
   }

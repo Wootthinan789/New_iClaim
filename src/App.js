@@ -11,6 +11,8 @@ import Profile from './Components/Profile';
 // import DownloadFile from './Components/DowloadFile';
 import SetPermissions from './Components/Set_Permissions';
 import Ininet from './Components/In_inet';
+import Hospital_News from './Components/Hospital_News';
+import TestAPI from './Components/Test_Get_API'
 
 const App = () =>{
   const token = localStorage.getItem("access_token");
@@ -28,6 +30,7 @@ const App = () =>{
           <Route path="/" element={<Profile/>} />
           <Route path="/Dashboard/External" element={<Profile/>} />
           <Route path="/Dashboard/Internal" element={<Internal/>} />
+          <Route path='/TEST/API' element={<TestAPI/>} />
           <Route 
           path="/Set/Permission" 
           element={
@@ -68,6 +71,16 @@ const App = () =>{
               )
             } 
             />
+          <Route
+          path='/Hospital/News'
+          element={
+            (role === "admin" || role === "Admin") ? (
+              <Hospital_News/>
+            ) : (
+              <HospitalEditNotAllowed/>
+            )
+          }
+          />
           {/* <Route path="/Test/Style" element={<Teststyle/>} />
           <Route path="/Download/File" element={<DownloadFile/>} /> */}
         </Routes>

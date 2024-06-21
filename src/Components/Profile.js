@@ -31,7 +31,7 @@ import RadioButtonUncheckedIcon from '@mui/icons-material/RadioButtonUnchecked';
 import CheckCircleIcon from '@mui/icons-material/CheckCircle';
 
 //let username = "วุฒินันท์ ปรางมาศ";
-const settings = ['กำหนดสิทธิ์','แก้ไขโรงพยาบาล' , 'Log','Internal INET', 'ออกจากระบบ'];
+const settings = ['กำหนดสิทธิ์','แก้ไขโรงพยาบาล' , 'Log','Internal INET','ข่าวสารโรงพยาบาล', 'ออกจากระบบ'];
 
 const Profile = () => {
   const [countries, setCountries] = useState([]);
@@ -49,9 +49,9 @@ const Profile = () => {
   const [keyIds, setKeyIds] = useState([]);
   const [id_hospital, setIdHospital] = useState(null);
   const [selectedCheckboxes, setSelectedCheckboxes] = useState({});
+  const [selectedCheckboxCount, setSelectedCheckboxCount] = useState(0);
 
   const [selectAll, setSelectAll] = useState(false);
-  
   const theme = useTheme();
   const isSmallScreen = useMediaQuery(theme.breakpoints.down('sm'));
 
@@ -283,6 +283,11 @@ const Profile = () => {
     navigate('/Log')
   }
 
+  const handleHospitalNews = () => {
+    navigate('/Hospital/News')
+    window.location.reload();
+  }
+
   const handleEdithospitalClick = () => {
     navigate('/Edit/Hospital')
     window.location.reload();
@@ -305,6 +310,12 @@ const Profile = () => {
       ...prevState,
       [index]: isChecked
     }));
+
+      // Update selected checkbox count
+    setSelectedCheckboxCount(prevCount =>
+      isChecked ? prevCount + 1 : prevCount - 1
+    );
+
     
     if (isChecked) {
       const checkboxData = countries[index];
@@ -312,12 +323,7 @@ const Profile = () => {
       const img_6_Array = checkboxData.img_6;
       const title = checkboxData.title;
       const token = keyIds.find((hospital) => hospital.id === id_hospital)?.token;
-      // console.log('id_hospital : ', id_hospital);
-      // console.log('img_6_Array : ', img_6_Array);
-      // console.log('Token : ', token);
-      // console.log('title : ', title);
-  
-      // Create a new object representing the selected checkbox data
+
       const selectedCheckbox = {
         id_hospital: id_hospital,
         img_6_Array: img_6_Array,
@@ -392,6 +398,8 @@ const handleSelectAllCheckboxChange = (event) => {
     updatedCheckedItems[index] = isChecked;
   });
   setCheckedItems(updatedCheckedItems);
+    // Update selected checkbox count
+  setSelectedCheckboxCount(isChecked ? countries.length : 0);
 };
 
 
@@ -475,8 +483,8 @@ const handleSelectAllCheckboxChange = (event) => {
               onClose={handleCloseUserMenu}
               PaperProps={{
                 style: {
-                  maxHeight:isSmallScreen ? '' : '200px', // ปรับสูงความสูงตามที่ต้องการ
-                  width: isSmallScreen ? '108px' : '150px', // ปรับความกว้างตามที่ต้องการ
+                  maxHeight:isSmallScreen ? '' : 'auto', // ปรับสูงความสูงตามที่ต้องการ
+                  width: isSmallScreen ? '108px' : '155px', // ปรับความกว้างตามที่ต้องการ
                 },
               }}
             >
@@ -484,15 +492,15 @@ const handleSelectAllCheckboxChange = (event) => {
                 <MenuItem key={setting} 
                 //className='Menu-list-icon'
                 style={{    
-                  padding: isSmallScreen ? '0 5px' : '5px 12px',}} // ปรับขนาดของ MenuItem
-                onClick={setting === 'ออกจากระบบ' ? handleLogout : setting === 'Log' ? handleLogClick : setting === 'แก้ไขโรงพยาบาล' ? handleEdithospitalClick : setting === 'กำหนดสิทธิ์' ? handleSetPermissions : setting === 'Internal INET' ? handleInternaliNetClick : null}
+                  padding: isSmallScreen ? '0 5px' : '5px 5px',}} // ปรับขนาดของ MenuItem
+                onClick={setting === 'ออกจากระบบ' ? handleLogout : setting === 'Log' ?  handleLogClick : setting === 'แก้ไขโรงพยาบาล' ? handleEdithospitalClick : setting === 'กำหนดสิทธิ์' ? handleSetPermissions : setting === 'Internal INET' ? handleInternaliNetClick : setting === 'ข่าวสารโรงพยาบาล' ? handleHospitalNews : null}
                 
               >
                 <Typography       
                 style={{
                   fontFamily: "'Kanit', sans-serif",
                   padding: isSmallScreen ? '0 12px' : '0 10px',
-                  fontSize: isSmallScreen ? '12px' : '16px',
+                  fontSize: isSmallScreen ? '8px' : '16px',
                   margin: isSmallScreen ? '1px 0' : '0 0',
                   }}
                   >{setting}</Typography>
@@ -570,7 +578,7 @@ const handleSelectAllCheckboxChange = (event) => {
         {loading ? (
           <p style={{ textAlign: "center" }}>Loading...</p>
         ) : countries && countries.length > 0 ? (
-          <CardContent>
+          <CardContent className='CardScrallber'>
             {countries.map((country, index) => (
               <div key={index} style={{ marginBottom: '20px', textAlign: 'center', position: 'relative' }}>
                 <FormGroup row >
@@ -602,7 +610,7 @@ const handleSelectAllCheckboxChange = (event) => {
                           color: checkedItems[index] ? '#FFFF' : 'black',
                         }}
                       >
-                        {country.title}
+                        {index + 1}. {country.title}
                       </Typography>
                     }
                   />
@@ -611,7 +619,7 @@ const handleSelectAllCheckboxChange = (event) => {
                   src={country.img_6}
                   alt={`iClaim${index + 1}`}
                   style={{
-                    width: '80%',
+                    width: '70%',
                     height: '50%',
                     objectFit: 'cover',
                     borderRadius: '0 0 8px 8px',
@@ -621,7 +629,14 @@ const handleSelectAllCheckboxChange = (event) => {
                 />
               </div>
             ))}
-            <FormGroup row>
+
+          </CardContent>
+        ) : (
+          <p style={{ textAlign: "center", fontFamily: "'Kanit', sans-serif", fontSize: isSmallScreen ? '8px' : '20px', }}>ไม่มีข้อมูลสําหรับวันที่เลือก</p>
+        )}
+      </Card>
+      <div className='SelectallStyle'>
+      <FormGroup row>
               <FormControlLabel
                 control={
                   <label className="custom-checkbox" >
@@ -646,16 +661,12 @@ const handleSelectAllCheckboxChange = (event) => {
                       fontSize: isSmallScreen ? '10px' : '18px',
                     }}
                   >
-                    Select All
+                    Select All ({selectedCheckboxCount}/{countries.length})
                   </Typography>
                 }
               />
-            </FormGroup>
-          </CardContent>
-        ) : (
-          <p style={{ textAlign: "center", fontFamily: "'Kanit', sans-serif", fontSize: isSmallScreen ? '8px' : '20px', }}>ไม่มีข้อมูลสําหรับวันที่เลือก</p>
-        )}
-      </Card>
+        </FormGroup>
+      </div>
       {!loading && countries && countries.length > 0 && (role === 'admin' || role === 'user' || role === 'Admin' || role === 'User') && (
         <div className='container-approve-reject'>
           <div className='Fixlocation-approve-reject'>
