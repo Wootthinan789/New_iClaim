@@ -385,7 +385,7 @@ button {
 @media (max-width: 768px) {
   .container,
   .CardScrallber{
-    max-height: 640px;
+    max-height: 440px;
     overflow-y: auto;
   }
   .container-approve-reject {
