@@ -1,3 +1,6 @@
+.container-hospital {
+    width: 45%;
+  }
 .newsTitle {
     font-family: 'Kanit', sans-serif;
     text-align: center;
@@ -5,10 +8,30 @@
     font-weight: 700;
     color: #000;
 }
+.button-send{
+    max-width: 320px;
+    display: flex;
+    padding: 0.6rem 1.4rem;
+    font-size: 1.375rem;
+    line-height: 1.25rem;
+    font-weight: 700;
+    text-align: center;
+    vertical-align: middle;
+    align-items: center;
+    border-radius: 0.5rem;
+    gap: 0.75rem;
+    color: rgb(255, 255, 255);
+    background-color: #1095c6;
+    cursor: pointer;
+    transition: all 0.0s ease;
+    font-family: 'Kanit', sans-serif;
+    padding: 10px 80px 10px 80px;
+    margin: 0px 50px 0px 50px;
+}
 .textFieldStyle {
     margin-top: 20px;
     background-color: rgb(238, 239, 239);
-    width: 50%;
+    width: 100%;
     height: 50%;
     font-size: 16px;
     justify-items: center;
@@ -29,11 +52,16 @@
     animation: rightMovement 2s infinite;
 }
 .scrollable-container {
+    font-family: 'Kanit', sans-serif;
     margin: 10px;
-    max-height: 300px;
+    max-height: 320px;
     overflow-y: auto;
 }
-
+.scrolla-list{
+    margin: 10px;
+    max-height: 150px;
+    overflow-y: auto;
+}
 .tableStyle {
     width: 100%;
     border-collapse: collapse;
@@ -43,6 +71,11 @@
     padding: 6px 10px;
     text-align: left;
     border: none;
+}
+.Card-List-data{
+    right: 100%;
+    width: auto;
+    height: 216px;
 }
 input[type="checkbox"] {
     transform: scale(1.5); /* ขยาย checkbox เป็น 1.5 เท่าของขนาดปกติ */
@@ -66,4 +99,10 @@ input[type="checkbox"] {
     50% {
         transform: rotate(-20deg);
     }
+}
+@media (max-width: 480px) {
+
+}
+@media (max-width: 420px) {
+
 }

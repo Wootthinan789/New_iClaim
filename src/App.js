@@ -34,7 +34,7 @@ const App = () =>{
           <Route 
           path="/Set/Permission" 
           element={
-            (role === "admin" || role === "Admin") ? (
+            (role === "admin" || role === "Admin" || role === "SuperAdmin" || role === "superadmin") ? (
               <SetPermissions/>
             ) : (
               <HospitalEditNotAllowed />
@@ -44,7 +44,7 @@ const App = () =>{
           <Route 
             path="/Log" 
             element={
-              (role === "admin" || role === "user" || role === "Admin" || role === "User") ? (
+              (role === "admin" || role === "user" || role === "Admin" || role === "User" || role === "SuperAdmin" || role === "superadmin") ? (
                 <Log/>
               ) : (
                 <HospitalEditNotAllowed />
@@ -54,7 +54,7 @@ const App = () =>{
           <Route
             path="/Edit/Hospital"
             element={
-              (role === "admin" || role === "Admin") ? (
+              (role === "admin" || role === "Admin" || role === "SuperAdmin" || role === "superadmin") ? (
                 <Edithospital/>
               ) : (
                 <HospitalEditNotAllowed />
@@ -64,7 +64,7 @@ const App = () =>{
           <Route 
             path="/Internal/inet" 
             element={
-              (role === "admin" || role === "Admin") ? (
+              (role === "admin" || role === "Admin" || role === "SuperAdmin" || role === "superadmin") ? (
                 <Ininet/>
               ) : (
                 <HospitalEditNotAllowed />
@@ -74,7 +74,7 @@ const App = () =>{
           <Route
           path='/Hospital/News'
           element={
-            (role === "admin" || role === "Admin") ? (
+            (role === "superadmin" || role === "SuperAdmin") ? (
               <Hospital_News/>
             ) : (
               <HospitalEditNotAllowed/>
