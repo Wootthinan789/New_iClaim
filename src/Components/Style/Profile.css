@@ -27,7 +27,7 @@
 .appBarStyle{
   position:static;
   width: 100%;
-  padding: 15px;
+  padding: 5px;
 }
 .cardStyle {
   width: 90%;
@@ -49,13 +49,13 @@
   left: 0;
 }
 .logoStyle{
-  height: 80px;
+  height: 50px;
   margin-right: 10px;
   padding: 10px;
 }
 .Box1{
   position: absolute;
-  right: 0;
+  right: 14px;
 }
 
 .Box2{
@@ -71,8 +71,8 @@
 }
 .Avatar-img{
   margin-right: 9px;
-  max-width: 28px;
-  max-height: 28px;
+  max-width: 20px;
+  max-height: 20px;
 }
 .Menu-list{
     margin-top: 40px;

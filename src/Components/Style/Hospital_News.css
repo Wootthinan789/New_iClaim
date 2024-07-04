@@ -1,10 +1,39 @@
 .container-hospital {
-    width: 45%;
+    width: 38%;
   }
+.cardStyle_New {
+    width: 90%;
+    height: auto;
+    /* margin-bottom: 20px; */
+}
+.custom-radio{
+    width: 20px;
+    height: 20px;
+}
+.radio-label {
+    display: flex;
+    align-items: center;
+    margin-bottom: 5px; /* ระยะห่างด้านล่าง */
+}
+.checkbox-all {
+    display: flex;
+    align-items: center;
+    margin-bottom: 2px; /* ระยะห่างด้านล่าง */
+}
+
+.radio-label input {
+    margin-right: 5px; /* ระยะห่างด้านขวาของ radio button */
+}
+.container-checkbox{
+    font-size: 12px;
+    display: flex;
+    flex-direction: row; /* จัดเรียงแนวนอน */
+    justify-content: space-between; /* กระจายไปทั่วขอบ */
+}
 .newsTitle {
     font-family: 'Kanit', sans-serif;
     text-align: center;
-    font-size: 32px;
+    font-size: 24px;
     font-weight: 700;
     color: #000;
 }
@@ -33,12 +62,12 @@
     background-color: rgb(238, 239, 239);
     width: 100%;
     height: 50%;
-    font-size: 16px;
+    font-size: 12px;
     justify-items: center;
     border-radius: 10px;
 }
 .textFieldInput {
-    font-size: 16px; /* Adjust the input text size */
+    font-size: 10px; /* Adjust the input text size */
     width: auto;
 }
 .leftRotate {
@@ -54,8 +83,17 @@
 .scrollable-container {
     font-family: 'Kanit', sans-serif;
     margin: 10px;
-    max-height: 320px;
+    max-height: 290px;
     overflow-y: auto;
+}
+.scrollable-container::-webkit-scrollbar {
+    width: 8px; /* กำหนดความกว้างของ scrollbar */
+    background-color: #ffffff; /* สีพื้นหลังของ scrollbar */
+    border-radius: 10px;
+}
+.scrollable-container::-webkit-scrollbar-thumb {
+    background-color: #888; /* สีของ Thumb */
+    border-radius: 8px; /* กำหนดรูปทรงของ Thumb */
 }
 .scrolla-list{
     margin: 10px;
@@ -68,6 +106,7 @@
 }
 
 .tableStyle th, .tableStyle td {
+    font-size: 12px;
     padding: 6px 10px;
     text-align: left;
     border: none;

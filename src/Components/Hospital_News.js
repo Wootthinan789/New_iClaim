@@ -22,6 +22,8 @@ import HomeIcon from './images-iclaim/home-regular-60.png';
 import { useNavigate } from 'react-router-dom';
 import DeleteIcon from '@mui/icons-material/Delete';
 
+import { Dropdown, ButtonToolbar } from 'rsuite';
+
 const Hospital_News = () => {
     const [anchorElUser, setAnchorElUser] = useState(null);
     const usernameJson = JSON.parse(localStorage.getItem('username'));
@@ -39,6 +41,9 @@ const Hospital_News = () => {
     const [charCount, setCharCount] = useState(0); // State เก็บจำนวนอักษรที่ป้อนเข้าไป
     const [fileNames, setFileNames] = useState([]);
 
+    const [isFirstChecked, setIsFirstChecked] = useState(true);
+    const [isSecondChecked, setIsSecondChecked] = useState(false);
+
     const theme = useTheme();
     const isSmallScreen = useMediaQuery(theme.breakpoints.down('sm'));
     const navigate = useNavigate();
@@ -48,6 +53,20 @@ const Hospital_News = () => {
     const handleOpenUserMenu = (event) => {
         setAnchorElUser(event.currentTarget);
     };
+
+    const handleFirstToggle = () => {
+        setIsFirstChecked(!isFirstChecked);
+        if (isSecondChecked) {
+          setIsSecondChecked(false);
+        }
+      };
+    
+      const handleSecondToggle = () => {
+        setIsSecondChecked(!isSecondChecked);
+        if (isFirstChecked) {
+          setIsFirstChecked(false);
+        }
+      };
 
     const handleHospitalNews = () => {
         navigate('/Hospital/News');
@@ -93,7 +112,7 @@ const Hospital_News = () => {
     useEffect(() => {
         const fetchData = async () => {
             try {
-                const response = await axios.get('http://localhost:443/iClaim/list/hospital');
+                const response = await axios.get('http://localhost:443/get/data/hospital/government');
                 setData(response.data);
                 setLoading(false);
             } catch (error) {
@@ -103,7 +122,7 @@ const Hospital_News = () => {
         };
 
         fetchData();
-    }, []);
+    }, [isFirstChecked]);
 
     const handleCheckboxChange = (event, index) => {
         const isChecked = event.target.checked;
@@ -163,7 +182,7 @@ const Hospital_News = () => {
     };
 
     const filteredData = data.filter(item => {
-        return item.hospital.toLowerCase().includes(searchTerm.toLowerCase());
+        return item.Hospital_Government.toLowerCase().includes(searchTerm.toLowerCase());
     });
 
     const handleSendMessage = async () => {
@@ -321,7 +340,7 @@ const Hospital_News = () => {
                     </button>
                 </div>
             </div>
-            <Card className='cardStyle_Log' style={{ backgroundColor: '#D9D9D9', boxShadow: 'none', borderRadius: '15px' }}>
+            <Card className='cardStyle_New' style={{ backgroundColor: '#D9D9D9', boxShadow: 'none', borderRadius: '15px' }}>
                 <CardContent>
                     <h1 className='newsTitle'>
                         <span className="leftRotate">📢</span>  ข่าวสารโรงพยาบาล <span className="rightRotate">📢</span>
@@ -334,7 +353,7 @@ const Hospital_News = () => {
                                 borderRadius: '10px',
                                 boxShadow: 'none',
                                 border: 'none',
-                                height: '440px',
+                                height: '420px',
                                 backgroundColor: 'rgb(238, 239, 239)',
                             }}>
                             <CardContent>
@@ -344,7 +363,8 @@ const Hospital_News = () => {
                                         width: '100%',
                                         height: '30px',
                                         borderWidth: 'thin',
-                                        borderRadius: '10px'
+                                        borderRadius: '10px',
+                                        marginBottom:'5px'
                                     }}
                                     type="text"
                                     placeholder="ค้นหาด้วยชื่อโรงพยาบาล"
@@ -354,20 +374,44 @@ const Hospital_News = () => {
                                 {loading ? (
                                     <p>Loading...</p>
                                 ) : (
-                                    <div style={{ fontFamily: "'Kanit', sans-serif" }}>
-                                        <p>จำนวนทั้งหมด : {Object.keys(selectedCheckboxes).length}</p> {/* Display count */}
+                                    <div style={{ fontFamily: "'Kanit', sans-serif"}}>
+                                        <div className='container-checkbox'>
+                                            <p>จำนวนทั้งหมด : {Object.keys(selectedCheckboxes).length}</p> {/* Display count */}
+                                            <div >
+                                            <label className="radio-label">
+                                            <input
+                                                type="radio"
+                                                checked={isFirstChecked}
+                                                onChange={handleFirstToggle}
+                                                className="custom-radio"
+                                            />
+                                            {isFirstChecked ? 'โรงพยาบาลรัฐ' : 'โรงพยาบาลรัฐ'}
+                                        </label>
+                                        <label className="radio-label">
+                                            <input
+                                                type="radio"
+                                                checked={isSecondChecked}
+                                                onChange={handleSecondToggle}
+                                                className="custom-radio"
+                                            />
+                                            {isSecondChecked ? 'โรงพยาบาลเอกชน' : 'โรงพยาบาลเอกชน'}
+                                        </label>
+                                        </div>
+                                        </div>                            
                                         <div className="scrollable-container">
                                             <table className="tableStyle">
                                                 <thead>
                                                     <tr>
-                                                        <th>
+                                                        <th className='checkbox-all'>
                                                             <input
+                                                                style={{cursor : "pointer",marginRight:'5px',whiteSpace: 'nowrap'}}
                                                                 type="checkbox"
                                                                 checked={Object.keys(checkedItems).length === filteredData.length}
                                                                 onChange={handleSelectAll}
                                                             />
+                                                            ทั้งหมด
                                                         </th>
-                                                        <th>จำนวน</th>
+                                                        <th>ลำดับ</th>
                                                         <th style={{ padding: '0px 50px' }}>ชื่อโรงพยาบาล</th>
                                                     </tr>
                                                 </thead>
@@ -376,13 +420,14 @@ const Hospital_News = () => {
                                                         <tr key={index}>
                                                             <td>
                                                                 <input
+                                                                    style={{cursor : "pointer"}}
                                                                     type="checkbox"
                                                                     checked={!!checkedItems[index]}
                                                                     onChange={(e) => handleCheckboxChange(e, index)}
                                                                 />
                                                             </td>
                                                             <td>{index + 1}</td>
-                                                            <td style={{ padding: '0px 10px 0px 50px' }}>{item.hospital}</td>
+                                                            <td style={{ padding: '0px 10px 0px 50px' }}>{item.Hospital_Government}</td>
                                                         </tr>
                                                     ))}
                                                 </tbody>
@@ -404,13 +449,14 @@ const Hospital_News = () => {
                             InputProps={{
                                 classes: { input: 'textFieldInput' },
                                 sx: {
+                                    fontSize: '14px',
                                     borderRadius: '10px',
                                     '& fieldset': {
                                         // border: 'none',
                                     },
                                 }
                             }}
-                            style={{ flexGrow: 1, fontSize: '16px' }}
+                            style={{ flexGrow: 1, fontSize: '10px' }}
                         />
                         <p style={{fontSize:'10px',margin:'5px 10px 10px 10px',fontFamily:"'Kanit', sans-serif"}}>{charCount} / 1000</p> {/* แสดงจำนวนอักษรที่ป้อน */}
                         <Card 
@@ -427,7 +473,8 @@ const Hospital_News = () => {
                                     style={{
                                         textAlign:'center',
                                         fontFamily:"'Kanit', sans-serif",
-                                        textDecoration: 'underline'
+                                        textDecoration: 'underline',
+                                        fontSize:'12px'
                                     }} 
                                 >
                                     รายละเอียดไฟล์แนบ
@@ -450,7 +497,7 @@ const Hospital_News = () => {
                         <div style={{ flexGrow: 1, display: 'flex', flexDirection: 'column', alignItems: 'flex-end'}}>
                             <Button 
                                 style={{
-                                    fontSize:'16px',
+                                    fontSize:'12px',
                                     fontWeight: '700',
                                     fontFamily:"'Kanit', sans-serif",
                                     textTransform: 'none' ,
@@ -468,7 +515,7 @@ const Hospital_News = () => {
                             </Button>
                             <Button 
                                 style={{
-                                    fontSize:'16px',
+                                    fontSize:'12px',
                                     fontWeight: '700',
                                     fontFamily:"'Kanit', sans-serif",
                                     textTransform: 'none' ,
@@ -493,7 +540,7 @@ const Hospital_News = () => {
                             />
                             <Button 
                                 style={{
-                                    fontSize:'16px',
+                                    fontSize:'12px',
                                     fontWeight: '700',
                                     fontFamily:"'Kanit', sans-serif",
                                     textTransform: 'none' ,
