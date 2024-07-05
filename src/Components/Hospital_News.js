@@ -55,18 +55,14 @@ const Hospital_News = () => {
     };
 
     const handleFirstToggle = () => {
-        setIsFirstChecked(!isFirstChecked);
-        if (isSecondChecked) {
-          setIsSecondChecked(false);
-        }
-      };
+        setIsFirstChecked(true);
+        setIsSecondChecked(false);
+    };
     
-      const handleSecondToggle = () => {
-        setIsSecondChecked(!isSecondChecked);
-        if (isFirstChecked) {
-          setIsFirstChecked(false);
-        }
-      };
+    const handleSecondToggle = () => {
+        setIsFirstChecked(false);
+        setIsSecondChecked(true);
+    };
 
     const handleHospitalNews = () => {
         navigate('/Hospital/News');
@@ -112,7 +108,14 @@ const Hospital_News = () => {
     useEffect(() => {
         const fetchData = async () => {
             try {
-                const response = await axios.get('http://localhost:443/get/data/hospital/government');
+                let endpoint = '';
+                if (isFirstChecked) {
+                    endpoint = 'http://localhost:443/get/data/hospital/government';
+                } else if (isSecondChecked) {
+                    endpoint = 'http://localhost:443/get/data/hospital/private';
+                }
+                
+                const response = await axios.get(endpoint);
                 setData(response.data);
                 setLoading(false);
             } catch (error) {
@@ -120,9 +123,9 @@ const Hospital_News = () => {
                 setLoading(false);
             }
         };
-
+    
         fetchData();
-    }, [isFirstChecked]);
+    }, [isFirstChecked, isSecondChecked]);
 
     const handleCheckboxChange = (event, index) => {
         const isChecked = event.target.checked;
@@ -182,8 +185,13 @@ const Hospital_News = () => {
     };
 
     const filteredData = data.filter(item => {
-        return item.Hospital_Government.toLowerCase().includes(searchTerm.toLowerCase());
+        const governmentHospital = item.Hospital_Government ? item.Hospital_Government.toLowerCase() : '';
+        const privateHospital = item.Hospital_Private ? item.Hospital_Private.toLowerCase() : '';
+        const searchLower = searchTerm.toLowerCase();
+    
+        return governmentHospital.includes(searchLower) || privateHospital.includes(searchLower);
     });
+    
 
     const handleSendMessage = async () => {
         try {
@@ -377,15 +385,15 @@ const Hospital_News = () => {
                                     <div style={{ fontFamily: "'Kanit', sans-serif"}}>
                                         <div className='container-checkbox'>
                                             <p>จำนวนทั้งหมด : {Object.keys(selectedCheckboxes).length}</p> {/* Display count */}
-                                            <div >
-                                            <label className="radio-label">
-                                            <input
-                                                type="radio"
-                                                checked={isFirstChecked}
-                                                onChange={handleFirstToggle}
-                                                className="custom-radio"
+                                        <div>
+                                        <label className="radio-label">
+                                        <input
+                                            type="radio"
+                                            checked={isFirstChecked}
+                                            onChange={handleFirstToggle}
+                                            className="custom-radio"
                                             />
-                                            {isFirstChecked ? 'โรงพยาบาลรัฐ' : 'โรงพยาบาลรัฐ'}
+                                            โรงพยาบาลรัฐ
                                         </label>
                                         <label className="radio-label">
                                             <input
@@ -394,7 +402,7 @@ const Hospital_News = () => {
                                                 onChange={handleSecondToggle}
                                                 className="custom-radio"
                                             />
-                                            {isSecondChecked ? 'โรงพยาบาลเอกชน' : 'โรงพยาบาลเอกชน'}
+                                            โรงพยาบาลเอกชน
                                         </label>
                                         </div>
                                         </div>                            
@@ -420,14 +428,14 @@ const Hospital_News = () => {
                                                         <tr key={index}>
                                                             <td>
                                                                 <input
-                                                                    style={{cursor : "pointer"}}
                                                                     type="checkbox"
-                                                                    checked={!!checkedItems[index]}
+                                                                    checked={checkedItems[index] || false}
                                                                     onChange={(e) => handleCheckboxChange(e, index)}
                                                                 />
                                                             </td>
                                                             <td>{index + 1}</td>
-                                                            <td style={{ padding: '0px 10px 0px 50px' }}>{item.Hospital_Government}</td>
+                                                            <td>{isFirstChecked ? item.Hospital_Government : isSecondChecked ? item.Hospital_Private : null}</td>
+                                                            <td>{item.token}</td>
                                                         </tr>
                                                     ))}
                                                 </tbody>
