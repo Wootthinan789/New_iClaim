@@ -129,22 +129,28 @@ const Hospital_News = () => {
 
     const handleCheckboxChange = (event, index) => {
         const isChecked = event.target.checked;
-        setCheckedItems(prevState => ({
-            ...prevState,
+        const newCheckedItems = {
+            ...checkedItems,
             [index]: isChecked
-        }));
-
+        };
+    
+        if (!isChecked) {
+            delete newCheckedItems[index];
+        }
+    
+        setCheckedItems(newCheckedItems);
+    
         if (isChecked) {
             const checkboxData = data[index];
             const { id, hospital, token } = checkboxData;
-
+    
             const selectedCheckbox = {
                 id_hospital: id,
                 token: token,
                 user_name: usernameJson.username,
                 title: hospital
             };
-
+    
             setSelectedCheckboxes(prevState => ({
                 ...prevState,
                 [index]: selectedCheckbox
@@ -156,31 +162,46 @@ const Hospital_News = () => {
                 return newState;
             });
         }
+    
+        const selectAllCheckbox = document.getElementById('selectAllCheckbox');
+        if (selectAllCheckbox) {
+            selectAllCheckbox.checked = Object.keys(newCheckedItems).length === filteredData.length;
+        }
+        console.log("newCheckedItems : ",newCheckedItems)
     };
+    
 
-    const handleSelectAll = () => {
+    const handleSelectAll = (event) => {
         if (Object.keys(checkedItems).length === filteredData.length) {
             setCheckedItems({});
             setSelectedCheckboxes({});
         } else {
             const newCheckedItems = {};
             const newSelectedCheckboxes = {};
-
-            filteredData.forEach((item, index) => {
-                newCheckedItems[index] = true;
-
-                const { id, hospital, token } = item;
-
-                newSelectedCheckboxes[index] = {
-                    id_hospital: id,
-                    token: token,
-                    user_name: usernameJson.username,
-                    title: hospital
-                };
-            });
-
+    
+            if (event.target.checked) {
+                filteredData.forEach((item, index) => {
+                    newCheckedItems[index] = true;
+                    let hospitalKey, tokenKey;
+                    if (isFirstChecked) {
+                        hospitalKey = 'Hospital_Government';
+                        tokenKey = 'Token_Government';
+                    } else if (isSecondChecked) {
+                        hospitalKey = 'Hospital_Private';
+                        tokenKey = 'Token_Private';
+                    }
+                    const { [hospitalKey]: hospital, [tokenKey]: token } = item;
+                    newSelectedCheckboxes[index] = {
+                        Hospital: hospital,
+                        Token: token,
+                        user_name: usernameJson.username,
+                    };
+                });
+            }
+    
             setCheckedItems(newCheckedItems);
             setSelectedCheckboxes(newSelectedCheckboxes);
+            console.log('Selected items:', newSelectedCheckboxes);
         }
     };
 
