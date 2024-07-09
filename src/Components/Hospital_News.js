@@ -57,11 +57,17 @@ const Hospital_News = () => {
     const handleFirstToggle = () => {
         setIsFirstChecked(true);
         setIsSecondChecked(false);
+            // Clear the checkbox states
+        setCheckedItems({});
+        setSelectedCheckboxes({});
     };
     
     const handleSecondToggle = () => {
         setIsFirstChecked(false);
         setIsSecondChecked(true);
+            // Clear the checkbox states
+        setCheckedItems({});
+        setSelectedCheckboxes({});
     };
 
     const handleHospitalNews = () => {
@@ -129,31 +135,34 @@ const Hospital_News = () => {
 
     const handleCheckboxChange = (event, index) => {
         const isChecked = event.target.checked;
+        const hospitalKey = isFirstChecked ? 'Hospital_Government' : isSecondChecked ? 'Hospital_Private' : null;
+        const tokenKey = isFirstChecked ? 'Token_Government' : isSecondChecked ? 'Token_Private' : null;
+    
+        // Ensure the index is valid
+        if (!filteredData[index]) {
+            console.error(`Invalid index: ${index}, filteredData:`, filteredData);
+            return;
+        }
+    
+        // Update checkedItems state
         const newCheckedItems = {
             ...checkedItems,
             [index]: isChecked
         };
     
-        if (!isChecked) {
-            delete newCheckedItems[index];
-        }
-    
         setCheckedItems(newCheckedItems);
     
+        // Update selectedCheckboxes state
         if (isChecked) {
-            const checkboxData = data[index];
-            const { id, hospital, token } = checkboxData;
-    
-            const selectedCheckbox = {
-                id_hospital: id,
-                token: token,
-                user_name: usernameJson.username,
-                title: hospital
-            };
+            const { [hospitalKey]: hospital, [tokenKey]: token } = filteredData[index];
     
             setSelectedCheckboxes(prevState => ({
                 ...prevState,
-                [index]: selectedCheckbox
+                [index]: {
+                    Hospital: hospital,
+                    Token: token,
+                    user_name: usernameJson.username,
+                }
             }));
         } else {
             setSelectedCheckboxes(prevState => {
@@ -163,12 +172,27 @@ const Hospital_News = () => {
             });
         }
     
-        const selectAllCheckbox = document.getElementById('selectAllCheckbox');
-        if (selectAllCheckbox) {
-            selectAllCheckbox.checked = Object.keys(newCheckedItems).length === filteredData.length;
-        }
-        console.log("newCheckedItems : ",newCheckedItems)
+        // Create an array of selected checkboxes
+        const selectedItemsArray = Object.keys(newCheckedItems)
+            .filter(idx => newCheckedItems[idx])
+            .map(idx => {
+                // Ensure the index is valid
+                if (!filteredData[idx]) {
+                    console.error(`Invalid index in array map: ${idx}, filteredData:`, filteredData);
+                    return null;
+                }
+                const { [hospitalKey]: hospital, [tokenKey]: token } = filteredData[idx];
+                return {
+                    Hospital: hospital,
+                    Token: token,
+                    user_name: usernameJson.username,
+                };
+            }).filter(item => item !== null); // Filter out any null items
+    
+        // Log the selected data
+        console.log('Selected Items Array:', selectedItemsArray);
     };
+    
     
 
     const handleSelectAll = (event) => {
