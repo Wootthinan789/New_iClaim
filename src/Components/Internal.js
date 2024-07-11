@@ -178,7 +178,7 @@ const Internal = () => {
           status: "Reject",
           user_name: usernameJson.username,
           remark: checkbox.title, // Use the checkbox title as the remark
-          data_type: "Internal"
+          data_type: "External 1"
         };
   
       await axios.post("https://rpa-apiprd.inet.co.th:443/iClaim/insert/log", logData);
@@ -252,7 +252,7 @@ const Internal = () => {
           status: "Approved",
           user_name: usernameJson.username,
           remark: checkbox.title, // Use the checkbox title as the remark
-          data_type: "Internal"
+          data_type: "External 1"
         };
       // ส่งข้อมูลเข้า log
       await axios.post("https://rpa-apiprd.inet.co.th:443/iClaim/insert/log", logData);
@@ -562,10 +562,10 @@ const handleSelectAllCheckboxChange = (event) => {
           </button>
         </div>
         <div className='Fixlocation'>
-        <button className="Dashboard-Internal-button" onClick={handleDashboardInternalClick} style={{ background: '#2D7951' }}>Internal</button>
+        <button className="Dashboard-Internal-button" onClick={handleDashboardInternalClick} style={{ background: '#2D7951' }}>External 1</button>
         </div>
         <div className='Fixlocation'>
-        <button className="Dashboard-Internal-button" onClick={handleDashboardExternalClick} >External</button>
+        <button className="Dashboard-Internal-button" onClick={handleDashboardExternalClick} >External 2</button>
         </div>
         <div className='Fixlocation'>
           <DatePicker className='Dashboard-Internal-button-date'

@@ -28,7 +28,7 @@ import File_export from './images-iclaim/file-export24.png'
 const Log = () => {
 
     const [logData, setLogData] = useState(null);
-    const [selectedType, setSelectedType] = useState('External');
+    const [selectedType, setSelectedType] = useState('External 2');
     const [loading, setLoading] = useState(true);
     const [selectedDate, setSelectedDate] = useState(new Date());
     const [, setPutDate] = useState(selectedDate.toISOString().slice(0, 10));
@@ -44,9 +44,9 @@ const Log = () => {
         const selectedValue = event.target.value;
         console.log('Selected value:', selectedValue); // เพิ่ม console.log เพื่อตรวจสอบค่าที่ถูกเลือก
         if (selectedValue === 10) {
-            setSelectedType("External");
+            setSelectedType("External 2");
         } else if (selectedValue === 20) {
-            setSelectedType("Internal");
+            setSelectedType("External 1");
         }
         console.log('Selected type:', selectedType); // เพิ่ม console.log เพื่อตรวจสอบค่า selectedType หลังจากการเปลี่ยนแปลง
     };
@@ -269,10 +269,10 @@ const Log = () => {
                     </button>
                 </div>
                 <div className='Fixlocation'>
-                    <button className="Dashboard-Internal-button" onClick={handleDashboardInternalClick} style={{lineHeight: '1'}}>Dashboard Internal</button>
+                    <button className="Dashboard-Internal-button" onClick={handleDashboardInternalClick} style={{lineHeight: '1'}}>External 1</button>
                 </div>
                 <div className='Fixlocation'>
-                    <button className="Dashboard-Internal-button" onClick={handleDashboardExternalClick} style={{lineHeight: '1'}} >Dashboard External</button>
+                    <button className="Dashboard-Internal-button" onClick={handleDashboardExternalClick} style={{lineHeight: '1'}} >External 2</button>
                 </div>
                 <div className='Fixlocation'>
                     <DatePicker className='Dashboard-Internal-button-date' selected={selectedDate} onChange={handleDateChange} dateFormat="dd/MM/yyyy" />
@@ -304,7 +304,7 @@ const Log = () => {
                                 fontSize: isSmallScreen ? '6px' : '16px',
                                 margin: '0',
                             }}
-                            >Dashboard External</MenuItem>
+                            >Dashboard External 2</MenuItem>
                             <MenuItem value={20}
                             style={{
                                 fontFamily: "'Kanit', sans-serif",
@@ -313,7 +313,7 @@ const Log = () => {
                                 fontSize: isSmallScreen ? '6px' : '16px',
                                 margin: '0',
                             }}
-                            >Dashboard Internal</MenuItem>
+                            >Dashboard External 1</MenuItem>
                         </Select>
                     </FormControl>
                 </div>

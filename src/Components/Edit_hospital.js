@@ -306,10 +306,10 @@ const Edit_hospital = () => {
             </button>
           </div>
           <div className='Fixlocation'>
-            <button className="Dashboard-Internal-button" onClick={handleDashboardInternalClick} >Dashboard Internal</button>
+            <button className="Dashboard-Internal-button" onClick={handleDashboardInternalClick} >Dashboard External 1</button>
           </div>
           <div className='Fixlocation'>
-            <button className="Dashboard-Internal-button" onClick={handleDashboardExternalClick} >Dashboard External</button>
+            <button className="Dashboard-Internal-button" onClick={handleDashboardExternalClick} >Dashboard External 2</button>
           </div>
         </div>
         <Card className='cardStyle_EditHospital' style={{ backgroundColor: '#D9D9D9', boxShadow: 'none', borderRadius: '15px' }}>

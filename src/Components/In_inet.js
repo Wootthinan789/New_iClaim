@@ -274,10 +274,10 @@ const Ininet = () => {
                     </button>
                 </div>
                 <div className='Fixlocation'>
-                    <button className="Dashboard-Internal-button" onClick={handleDashboardInternalClick} style={{ lineHeight: '1' }}>Dashboard Internal</button>
+                    <button className="Dashboard-Internal-button" onClick={handleDashboardInternalClick} style={{ lineHeight: '1' }}>Dashboard External 1</button>
                 </div>
                 <div className='Fixlocation'>
-                    <button className="Dashboard-Internal-button" onClick={handleDashboardExternalClick} style={{ lineHeight: '1' }} >Dashboard External</button>
+                    <button className="Dashboard-Internal-button" onClick={handleDashboardExternalClick} style={{ lineHeight: '1' }} >Dashboard External 2</button>
                 </div>
             </div>
             <Card className='cardStyle_Log' style={{ backgroundColor: '#D9D9D9', boxShadow: 'none', borderRadius: '15px' }}>

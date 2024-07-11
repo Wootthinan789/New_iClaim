@@ -124,6 +124,9 @@ const Hospital_News = () => {
                 const response = await axios.get(endpoint);
                 setData(response.data);
                 setLoading(false);
+    
+                // Log the response data
+                console.log(`Data from ${endpoint}:`, response.data);
             } catch (error) {
                 console.error('Error fetching data:', error);
                 setLoading(false);
@@ -133,67 +136,41 @@ const Hospital_News = () => {
         fetchData();
     }, [isFirstChecked, isSecondChecked]);
 
-    const handleCheckboxChange = (event, index) => {
+    const handleCheckboxChange = (event, item) => {
         const isChecked = event.target.checked;
-        const hospitalKey = isFirstChecked ? 'Hospital_Government' : isSecondChecked ? 'Hospital_Private' : null;
-        const tokenKey = isFirstChecked ? 'Token_Government' : isSecondChecked ? 'Token_Private' : null;
+        const hospitalKey = isFirstChecked ? item.Hospital_Government : item.Hospital_Private;
+        const updatedCheckedItems = { ...checkedItems, [hospitalKey]: isChecked };
     
-        // Ensure the index is valid
-        if (!filteredData[index]) {
-            console.error(`Invalid index: ${index}, filteredData:`, filteredData);
-            return;
+        let hospitalKeyField, tokenKeyField;
+        if (isFirstChecked) {
+            hospitalKeyField = 'Hospital_Government';
+            tokenKeyField = 'Token_Government';
+        } else if (isSecondChecked) {
+            hospitalKeyField = 'Hospital_Private';
+            tokenKeyField = 'Token_Private';
         }
     
-        // Update checkedItems state
-        const newCheckedItems = {
-            ...checkedItems,
-            [index]: isChecked
-        };
+        const selectedItem = item;
+        const { [hospitalKeyField]: hospital, [tokenKeyField]: token } = selectedItem;
     
-        setCheckedItems(newCheckedItems);
+        const updatedSelectedCheckboxes = { ...selectedCheckboxes };
     
-        // Update selectedCheckboxes state
-        if (isChecked) {
-            const { [hospitalKey]: hospital, [tokenKey]: token } = filteredData[index];
-    
-            setSelectedCheckboxes(prevState => ({
-                ...prevState,
-                [index]: {
-                    Hospital: hospital,
-                    Token: token,
-                    user_name: usernameJson.username,
-                }
-            }));
-        } else {
-            setSelectedCheckboxes(prevState => {
-                const newState = { ...prevState };
-                delete newState[index];
-                return newState;
-            });
+        // Check if this checkbox was previously selected
+        if (isChecked && !updatedSelectedCheckboxes[hospitalKey]) {
+            updatedSelectedCheckboxes[hospitalKey] = {
+                Hospital: hospital,
+                Token: token,
+                user_name: usernameJson.username,
+            };
+        } else if (!isChecked && updatedSelectedCheckboxes[hospitalKey]) {
+            delete updatedSelectedCheckboxes[hospitalKey];
         }
     
-        // Create an array of selected checkboxes
-        const selectedItemsArray = Object.keys(newCheckedItems)
-            .filter(idx => newCheckedItems[idx])
-            .map(idx => {
-                // Ensure the index is valid
-                if (!filteredData[idx]) {
-                    console.error(`Invalid index in array map: ${idx}, filteredData:`, filteredData);
-                    return null;
-                }
-                const { [hospitalKey]: hospital, [tokenKey]: token } = filteredData[idx];
-                return {
-                    Hospital: hospital,
-                    Token: token,
-                    user_name: usernameJson.username,
-                };
-            }).filter(item => item !== null); // Filter out any null items
+        setCheckedItems(updatedCheckedItems);
+        setSelectedCheckboxes(updatedSelectedCheckboxes);
     
-        // Log the selected data
-        console.log('Selected Items Array:', selectedItemsArray);
+        console.log('Current selected checkboxes:', updatedSelectedCheckboxes);
     };
-    
-    
 
     const handleSelectAll = (event) => {
         if (Object.keys(checkedItems).length === filteredData.length) {
@@ -204,18 +181,19 @@ const Hospital_News = () => {
             const newSelectedCheckboxes = {};
     
             if (event.target.checked) {
-                filteredData.forEach((item, index) => {
-                    newCheckedItems[index] = true;
-                    let hospitalKey, tokenKey;
+                filteredData.forEach((item) => {
+                    const hospitalKey = isFirstChecked ? item.Hospital_Government : item.Hospital_Private;
+                    newCheckedItems[hospitalKey] = true;
+                    let hospitalKeyField, tokenKeyField;
                     if (isFirstChecked) {
-                        hospitalKey = 'Hospital_Government';
-                        tokenKey = 'Token_Government';
+                        hospitalKeyField = 'Hospital_Government';
+                        tokenKeyField = 'Token_Government';
                     } else if (isSecondChecked) {
-                        hospitalKey = 'Hospital_Private';
-                        tokenKey = 'Token_Private';
+                        hospitalKeyField = 'Hospital_Private';
+                        tokenKeyField = 'Token_Private';
                     }
-                    const { [hospitalKey]: hospital, [tokenKey]: token } = item;
-                    newSelectedCheckboxes[index] = {
+                    const { [hospitalKeyField]: hospital, [tokenKeyField]: token } = item;
+                    newSelectedCheckboxes[hospitalKey] = {
                         Hospital: hospital,
                         Token: token,
                         user_name: usernameJson.username,
@@ -236,7 +214,7 @@ const Hospital_News = () => {
     
         return governmentHospital.includes(searchLower) || privateHospital.includes(searchLower);
     });
-    
+    // console.log(filteredData)
 
     const handleSendMessage = async () => {
         try {
@@ -469,13 +447,13 @@ const Hospital_News = () => {
                                                     </tr>
                                                 </thead>
                                                 <tbody>
-                                                    {filteredData.map((item, index) => (
-                                                        <tr key={index}>
+                                                    {filteredData.map((item,index) => (
+                                                        <tr key={`${item.hospital}-${index}`}>
                                                             <td>
                                                                 <input
                                                                     type="checkbox"
-                                                                    checked={checkedItems[index] || false}
-                                                                    onChange={(e) => handleCheckboxChange(e, index)}
+                                                                    checked={checkedItems[isFirstChecked ? item.Hospital_Government : item.Hospital_Private] || false}
+                                                                    onChange={(event) => handleCheckboxChange(event, item)}
                                                                 />
                                                             </td>
                                                             <td>{index + 1}</td>
