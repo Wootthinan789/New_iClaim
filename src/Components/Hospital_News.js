@@ -14,15 +14,15 @@ import MenuItem from '@mui/material/MenuItem';
 import KeyboardArrowDownIcon from '@mui/icons-material/KeyboardArrowDown';
 import Card from '@mui/material/Card';
 import CardContent from '@mui/material/CardContent';
-import { useMediaQuery, useTheme, TextField, Button } from '@mui/material';
 import 'react-datepicker/dist/react-datepicker.css';
 import logo from './images-iclaim/download (2).png';
 import employee from './images-iclaim/employee.png';
 import HomeIcon from './images-iclaim/home-regular-60.png';
 import { useNavigate } from 'react-router-dom';
 import DeleteIcon from '@mui/icons-material/Delete';
-
-import { Dropdown, ButtonToolbar } from 'rsuite';
+import VisibilityIcon from '@mui/icons-material/Visibility';
+import { useMediaQuery, useTheme, TextField, Button, Dialog, DialogContent, DialogActions } from '@mui/material';
+import CloseIcon from '@mui/icons-material/Close';
 
 const Hospital_News = () => {
     const [anchorElUser, setAnchorElUser] = useState(null);
@@ -41,6 +41,8 @@ const Hospital_News = () => {
     const [charCount, setCharCount] = useState(0); // State เก็บจำนวนอักษรที่ป้อนเข้าไป
     const [fileNames, setFileNames] = useState([]);
 
+    const [previewImage, setPreviewImage] = useState(null); // State to manage the image preview
+    const [isPreviewOpen, setIsPreviewOpen] = useState(false); // State to manage the preview dialog open/close
     const [isFirstChecked, setIsFirstChecked] = useState(true);
     const [isSecondChecked, setIsSecondChecked] = useState(false);
 
@@ -224,7 +226,7 @@ const Hospital_News = () => {
                 selectedHospitals: Object.values(selectedCheckboxes)
             };
     
-            const messageResponse = await axios.post('http://localhost:443/api/New/message', messagePayload, {
+            const messageResponse = await axios.post('http://localhost:443/send/Message/New', messagePayload, {
                 headers: {
                     'Content-Type': 'application/json',
                 },
@@ -305,6 +307,19 @@ const Hospital_News = () => {
     
         setAttachedFiles(newAttachedFiles);
         setFileNames(newFileNames);
+    };
+    const handlePreviewImage = (file) => {
+        const reader = new FileReader();
+        reader.onload = (e) => {
+            setPreviewImage(e.target.result);
+            setIsPreviewOpen(true);
+        };
+        reader.readAsDataURL(file);
+    };
+
+    const handleClosePreview = () => {
+        setIsPreviewOpen(false);
+        setPreviewImage(null);
     };
 
     return (
@@ -516,9 +531,14 @@ const Hospital_News = () => {
                                     <Typography style={{ fontFamily: "'Kanit', sans-serif", fontSize: '14px' }}>
                                         {index + 1}. {fileName}
                                     </Typography>
+                                    <div>
+                                    <IconButton onClick={() => handlePreviewImage(attachedFiles[index])}>
+                                        <VisibilityIcon />
+                                    </IconButton>
                                     <IconButton onClick={() => handleRemoveFile(index)}>
                                         <DeleteIcon />
                                     </IconButton>
+                                    </div>
                                 </div>
                                 ))}
                                 </div>
@@ -598,6 +618,16 @@ const Hospital_News = () => {
                     </div>
                 </CardContent>
             </Card>
+            <Dialog open={isPreviewOpen} onClose={handleClosePreview} maxWidth="lg" fullWidth>
+                <DialogActions>
+                    <IconButton edge="end" color="inherit" onClick={handleClosePreview} aria-label="close">
+                        <CloseIcon />
+                    </IconButton>
+                </DialogActions>
+                <DialogContent >
+                    {previewImage && <img src={previewImage} alt="Preview" style={{ maxWidth: '100%', maxHeight: '100%' }} />}
+                </DialogContent>
+            </Dialog>
         </div>
     );
 };
