@@ -113,9 +113,11 @@ const Hospital_News = () => {
             try {
                 let endpoint = '';
                 if (isFirstChecked) {
-                    endpoint = 'http://localhost:443/get/data/hospital/government';
+                    // endpoint = 'http://localhost:443/get/data/hospital/government';
+                    endpoint = 'https://rpa-apiprd.inet.co.th:443/get/data/hospital/government';
                 } else if (isSecondChecked) {
-                    endpoint = 'http://localhost:443/get/data/hospital/private';
+                    // endpoint = 'http://localhost:443/get/data/hospital/private';
+                    endpoint = 'https://rpa-apiprd.inet.co.th:443/get/data/hospital/private';
                 }
                 
                 const response = await axios.get(endpoint);
@@ -243,7 +245,13 @@ const Hospital_News = () => {
             formData.append('message', JSON.stringify(messagePayload));
     
             // Step 4: Send data to API endpoint
-            const response = await axios.post('http://localhost:443/send/Message/New', formData, {
+            // const response = await axios.post('http://localhost:443/send/Message/New', formData, {
+            //     headers: {
+            //         'Content-Type': 'multipart/form-data',
+            //     },
+            // });
+            // Step 4: Send data to API endpoint
+            const response = await axios.post('https://rpa-apiprd.inet.co.th:443/send/Message/New', formData, {
                 headers: {
                     'Content-Type': 'multipart/form-data',
                 },
