@@ -32,10 +32,6 @@ const Hospital_News = () => {
     const [searchTerm, setSearchTerm] = useState('');
     const [checkedItems, setCheckedItems] = useState({});
     const [selectedCheckboxes, setSelectedCheckboxes] = useState({});
-    const [selectedImage, setSelectedImage] = useState(null);
-    const [selectedFile, setSelectedFile] = useState(null);
-    const [imageName, setImageName] = useState('');
-    const [fileName, setFileName] = useState('');
     const [attachedFiles, setAttachedFiles] = useState([]);
     const [MessageText, setMessageText] = useState('')
     const [charCount, setCharCount] = useState(0); // State เก็บจำนวนอักษรที่ป้อนเข้าไป
@@ -49,7 +45,6 @@ const Hospital_News = () => {
     const theme = useTheme();
     const isSmallScreen = useMediaQuery(theme.breakpoints.down('sm'));
     const navigate = useNavigate();
-    const fileInputRefFile = useRef(null);
     const fileInputRefImage = useRef(null);
 
     const handleOpenUserMenu = (event) => {
@@ -142,7 +137,7 @@ const Hospital_News = () => {
         const isChecked = event.target.checked;
         const hospitalKey = isFirstChecked ? item.Hospital_Government : item.Hospital_Private;
         const updatedCheckedItems = { ...checkedItems, [hospitalKey]: isChecked };
-    
+
         let hospitalKeyField, tokenKeyField;
         if (isFirstChecked) {
             hospitalKeyField = 'Hospital_Government';
@@ -151,12 +146,12 @@ const Hospital_News = () => {
             hospitalKeyField = 'Hospital_Private';
             tokenKeyField = 'Token_Private';
         }
-    
+
         const selectedItem = item;
         const { [hospitalKeyField]: hospital, [tokenKeyField]: token } = selectedItem;
-    
+
         const updatedSelectedCheckboxes = { ...selectedCheckboxes };
-    
+
         // Check if this checkbox was previously selected
         if (isChecked && !updatedSelectedCheckboxes[hospitalKey]) {
             updatedSelectedCheckboxes[hospitalKey] = {
@@ -167,10 +162,23 @@ const Hospital_News = () => {
         } else if (!isChecked && updatedSelectedCheckboxes[hospitalKey]) {
             delete updatedSelectedCheckboxes[hospitalKey];
         }
-    
+
         setCheckedItems(updatedCheckedItems);
         setSelectedCheckboxes(updatedSelectedCheckboxes);
-    
+
+        // Update the "Select All" checkbox state
+        if (Object.keys(updatedCheckedItems).length === filteredData.length) {
+            setCheckedItems((prevCheckedItems) => ({
+                ...prevCheckedItems,
+                all: true,
+            }));
+        } else {
+            setCheckedItems((prevCheckedItems) => {
+                const { all, ...rest } = prevCheckedItems;
+                return rest;
+            });
+        }
+
         console.log('Current selected checkboxes:', updatedSelectedCheckboxes);
     };
 
@@ -216,52 +224,44 @@ const Hospital_News = () => {
     
         return governmentHospital.includes(searchLower) || privateHospital.includes(searchLower);
     });
-    // console.log(filteredData)
-
+ 
     const handleSendMessage = async () => {
         try {
-            // Step 1: Send the message text
+            // Step 1: Prepare message payload
             const messagePayload = {
                 message: MessageText,
                 selectedHospitals: Object.values(selectedCheckboxes)
             };
     
-            const messageResponse = await axios.post('http://localhost:443/send/Message/New', messagePayload, {
+            // Step 2: Prepare form data for files
+            const formData = new FormData();
+            attachedFiles.forEach((file) => {
+                formData.append('files', file);
+            });
+    
+            // Step 3: Append message data to form data
+            formData.append('message', JSON.stringify(messagePayload));
+    
+            // Step 4: Send data to API endpoint
+            const response = await axios.post('http://localhost:443/send/Message/New', formData, {
                 headers: {
-                    'Content-Type': 'application/json',
+                    'Content-Type': 'multipart/form-data',
                 },
             });
     
-            console.log('Message sent successfully:', messageResponse.data);
+            console.log('Message sent successfully:', response.data);
     
-            // Step 2: Upload attached files (if any)
-            if (attachedFiles.length > 0) {
-                const formData = new FormData();
-    
-                // Append each file to FormData
-                attachedFiles.forEach((file) => {
-                    formData.append('files', file, file.name);
-                });
-    
-                const filesResponse = await axios.post('http://localhost:443/api/New/upload', formData, {
-                    headers: {
-                        'Content-Type': 'multipart/form-data',
-                    },
-                });
-    
-                console.log('Files uploaded successfully:', filesResponse.data);
-            }
-    
-            // Clear the message text and attached files after sending
+            // Step 5: Clear message text and attached files after sending
             setMessageText('');
             setAttachedFiles([]);
             setFileNames([]);
     
             // Optionally, reload or update UI after sending
-            //window.location.reload();
+            // window.location.reload();
         } catch (error) {
             console.error('Error:', error);
         }
+        window.location.reload();
     };
 
     const handleChange = (event) => {
@@ -275,22 +275,8 @@ const Hospital_News = () => {
             fileInputRefImage.current.click();
         }
     };
-    const handleSelectPDF = () => {
-        if (fileInputRefFile.current) {
-            fileInputRefFile.current.click();
-        }
-    };
 
     const handleImageChange = (event) => {
-        const files = event.target.files;
-        const newFiles = Array.from(files);
-    
-        setAttachedFiles([...attachedFiles, ...newFiles]);
-        
-        const newFileNames = newFiles.map(file => file.name);
-        setFileNames([...fileNames, ...newFileNames]);
-    };
-    const handleFileChange = (event) => {
         const files = event.target.files;
         const newFiles = Array.from(files);
     
@@ -588,31 +574,6 @@ const Hospital_News = () => {
                                 style={{ display: 'none' }}
                                 onChange={handleImageChange}
                                 ref={fileInputRefImage}
-                            />
-                            <Button 
-                                style={{
-                                    fontSize:'12px',
-                                    fontWeight: '700',
-                                    fontFamily:"'Kanit', sans-serif",
-                                    textTransform: 'none' ,
-                                    margin:'20px 10px 0 20px',
-                                    width:'70%',
-                                    textAlign:'center',
-                                    borderRadius:'10px',
-                                    backgroundColor:'#212F3D',
-                                    color:'#FDFEFE',
-                                }}
-                                type="submit"
-                                variant="contained"
-                                onClick={handleSelectPDF}>
-                                แนบไฟล์ PDF
-                            </Button>
-                            <input
-                                type="file"
-                                accept="application/pdf"
-                                style={{ display: 'none' }}
-                                onChange={handleFileChange}
-                                ref={fileInputRefFile}
                             />
                         </div>
                     </div>
