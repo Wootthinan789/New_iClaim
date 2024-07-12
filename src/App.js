@@ -74,7 +74,7 @@ const App = () =>{
           <Route
           path='/Hospital/News'
           element={
-            (role === "superadmin" || role === "SuperAdmin") ? (
+            (role === "admin" || role === "Admin" || role === "SuperAdmin" || role === "superadmin") ? (
               <Hospital_News/>
             ) : (
               <HospitalEditNotAllowed/>
