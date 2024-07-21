@@ -340,9 +340,9 @@ const Edit_hospital = () => {
                     <tr key={index}>
                       <td className='data_Style'>{item.hospital}</td>
                       <td className='data_Style'>{item.token}</td>
-                      <td className='data_Style'>
+                      {/* <td className='data_Style'>
                         <button className='button_Edit' onClick={() => handleOpenEditDialog(item)}>แก้ไข</button>
-                      </td>
+                      </td> */}
                       <td className='data_Style'>
                         <button className='button_Delete' onClick={() => handleOpenDeleteConfirmationDialog(item)}>ลบ</button>
                       </td>
