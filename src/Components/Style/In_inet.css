@@ -1,8 +1,31 @@
+.custom-checkbox-internal{
+  background-color: #ffffff;
+  border-radius: 50%;
+}
+.custom-checkbox-internal-1{
+  display: flex;
+  align-items: flex-start;
+  justify-content: center;
+  height: 60%;
+}
+.selectAllContainer {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-right: 75%;
+  padding: 10px 2px 2px 2px;
+}
+
 .container-approve-reject-inet {
     display: flex;
     justify-content: center;
     align-items: center;
     height: 100%;
+}
+
+.CardScrallber-internal{
+  max-height: 450px;
+  overflow-y: auto;
 }
 
 .button-container {

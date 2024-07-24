@@ -245,17 +245,17 @@ const Hospital_News = () => {
             formData.append('message', JSON.stringify(messagePayload));
     
             // Step 4: Send data to API endpoint
-            // const response = await axios.post('http://localhost:443/send/Message/New', formData, {
-            //     headers: {
-            //         'Content-Type': 'multipart/form-data',
-            //     },
-            // });
-            // Step 4: Send data to API endpoint
-            const response = await axios.post('https://rpa-apiprd.inet.co.th:443/send/Message/New', formData, {
+            const response = await axios.post('http://localhost:443/send/Message/New', formData, {
                 headers: {
                     'Content-Type': 'multipart/form-data',
                 },
             });
+            // Step 4: Send data to API endpoint
+            // const response = await axios.post('https://rpa-apiprd.inet.co.th:443/send/Message/New', formData, {
+            //     headers: {
+            //         'Content-Type': 'multipart/form-data',
+            //     },
+            // });
     
             console.log('Message sent successfully:', response.data);
     
