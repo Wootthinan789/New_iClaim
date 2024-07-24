@@ -21,9 +21,8 @@ import HomeIcon from './images-iclaim/home-regular-60.png';
 import { useNavigate } from 'react-router-dom';
 import DeleteIcon from '@mui/icons-material/Delete';
 import VisibilityIcon from '@mui/icons-material/Visibility';
-import { useMediaQuery, useTheme, TextField, Button, Dialog, DialogContent, DialogActions } from '@mui/material';
+import { useMediaQuery, useTheme, TextField, Button, Dialog, DialogContent, DialogActions ,CircularProgress} from '@mui/material';
 import CloseIcon from '@mui/icons-material/Close';
-
 const Hospital_News = () => {
     const [anchorElUser, setAnchorElUser] = useState(null);
     const usernameJson = JSON.parse(localStorage.getItem('username'));
@@ -228,6 +227,7 @@ const Hospital_News = () => {
     });
  
     const handleSendMessage = async () => {
+        setLoading(true);
         try {
             // Step 1: Prepare message payload
             const messagePayload = {
@@ -555,9 +555,29 @@ const Hospital_News = () => {
                                 }}
                                 type="submit"
                                 variant="contained"
-                                onClick={handleSendMessage}>
-                                ส่งข้อความ
+                                onClick={handleSendMessage}
+                                //disabled={loading} // ปิดปุ่มเมื่อโหลด
+                                >
+                               ส่งข้อความ
                             </Button>
+                            {loading && (
+                                <Box 
+                                    sx={{
+                                        display: 'flex',
+                                        alignItems: 'center',
+                                        justifyContent: 'center',
+                                        position: 'fixed',
+                                        top: 0,
+                                        left: 0,
+                                        right: 0,
+                                        bottom: 0,
+                                        backgroundColor: 'rgba(0, 0, 0, 0.5)',
+                                        zIndex: 9999,
+                                    }}
+                                >
+                                    <CircularProgress size={60} style={{ color: '#FDFEFE' }} />
+                                </Box>
+                            )}
                             <Button 
                                 style={{
                                     fontSize:'12px',
