@@ -1,8 +1,7 @@
 import React, { useState, useEffect } from 'react';
-import './Style/In_inet.css';
+import './Style/In_inet.css'
 import axios from "axios";
 import AppBar from '@mui/material/AppBar';
-import Checkbox from '@mui/material/Checkbox';
 import Box from '@mui/material/Box';
 import Toolbar from '@mui/material/Toolbar';
 import IconButton from '@mui/material/IconButton';
@@ -17,39 +16,112 @@ import CardContent from '@mui/material/CardContent';
 import { useMediaQuery, useTheme } from '@mui/material';
 import 'react-datepicker/dist/react-datepicker.css';
 import logo from './images-iclaim/download (2).png';
+import Modal from '@mui/material/Modal';
 import Button from '@mui/material/Button';
-import employee from './images-iclaim/employee.png';
+import employee from './images-iclaim/employee.png'
 import HomeIcon from './images-iclaim/home-regular-60.png';
 import { useNavigate } from 'react-router-dom';
 import SuccessIcon from './images-iclaim/checked.png';
 import swal from 'sweetalert';
-import DatePicker from 'react-datepicker';
-import 'react-datepicker/dist/react-datepicker.css';
-import RadioButtonUncheckedIcon from '@mui/icons-material/RadioButtonUnchecked';
-import CheckCircleIcon from '@mui/icons-material/CheckCircle';
 
 const Ininet = () => {
+
     const [anchorElUser, setAnchorElUser] = useState(null);
     const [notification, setNotification] = useState({ message: '', show: false });
-    const [images, setImages] = useState([]);
-    const [selectedImages, setSelectedImages] = useState(new Set());
-    const [selectAll, setSelectAll] = useState(false);
+    const [darkBackground, setDarkBackground] = useState(false);
     const usernameJson = JSON.parse(localStorage.getItem('username'));
-    const [selectedDate, setSelectedDate] = useState(new Date());
-    const [putdate, setPutDate] = useState(selectedDate.toISOString().slice(0, 10));
-    const [totalItems, setTotalItems] = useState(0);
+    const [openModal, setOpenModal] = useState(false);
+    const [rejectReason, setRejectReason] = useState('');
 
     const theme = useTheme();
     const isSmallScreen = useMediaQuery(theme.breakpoints.down('sm'));
     const navigate = useNavigate();
 
+    const handleApproveButtonClick = async () => {
+        setNotification(swal({
+            text: 'ส่ง report Success',
+            icon: 'success',
+            buttons: false,
+            show: true
+        }));
+        setDarkBackground(true);
+
+        try {
+            //await axios.post("http://203.154.39.190:5000/rpa/iclaim/send-image/Internal")
+            await axios.post("https://rpa-apiprd.inet.co.th:443/rpa/iclaim/sendImageInternal")
+        } catch (error) {
+            console.error('Error:', error.message);
+        }
+
+        // Clear selected checkboxes and hide notification after 2.5 seconds
+        setTimeout(() => {
+        }, 2500);
+        setTimeout(() => {
+            window.location.reload(); // Reload the page
+        }, 2500);
+    };
+
+    const handleRejectButtonClick = () => {
+        setOpenModal(true);
+    };
+
+    const handleCloseModal = () => {
+        setRejectReason('');
+        setOpenModal(false);
+    };
+
+    const handleRejectConfirm = async () => {
+        console.log(rejectReason)
+        const data = {
+            message: rejectReason,
+        };
+        try {
+            // await axios.post("http://203.154.39.190:5000/rpa/iclaim/reject-image/Internal", data);
+            await axios.post("https://rpa-apiprd.inet.co.th:443/rpa/iclaim/RejectImageInternal", data);
+            setRejectReason(''); // Clear the textarea
+        } catch (error) {
+            console.error('Error:', error.message);
+        }
+        setOpenModal(false);
+    };
+
+    useEffect(() => {
+        let lastActivityTime = new Date().getTime();
+
+        const checkInactivity = () => {
+            const currentTime = new Date().getTime();
+            const inactiveTime = currentTime - lastActivityTime;
+            const twoMinutes = 10 * 60 * 1000; // 10 minutes in milliseconds
+
+            if (inactiveTime > twoMinutes) {
+                // Log out if inactive for more than 10 minutes
+                handleLogout();
+            }
+        };
+        const handleActivity = () => {
+            lastActivityTime = new Date().getTime();
+        };
+
+        const activityInterval = setInterval(checkInactivity, 60000); // Check every minute for inactivity
+
+        // Listen for user activity events
+        window.addEventListener('mousemove', handleActivity);
+        window.addEventListener('keydown', handleActivity);
+
+        return () => {
+            clearInterval(activityInterval);
+            window.removeEventListener('mousemove', handleActivity);
+            window.removeEventListener('keydown', handleActivity);
+        };
+    }, []);
+
     const handleDashboardInternalClick = () => {
-        navigate('/Dashboard/Internal');
+        navigate('/Dashboard/Internal')
         window.location.reload();
     };
 
     const handleDashboardExternalClick = () => {
-        navigate('/Dashboard/External');
+        navigate('/Dashboard/External')
         window.location.reload();
     };
 
@@ -58,64 +130,32 @@ const Ininet = () => {
     };
 
     const handleHospitalNews = () => {
-        navigate('/Hospital/News');
+        navigate('/Hospital/News')
         window.location.reload();
-    };
+      }
 
     const handleEdithospitalClick = () => {
-        navigate('/Edit/Hospital');
+        navigate('/Edit/Hospital')
         window.location.reload();
     };
 
     const handleLogClick = () => {
-        navigate('/Log');
+        navigate('/Log')
     };
 
     const handleInternaliNetClick = () => {
-        navigate('/Internal/inet');
+        navigate('/Internal/inet')
         window.location.reload();
-    };
+    }
 
     const handleSetPermissions = () => {
-        navigate('/Set/Permission');
+        navigate('/Set/Permission')
         window.location.reload();
-    };
+    }
 
     const handleCloseUserMenu = () => {
         setAnchorElUser(null);
     };
-
-    useEffect(() => {
-        let lastActivityTime = new Date().getTime();
-    
-        const checkInactivity = () => {
-          const currentTime = new Date().getTime();
-          const inactiveTime = currentTime - lastActivityTime;
-          const twoMinutes = 10 * 60 * 1000; // 10 minutes in milliseconds
-    
-          if (inactiveTime > twoMinutes) {
-            // Log out if inactive for more than 10 minutes
-            handleLogout();
-          }
-        };
-    
-        const handleActivity = () => {
-          lastActivityTime = new Date().getTime();
-        };
-    
-        const activityInterval = setInterval(checkInactivity, 60000); // Check every minute for inactivity
-    
-        // Listen for user activity events
-        window.addEventListener('mousemove', handleActivity);
-        window.addEventListener('keydown', handleActivity);
-    
-        return () => {
-          clearInterval(activityInterval);
-          window.removeEventListener('mousemove', handleActivity);
-          window.removeEventListener('keydown', handleActivity);
-        };
-      }, []);
-    
 
     const handleLogout = () => {
         localStorage.removeItem("access_token");
@@ -127,92 +167,12 @@ const Ininet = () => {
     };
 
     const handleReload = () => {
-        navigate('/Dashboard/External');
+        navigate('/Dashboard/External')
     };
-
-    const handleDateChange = (date) => {
-        setSelectedDate(date);
-        const formattedDate = date.toISOString().slice(0, 10);
-        setPutDate(formattedDate);
-        console.log("Selected date:", formattedDate);
-
-        // Format the date for the API parameter
-        const apiDate = `${date.getDate().toString().padStart(2, '0')}${(date.getMonth() + 1).toString().padStart(2, '0')}${date.getFullYear()}`;
-
-        // Make the API call
-        axios.get('https://rpa-apiprd.inet.co.th/iClaim/get/img', {
-            params: {
-                date_on: apiDate,
-                id_process: 'Src_000001'
-            }
-        })
-        .then(response => {
-            console.log("API response:", response.data);
-            setImages(response.data); // Update state with images data
-            setTotalItems(response.data.length);
-        })
-        .catch(error => {
-            console.error("Error fetching data from API:", error);
-        });
-    };
-
-    useEffect(() => {
-        const currentDate = new Date();
-        const previousDay = new Date(currentDate);
-        previousDay.setDate(currentDate.getDate() - 1);
-
-        setSelectedDate(previousDay);
-        const formattedDate = previousDay.toISOString().slice(0, 10);
-        setPutDate(formattedDate);
-        console.log("Initial date:", previousDay.toISOString().slice(0, 10));
-
-        // Format the date for the API parameter
-        const apiDate = `${previousDay.getDate().toString().padStart(2, '0')}${(previousDay.getMonth() + 1).toString().padStart(2, '0')}${previousDay.getFullYear()}`;
-
-        // Make the API call
-        axios.get('https://rpa-apiprd.inet.co.th/iClaim/get/img', {
-            params: {
-                date_on: apiDate,
-                id_process: 'Src_000001'
-            }
-        })
-        .then(response => {
-            console.log("API response:", response.data);
-            setImages(response.data); // Update state with images data
-            setTotalItems(response.data.length);
-        })
-        .catch(error => {
-            console.error("Error fetching data from API:", error);
-        });
-    }, []);
-
-    const handleCheckboxChange = (doc_id) => {
-        setSelectedImages(prev => {
-            const updated = new Set(prev);
-            if (updated.has(doc_id)) {
-                updated.delete(doc_id);
-            } else {
-                updated.add(doc_id);
-            }
-            return updated;
-        });
-    };
-
-    const handleSelectAllChange = () => {
-        if (selectAll) {
-            setSelectedImages(new Set());
-        } else {
-            const allDocIds = new Set(images.map(item => item.doc_id));
-            setSelectedImages(allDocIds);
-        }
-        setSelectAll(!selectAll);
-    };
-
-    const selectedCount = selectedImages.size;
 
     return (
         <div className='containerStype'>
-            <AppBar position="static" className='appBarStyle' style={{ backgroundColor: 'white', boxShadow: 'none' }}>
+            <AppBar position="static" className='appBarStyle' style={{ backgroundColor: 'white', boxShadow: 'none', }}>
                 <Toolbar>
                     <Box className='BoxStyle'>
                         <img src={logo} alt="Logo" className='logoStyle' />
@@ -256,7 +216,7 @@ const Ininet = () => {
                                 },
                             }}
                         >
-                            {['กำหนดสิทธิ์', 'แก้ไขโรงพยาบาล', 'Log', 'Internal INET', 'ข่าวสารโรงพยาบาล', 'ออกจากระบบ'].map((setting) => (
+                            {['กำหนดสิทธิ์', 'แก้ไขโรงพยาบาล', 'Log', 'Internal INET','ข่าวสารโรงพยาบาล', 'ออกจากระบบ'].map((setting) => (
                                 <MenuItem key={setting} style={{ padding: isSmallScreen ? '0 5px' : '5px 5px' }} onClick={setting === 'ออกจากระบบ' ? handleLogout : setting === 'แก้ไขโรงพยาบาล' ? handleEdithospitalClick : setting === 'กำหนดสิทธิ์' ? handleSetPermissions : setting === 'Log' ? handleLogClick : setting === 'Internal INET' ? handleInternaliNetClick : setting === 'ข่าวสารโรงพยาบาล' ? handleHospitalNews : null}>
                                     <Typography style={{ fontFamily: "'Kanit', sans-serif", padding: isSmallScreen ? '0 12px' : '0 10px', fontSize: isSmallScreen ? '8px' : '16px', margin: isSmallScreen ? '1px 0' : '0 0' }}>
                                         {setting}
@@ -267,6 +227,40 @@ const Ininet = () => {
                     </Box>
                 </Toolbar>
             </AppBar>
+            <Modal
+                open={openModal}
+                onClose={handleCloseModal}
+                aria-labelledby="modal-modal-title"
+                aria-describedby="modal-modal-description"
+            >
+                <div className="modalStyle-inet">
+                    <div className="contentContainer-inet">
+                        <textarea
+                            placeholder="เพิ่มรายละเอียด" // Add placeholder text
+                            className="rejectReasonInput_External-inet"
+                            style={{ fontFamily: "'Kanit', sans-serif" }}
+                            value={rejectReason} // Set the value to the state variable
+                            onChange={(e) => setRejectReason(e.target.value)} // Update state on change
+                        />
+                    </div>
+                    <div className="buttonContainer">
+                        <Button
+                            variant="contained"
+                            style={{ backgroundColor: '#1095c6', color: 'white', fontFamily: "'Kanit', sans-serif" }}
+                            onClick={handleRejectConfirm}
+                        >
+                            Confirm
+                        </Button>
+                        <Button
+                            variant="contained"
+                            style={{ backgroundColor: '#9c0606', color: 'white', fontFamily: "'Kanit', sans-serif" }}
+                            onClick={handleCloseModal}
+                        >
+                            Cancel
+                        </Button>
+                    </div>
+                </div>
+            </Modal>
             {notification.show && (
                 <div className="notification">
                     <img src={SuccessIcon} alt="Success Icon" className='SuccessIcon-img' />
@@ -283,96 +277,24 @@ const Ininet = () => {
                     <button className="Dashboard-Internal-button" onClick={handleDashboardInternalClick} style={{ lineHeight: '1' }}>Dashboard External 1</button>
                 </div>
                 <div className='Fixlocation'>
-                    <button className="Dashboard-Internal-button" onClick={handleDashboardExternalClick} style={{ lineHeight: '1' }}>Dashboard External 2</button>
-                </div>
-                <div className='Fixlocation'>
-                    <DatePicker className='Dashboard-Internal-button-date'
-                        selected={selectedDate} onChange={handleDateChange} dateFormat="dd/MM/yyyy" />
+                    <button className="Dashboard-Internal-button" onClick={handleDashboardExternalClick} style={{ lineHeight: '1' }} >Dashboard External 2</button>
                 </div>
             </div>
-            <Card className='cardStyle_Log cardContainer' style={{ backgroundColor: '#D9D9D9', boxShadow: 'none', borderRadius: '15px' }}>
-                <CardContent className='CardScrallber-internal'>
-                    {images.length > 0 ? (
-                        images.map((item) => (
-                            <div key={item.doc_id} style={{ padding: '10px', textAlign: 'center' }}>
-                                <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                                    
-                                    <label className="custom-checkbox-internal-1" style={{ marginRight: '10px' }}>
-                                        <label className="custom-checkbox-internal" >
-                                            <Checkbox
-                                                icon={<RadioButtonUncheckedIcon />}
-                                                checkedIcon={<CheckCircleIcon />}
-                                                type="checkbox"
-                                                checked={selectedImages.has(item.doc_id)}
-                                                onChange={() => handleCheckboxChange(item.doc_id)}
-                                                size="small"
-                                            />
-                                            <span className='checkmark'></span>
-                                        </label>
-                                    </label>
-                                    <Typography
-                                        variant="subtitle1"
-                                        style={{
-                                            fontWeight: 'bold',
-                                            background: selectedImages.has(item.doc_id) ? '#1768C4' : '#FFFF',
-                                            borderRadius: '10px',
-                                            padding: isSmallScreen ? '5px 8px' : '10px 15px',
-                                            marginBottom: '5px',
-                                            fontSize: isSmallScreen ? '8px' : '16px',
-                                            color: selectedImages.has(item.doc_id) ? '#FFFF' : 'black',
-                                            maxWidth: '80%',
-                                            display: 'inline-block',
-                                            textAlign: 'center',
-                                        }}
-                                    >
-                                        {item.title_name}
-                                    </Typography>
-                                </div>
-                                <img
-                                    src={item.src_img}
-                                    alt={item.title_name}
-                                    style={{
-                                        width: '70%',
-                                        borderRadius: '15px',
-                                        display: 'block',
-                                        margin: '0 auto',
-                                    }}
-                                />
-                            </div>
-                        ))
-                    ) : (
-                        <Typography variant="body1" style={{ fontFamily: "'Kanit', sans-serif" }}>
-                            No images available
-                        </Typography>
-                    )}
+            <Card className='cardStyle_Log' style={{ backgroundColor: '#D9D9D9', boxShadow: 'none', borderRadius: '15px' }}>
+                <CardContent>
+                    <div className='Title-inet'>Report กลุ่มผู้บริหาร</div>
+                    <div className='Title2-inet'>สามารถตรวจสอบ Report ได้ที่กลุ่ม Line : Dashboard iClaim OD</div>
+                    <div className='container-approve-reject-inet'>
+                        <div className='Fixlocation-approve-reject-inet'>
+                            <button className="button-Approve-inet" onClick={handleApproveButtonClick} >Approve</button>
+                        </div>
+                        <div className='Fixlocation-approve-reject-inet'>
+                            <button className="button-Reject-inet" onClick={handleRejectButtonClick}>Reject</button>
+                        </div>
+                    </div>
                 </CardContent>
             </Card>
-            <div className='selectAllContainer' style={{fontfamily: "'Kanit', sans-serif"}}>
-                    <label className="custom-checkbox-internal" >
-                        <Checkbox
-                            icon={<RadioButtonUncheckedIcon />}
-                            checkedIcon={<CheckCircleIcon />}
-                            type="checkbox"
-                            checked={selectAll}
-                            onChange={handleSelectAllChange}
-                            size="small"
-                            className="custom-checkbox-internal"
-                        />
-                        <span className='checkmark'></span>
-                    </label>
-                    <Typography
-                    style={{
-                      fontWeight: 'bold',
-                      fontFamily: "'Kanit', sans-serif",
-                      marginTop: '5px',
-                      margin: isSmallScreen ? '0px 0px 2px' : '0px 7px',
-                      fontSize: isSmallScreen ? '10px' : '18px',
-                    }}
-                  >
-                     Select All ({selectedCount}/{totalItems})
-                  </Typography>
-                </div>
-            </div>
+        </div>
     );
 };
 
