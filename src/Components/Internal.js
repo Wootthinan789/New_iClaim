@@ -632,6 +632,7 @@ const handleSelectAllCheckboxChange = (event) => {
           <p style={{ textAlign: "center", fontFamily: "'Kanit', sans-serif", fontSize: isSmallScreen ? '8px' : '20px', }}>ไม่มีข้อมูลสําหรับวันที่เลือก</p>
         )}
       </Card>
+      {!loading && countries && countries.length > 0 && (role === 'admin' || role === 'user' || role === 'Admin' || role === 'User') && (
      <div className='SelectallStyle'>
       <FormGroup row>
               <FormControlLabel
@@ -663,6 +664,7 @@ const handleSelectAllCheckboxChange = (event) => {
               />
             </FormGroup>
             </div>
+      )}
       {!loading && countries && countries.length > 0 && (role === 'admin' || role === 'user' || role === 'Admin' || role === 'User') && (
         <div className='container-approve-reject'>
           <div className='Fixlocation-approve-reject'>

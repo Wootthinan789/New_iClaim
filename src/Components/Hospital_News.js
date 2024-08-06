@@ -245,17 +245,17 @@ const Hospital_News = () => {
             formData.append('message', JSON.stringify(messagePayload));
     
             // Step 4: Send data to API endpoint
-            const response = await axios.post('http://localhost:443/send/Message/New', formData, {
-                headers: {
-                    'Content-Type': 'multipart/form-data',
-                },
-            });
-            // Step 4: Send data to API endpoint
-            // const response = await axios.post('https://rpa-apiprd.inet.co.th:443/send/Message/New', formData, {
+            // const response = await axios.post('http://localhost:443/send/Message/New', formData, {
             //     headers: {
             //         'Content-Type': 'multipart/form-data',
             //     },
             // });
+            // Step 4: Send data to API endpoint
+            const response = await axios.post('https://rpa-apiprd.inet.co.th:443/send/Message/New', formData, {
+                headers: {
+                    'Content-Type': 'multipart/form-data',
+                },
+            });
     
             console.log('Message sent successfully:', response.data);
     
@@ -265,11 +265,11 @@ const Hospital_News = () => {
             setFileNames([]);
     
             // Optionally, reload or update UI after sending
-            // window.location.reload();
+            window.location.reload();
         } catch (error) {
             console.error('Error:', error);
         }
-        window.location.reload();
+        //window.location.reload();
     };
 
     const handleChange = (event) => {
@@ -383,7 +383,7 @@ const Hospital_News = () => {
             <Card className='cardStyle_New' style={{ backgroundColor: '#D9D9D9', boxShadow: 'none', borderRadius: '15px' }}>
                 <CardContent>
                     <h1 className='newsTitle'>
-                        <span className="leftRotate">📢</span>  ข่าวสารโรงพยาบาล <span className="rightRotate">📢</span>
+                        <span className="leftRotate">📢</span>  แจ้งข่าวสารโรงพยาบาล <span className="rightRotate">📢</span>
                     </h1>
                     <div style={{ display: 'flex', alignItems: 'flex-start' }}>
                         <Card
