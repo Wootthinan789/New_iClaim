@@ -45,8 +45,10 @@ const Log = () => {
         console.log('Selected value:', selectedValue); // เพิ่ม console.log เพื่อตรวจสอบค่าที่ถูกเลือก
         if (selectedValue === 10) {
             setSelectedType("External 2");
-        } else if (selectedValue === 20) {
+        }else if (selectedValue === 20) {
             setSelectedType("External 1");
+        }else if (selectedValue === 30) {
+            setSelectedType("Internal");
         }
         console.log('Selected type:', selectedType); // เพิ่ม console.log เพื่อตรวจสอบค่า selectedType หลังจากการเปลี่ยนแปลง
     };
@@ -314,6 +316,15 @@ const Log = () => {
                                 margin: '0',
                             }}
                             >Dashboard External 1</MenuItem>
+                            <MenuItem value={30}
+                            style={{
+                                fontFamily: "'Kanit', sans-serif",
+                                fontWeight: '700',
+                                textAlign:'center',
+                                fontSize: isSmallScreen ? '6px' : '16px',
+                                margin: '0',
+                            }}
+                            >Dashboard Internal</MenuItem>
                         </Select>
                     </FormControl>
                 </div>

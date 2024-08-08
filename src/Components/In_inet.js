@@ -27,6 +27,7 @@ import DatePicker from 'react-datepicker';
 import 'react-datepicker/dist/react-datepicker.css';
 import RadioButtonUncheckedIcon from '@mui/icons-material/RadioButtonUnchecked';
 import CheckCircleIcon from '@mui/icons-material/CheckCircle';
+import Swal from 'sweetalert2';
 
 
 const Ininet = () => {
@@ -43,9 +44,8 @@ const Ininet = () => {
     const theme = useTheme();
     const isSmallScreen = useMediaQuery(theme.breakpoints.down('sm'));
     const navigate = useNavigate();
+    const [mappedImages, setMappedImages] = useState([]);
     const role = localStorage.getItem("role")
-    const [loading, setLoading] = useState(true);
-    const [countries, setCountries] = useState([]);
 
     const handleDashboardInternalClick = () => {
         navigate('/Dashboard/Internal');
@@ -196,12 +196,78 @@ const Ininet = () => {
     }, []);
 
     const handleApproveButtonClick = async () => {
-        console.log('Click Approve')
-    }
+        console.log('Click Approve');
+        const mappedImages = Array.from(selectedImages).map(id => {
+            const image = images.find(img => img.doc_id === id);
+            return {
+                doc_id: image.doc_id,
+                title: image.title_name,
+                src: image.src_img,
+                username : usernameJson.username
+            };
+        });
 
-    const handleRejectButtonClick  = async () => {
-        console.log('Click Reject')
-    }
+        const data = {
+            message: mappedImages
+        };
+        console.log('messages : ', data);
+        try {
+            Swal.fire({
+                icon: 'success',
+                title: 'Success',
+                text: 'Data sent successfully!',
+                timer: 2000,
+                showConfirmButton: false
+            });
+            const response = await axios.post('http://localhost:443/Internal/send/data/inet', data);
+            console.log('API response:', response.data);
+
+            const loginternal = mappedImages.map(async (image) => {
+                const logData = {
+                    doc_name: "-",
+                    status: "Approved",
+                    user_name: usernameJson.username,
+                    remark:image.title,
+                    data_type: "Internal"
+                };
+            console.log("logData : ",logData)
+            await axios.post("https://rpa-apiprd.inet.co.th:443/iClaim/insert/log", logData);
+            console.log("Log data inserted successfully for", image.title);
+            })
+            await Promise.all(loginternal);
+
+        } catch (error) {
+            console.error('Error sending data to API:', error);
+            Swal.fire({
+                icon: 'error',
+                title: 'Error',
+                text: 'Failed to send data!',
+                timer: 2000,
+                showConfirmButton: false
+            });
+        }
+    };
+    
+    const handleRejectButtonClick = () => {
+        console.log('Click Reject');
+        const mappedImages = Array.from(selectedImages).map(id => {
+            const image = images.find(img => img.doc_id === id);
+            return {
+                approve:image.approve,
+                date_on:image.date_on,
+                doc_id: image.doc_id,
+                id_process:image.id_process,
+                insert_approve:images.insert_approve,
+                insert_time:images.insert_time,
+                title: image.title_name,
+                src: image.src_img,
+                user_approve:image.user_approve,
+            };
+        });
+
+        console.log('Selected Images: ', mappedImages);
+        setMappedImages(mappedImages); // Update the state with mapped images
+    };
 
     const handleCheckboxChange = (doc_id) => {
         setSelectedImages(prev => {
@@ -221,6 +287,7 @@ const Ininet = () => {
             const mappedImages = Array.from(updated).map(id => {
                 const image = images.find(img => img.doc_id === id);
                 return {
+                    doc_id : image.doc_id,
                     title: image.title_name,
                     src: image.src_img
                 };
@@ -238,6 +305,7 @@ const Ininet = () => {
             setSelectedImages(allDocIds);
             
             const mappedImages = images.map(item => ({
+                doc_id: item.doc_id,
                 title: item.title_name,
                 src: item.src_img
             }));
