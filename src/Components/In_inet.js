@@ -22,11 +22,11 @@ import employee from './images-iclaim/employee.png';
 import HomeIcon from './images-iclaim/home-regular-60.png';
 import { useNavigate } from 'react-router-dom';
 import SuccessIcon from './images-iclaim/checked.png';
-import swal from 'sweetalert';
 import DatePicker from 'react-datepicker';
 import 'react-datepicker/dist/react-datepicker.css';
 import RadioButtonUncheckedIcon from '@mui/icons-material/RadioButtonUnchecked';
 import CheckCircleIcon from '@mui/icons-material/CheckCircle';
+import Modal from '@mui/material/Modal';
 import Swal from 'sweetalert2';
 
 
@@ -43,9 +43,12 @@ const Ininet = () => {
     const [currentApiDate, setCurrentApiDate] = useState(new Date().toISOString().slice(0, 10)); // New state for API date
     const theme = useTheme();
     const isSmallScreen = useMediaQuery(theme.breakpoints.down('sm'));
+    const [openModal, setOpenModal] = useState(false);
     const navigate = useNavigate();
-    const [mappedImages, setMappedImages] = useState([]);
     const role = localStorage.getItem("role")
+    const [selectedItemsDetails, setSelectedItemsDetails] = useState({});
+    const [rejectReason, setRejectReason] = useState('');
+    const [rejectedImage, setRejectedImage] = useState(null);
 
     const handleDashboardInternalClick = () => {
         navigate('/Dashboard/Internal');
@@ -215,11 +218,12 @@ const Ininet = () => {
             Swal.fire({
                 icon: 'success',
                 title: 'Success',
-                text: 'Data sent successfully!',
+                //text: 'Data sent successfully!',
                 timer: 2000,
                 showConfirmButton: false
             });
-            const response = await axios.post('http://localhost:443/Internal/send/data/inet', data);
+            // const response = await axios.post('http://localhost:443/Internal/send/data/inet', data);
+            const response = await axios.post('https://rpa-apiprd.inet.co.th:443/Internal/send/data/inet', data);
             console.log('API response:', response.data);
 
             const loginternal = mappedImages.map(async (image) => {
@@ -234,6 +238,7 @@ const Ininet = () => {
             await axios.post("https://rpa-apiprd.inet.co.th:443/iClaim/insert/log", logData);
             console.log("Log data inserted successfully for", image.title);
             })
+            window.location.reload();
             await Promise.all(loginternal);
 
         } catch (error) {
@@ -247,35 +252,116 @@ const Ininet = () => {
             });
         }
     };
-    
-    const handleRejectButtonClick = () => {
-        console.log('Click Reject');
-        const mappedImages = Array.from(selectedImages).map(id => {
-            const image = images.find(img => img.doc_id === id);
-            return {
-                approve:image.approve,
-                date_on:image.date_on,
-                doc_id: image.doc_id,
-                id_process:image.id_process,
-                insert_approve:images.insert_approve,
-                insert_time:images.insert_time,
-                title: image.title_name,
-                src: image.src_img,
-                user_approve:image.user_approve,
-            };
-        });
 
-        console.log('Selected Images: ', mappedImages);
-        setMappedImages(mappedImages); // Update the state with mapped images
+    const handleRejectButtonClick = () => {
+        setOpenModal(true);
+      };
+    
+      const handleCloseModal = () => {
+        setRejectReason('');
+        setRejectedImage(null);
+        setOpenModal(false);
+      };
+    
+      const handleRejectReasonChange = (event, index) => {
+        const value = event.target.value;
+        setSelectedItemsDetails(prevState => ({
+          ...prevState,
+          [index]: {
+            ...prevState[index],
+            rejectReason: value
+          }
+        }));
+      };
+    
+    const handleRejectConfirm = async () => {
+        const newDataArray = Object.keys(selectedItemsDetails).map((doc_id) => ({
+            approve:selectedItemsDetails[doc_id].approve,
+            date_on:selectedItemsDetails[doc_id].date_on, 
+            doc_id:selectedItemsDetails[doc_id].doc_id, 
+            id_process:selectedItemsDetails[doc_id].id_process, 
+            insert_approve:selectedItemsDetails[doc_id].insert_approve, 
+            insert_time:selectedItemsDetails[doc_id].insert_time, 
+            src_img:selectedItemsDetails[doc_id].src, 
+            title:selectedItemsDetails[doc_id].title_name, 
+            user_approve:selectedItemsDetails[doc_id].user_approve, 
+            rejectReason:selectedItemsDetails[doc_id].rejectReason,
+            user_name:selectedItemsDetails[doc_id].user_name,
+            menu:'Internal'
+        }))
+        console.log("newDataArray : " ,newDataArray)
+
+        try {
+            const selectedHospitalsArrayReject = Object.values(newDataArray);
+            const data ={
+                message : selectedHospitalsArrayReject
+            }
+            console.log('Data : ', data)
+
+            //send date api reject to ake
+            const response = await axios.post('https://rpa-apiprd.inet.co.th:443/rpa/iclaim/RejectImageInternalV2',data)
+            console.log(`Data send success to api ake : `, response.data);
+
+                  // ส่งข้อมูลไปยัง API
+            // await axios.post("https://rpa-apiprd.inet.co.th:443/send-message/Reject", data);
+            // //await axios.post("http://localhost:443/send-message/Reject", data);
+            // console.log("Data sent successfully send message Reject");
+
+                  // ส่งข้อมูลไปยัง API insert log
+            const logPromises = selectedHospitalsArrayReject.map(async (checkbox) => {
+                const logData = {
+                doc_name: "-",
+                status: "Reject",
+                user_name: usernameJson.username,
+                remark: checkbox.title, // Use the checkbox title as the remark
+                data_type: "Internal"
+                };
+        
+            await axios.post("https://rpa-apiprd.inet.co.th:443/iClaim/insert/log", logData);
+            console.log("Log data inserted successfully");
+            });
+            await Promise.all(logPromises);
+            //await axios.post("http://localhost:443/send-message/alertReject", data);
+            await axios.post("https://rpa-apiprd.inet.co.th:443/send-message/alertReject", data);
+            console.log("Data sent successfully send message alert Reject");
+        } catch (error) {
+            console.error('Error sending data:', error.message);
+          }
+          // เคลียร์ข้อมูลของ textarea และปิด Modal
+          setSelectedItemsDetails({});
+          setOpenModal(false);
+          window.location.reload();
     };
 
     const handleCheckboxChange = (doc_id) => {
         setSelectedImages(prev => {
             const updated = new Set(prev);
-            if (updated.has(doc_id)) {
+            const isSelected = updated.has(doc_id);
+            if (isSelected) {
                 updated.delete(doc_id);
+                // Remove the item from selectedItemsDetails
+                const newDetails = { ...selectedItemsDetails };
+                delete newDetails[doc_id];
+                setSelectedItemsDetails(newDetails);
             } else {
                 updated.add(doc_id);
+                // Find the image details and add it to selectedItemsDetails
+                const selectedItem = images.find(img => img.doc_id === doc_id);
+                setSelectedItemsDetails(prevDetails => ({
+                    ...prevDetails,
+                    [doc_id]: {
+                        approve: selectedItem.approve,
+                        date_on: selectedItem.date_on,
+                        doc_id: selectedItem.doc_id,
+                        id_process: selectedItem.id_process,
+                        insert_approve: selectedItem.insert_approve,
+                        insert_time: selectedItem.insert_time,
+                        title_name: selectedItem.title_name,
+                        src: selectedItem.src_img,
+                        user_name: usernameJson.username,
+                        user_approve:selectedItem.user_approve
+                    }
+                }));
             }
             // Check if all items are selected
             if (updated.size === images.length) {
@@ -283,36 +369,45 @@ const Ininet = () => {
             } else {
                 setSelectAll(false);
             }
-            // Map selected images to new objects and log them
-            const mappedImages = Array.from(updated).map(id => {
-                const image = images.find(img => img.doc_id === id);
-                return {
-                    doc_id : image.doc_id,
-                    title: image.title_name,
-                    src: image.src_img
-                };
-            });
-            console.log(mappedImages);
+            // console.log('Selected items details:', Object.values(selectedItemsDetails).sort((a, b) => a.index - b.index));
             return updated;
         });
     };
-
+    
     const handleSelectAllChange = () => {
         if (selectAll) {
             setSelectedImages(new Set());
+            setSelectedItemsDetails({});
         } else {
             const allDocIds = new Set(images.map(item => item.doc_id));
             setSelectedImages(allDocIds);
-            
-            const mappedImages = images.map(item => ({
-                doc_id: item.doc_id,
-                title: item.title_name,
-                src: item.src_img
-            }));
-            console.log(mappedImages);
+    
+            // Update selectedItemsDetails with all images, preserving order
+            const allDetails = images.reduce((acc, item) => {
+                acc[item.doc_id] = {
+                    approve: item.approve,
+                    date_on: item.date_on,
+                    doc_id: item.doc_id,
+                    id_process: item.id_process,
+                    insert_approve: item.insert_approve,
+                    insert_time: item.insert_time,
+                    title_name: item.title_name,
+                    src: item.src_img,
+                    username: usernameJson.username,
+                    user_approve: item.user_approve
+                };
+                return acc;
+            }, {});
+            setSelectedItemsDetails(allDetails);
         }
         setSelectAll(!selectAll);
+        // console.log('Selected items details:', Object.values(selectedItemsDetails).sort((a, b) => a.index - b.index));
     };
+    useEffect(() => {
+        // ทำอะไรก็ตามที่ต้องการเมื่อมีการเปลี่ยนแปลงใน selectedCheckboxes
+         console.log('Selected checkboxes:', selectedItemsDetails);
+      }, [selectedItemsDetails]);
+    
 
     const selectedCount = selectedImages.size;
 
@@ -373,6 +468,46 @@ const Ininet = () => {
                     </Box>
                 </Toolbar>
             </AppBar>
+            <Modal
+                open={openModal}
+                onClose={handleCloseModal}
+                aria-labelledby="modal-modal-title"
+                aria-describedby="modal-modal-description"
+            >
+                <div className="modalStyle">
+                <div className="contentContainer">
+                    {Object.keys(selectedItemsDetails).map((index) => (
+                    <div key={index}>
+                        <img src={selectedItemsDetails[index].src} alt={`Image ${index + 1}`} className="imageInModal_External" />
+                        <textarea
+                        placeholder="เพิ่มรายละเอียดสำหรับรูปภาพนี้"
+                        value={selectedItemsDetails[index].rejectReason || ''} // ใช้ค่า rejectReason ของแต่ละรายการ
+                        onChange={(e) => handleRejectReasonChange(e, index)} // เพิ่มการเรียกใช้ฟังก์ชัน handleRejectReasonChange
+                        className="rejectReasonInput_External"
+                        style={{fontFamily:"'Kanit', sans-serif"}}
+                        />
+                    </div>
+                    ))}
+                </div>
+                <div className="buttonContainer">
+                    <Button
+                    variant="contained"
+                    style={{ backgroundColor: '#1095c6', color: 'white', fontFamily: "'Kanit', sans-serif" }}
+                    onClick={handleRejectConfirm}
+                    >
+                    Confirm
+                    </Button>
+                    <Button
+                    variant="contained"
+                    style={{ backgroundColor: '#9c0606', color: 'white', fontFamily: "'Kanit', sans-serif" }}
+                    onClick={handleCloseModal}
+                    >
+                    Cancel
+                    </Button>
+                </div>
+                </div>
+            </Modal>
+
             {notification.show && (
                 <div className="notification">
                     <img src={SuccessIcon} alt="Success Icon" className='SuccessIcon-img' />
