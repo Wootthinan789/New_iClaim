@@ -222,8 +222,8 @@ const Ininet = () => {
                 timer: 2000,
                 showConfirmButton: false
             });
-            // const response = await axios.post('http://localhost:443/Internal/send/data/inet', data);
-            const response = await axios.post('https://rpa-apiprd.inet.co.th:443/Internal/send/data/inet', data);
+            const response = await axios.post('http://localhost:443/Internal/send/data/inet', data);
+            //const response = await axios.post('https://rpa-apiprd.inet.co.th:443/Internal/send/data/inet', data);
             console.log('API response:', response.data);
 
             const loginternal = mappedImages.map(async (image) => {
@@ -304,7 +304,7 @@ const Ininet = () => {
 
                   // ส่งข้อมูลไปยัง API
             // await axios.post("https://rpa-apiprd.inet.co.th:443/send-message/Reject", data);
-            // //await axios.post("http://localhost:443/send-message/Reject", data);
+            // await axios.post("http://localhost:443/send-message/Reject", data);
             // console.log("Data sent successfully send message Reject");
 
                   // ส่งข้อมูลไปยัง API insert log

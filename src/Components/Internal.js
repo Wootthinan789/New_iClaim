@@ -331,7 +331,7 @@ const Internal = () => {
         img_7_Array: img_7_Array,
         token: token,
         user_name: usernameJson.username,
-        menu : "Internal",
+        menu : "External 1",
         title:title
       };
   
@@ -386,7 +386,7 @@ const handleSelectAllCheckboxChange = (event) => {
       img_7_Array,
       token,
       user_name: usernameJson.username,
-      menu : "Internal",
+      menu : "External 1",
       title
     };
   }) : [];

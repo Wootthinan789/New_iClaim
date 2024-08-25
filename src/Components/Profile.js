@@ -327,7 +327,7 @@ const Profile = () => {
         img_6_Array: img_6_Array,
         token: token,
         user_name: usernameJson.username,
-        menu : "External",
+        menu : "External 2",
         title:title
       };
   
@@ -382,7 +382,7 @@ const handleSelectAllCheckboxChange = (event) => {
       img_6_Array,
       token,
       user_name: usernameJson.username,
-      menu : "External",
+      menu : "External 2",
       title
     };
   }) : [];
