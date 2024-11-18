@@ -122,11 +122,42 @@ const Hospital_News = () => {
         setHospitalData([]); // Clear data when closing
     };
 
-    const handleAddHospital = () => {
-        // Add your submit logic here
-        console.log('Hospital Type:', hospitalType);
-        console.log('Hospital Name:', hospitalName);
-        console.log('Token:', token);
+    const handleAddHospital = async () => {
+            // ตรวจสอบข้อมูลก่อน
+        if (!hospitalType || !hospitalName || !token) {
+            alert("กรุณากรอกข้อมูลให้ครบถ้วน");
+            return;
+        }
+
+        // รวบรวมข้อมูลเป็น object
+        const newHospital = {
+            list_tpye: hospitalType, // จะเก็บเป็น "โรงพยาบาลรัฐ" หรือ "โรงพยาบาลเอกชน"
+            Hospital_: hospitalName,
+            Token_: token,
+        };
+
+        console.log("ข้อมูลโรงพยาบาลที่เพิ่ม:", newHospital);
+        try {
+            // ส่งข้อมูลไปยัง API
+            const response = await axios.post(
+                "http://localhost:443/insert/hospital/post",
+                newHospital
+            );
+    
+            // ตรวจสอบผลลัพธ์จาก API
+            if (response.status === 200) {
+                console.log("เพิ่มโรงพยาบาลสำเร็จ:", response.data);
+                alert("เพิ่มโรงพยาบาลสำเร็จ!");
+            } else {
+                console.error("เกิดข้อผิดพลาดในการเพิ่มโรงพยาบาล:", response.data);
+                alert("ไม่สามารถเพิ่มโรงพยาบาลได้");
+            }
+        } catch (error) {
+            console.error("เกิดข้อผิดพลาด:", error);
+            alert("เกิดข้อผิดพลาดในการเชื่อมต่อกับเซิร์ฟเวอร์");
+        }
+    
+        // ปิด popup หลังจากเพิ่มข้อมูล
         handleClosePopup();
     };
 
@@ -708,13 +739,20 @@ const Hospital_News = () => {
                 </DialogContent>
             </Dialog>
             <Dialog open={isPopupOpen} onClose={handleClosePopup} maxWidth="sm" fullWidth>
-                <DialogTitle style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                    <Typography variant="h6" style={{ fontFamily: "'Kanit', sans-serif", color: '#333' }}>เพิ่มโรงพยาบาล</Typography>
+            <DialogTitle
+                    style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}
+                >
+                    <Typography
+                        variant="h6"
+                        component="div" // เปลี่ยนจาก h6 เป็น div เพื่อแก้ปัญหา nesting
+                        style={{ fontFamily: "'Kanit', sans-serif", color: '#333' }}
+                    >
+                        เพิ่มโรงพยาบาล
+                    </Typography>
                     <IconButton onClick={handleClosePopup}>
                         <CloseIcon />
                     </IconButton>
                 </DialogTitle>
-                
                 <DialogContent dividers>
                     <Box display="flex" flexDirection="column" gap={2} style={{ fontFamily: "'Kanit', sans-serif" }}>
                         <FormControl fullWidth variant="outlined" style={{ marginBottom: '16px' }}>
@@ -724,8 +762,8 @@ const Hospital_News = () => {
                                 onChange={(e) => setHospitalType(e.target.value)}
                                 label="ประเภทโรงพยาบาล"
                             >
-                                <MenuItem value="public">โรงพยาบาลรัฐ</MenuItem>
-                                <MenuItem value="private">โรงพยาบาลเอกชน</MenuItem>
+                                <MenuItem value="โรงพยาบาลรัฐ">โรงพยาบาลรัฐ</MenuItem>
+                                <MenuItem value="โรงพยาบาลเอกชน">โรงพยาบาลเอกชน</MenuItem>
                             </Select>
                         </FormControl>
 
