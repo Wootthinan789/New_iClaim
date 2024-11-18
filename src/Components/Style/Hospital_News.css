@@ -6,6 +6,30 @@
     height: auto;
     /* margin-bottom: 20px; */
 }
+.Dashboard-Internal-button-post {
+    margin: 5px 0px 2px;
+    max-width: 320px;
+    display: flex;
+    padding: 6px 25px;
+    font-size: 16px;
+    line-height: 1.25rem;
+    font-weight: 700;
+    text-align: center;
+    vertical-align: middle;
+    align-items: center;
+    border-radius: 0.5rem;
+    border: 1px solid rgba(217, 217, 217, 0);
+    gap: 0.75rem;
+    color: rgb(0, 0, 0);
+    background-color: #ff0000;
+    cursor: pointer;
+    transition: all 0.0s ease;
+    font-family: 'Kanit', sans-serif;
+  }
+  
+  .Dashboard-Internal-button-post:hover {
+    transform: scale(1.10);
+  }
 .custom-radio{
     width: 20px;
     height: 20px;

@@ -21,8 +21,9 @@ import HomeIcon from './images-iclaim/home-regular-60.png';
 import { useNavigate } from 'react-router-dom';
 import DeleteIcon from '@mui/icons-material/Delete';
 import VisibilityIcon from '@mui/icons-material/Visibility';
-import { useMediaQuery, useTheme, TextField, Button, Dialog, DialogContent, DialogActions ,CircularProgress} from '@mui/material';
+import { useMediaQuery, useTheme, TextField, Button, Dialog, DialogContent, DialogActions ,CircularProgress,Select,InputLabel,FormControl,DialogTitle,DialogContentText} from '@mui/material';
 import CloseIcon from '@mui/icons-material/Close';
+
 const Hospital_News = () => {
     const [anchorElUser, setAnchorElUser] = useState(null);
     const usernameJson = JSON.parse(localStorage.getItem('username'));
@@ -45,6 +46,89 @@ const Hospital_News = () => {
     const isSmallScreen = useMediaQuery(theme.breakpoints.down('sm'));
     const navigate = useNavigate();
     const fileInputRefImage = useRef(null);
+
+    const [isPopupOpen, setIsPopupOpen] = useState(false);
+    const [hospitalName, setHospitalName] = useState('');
+    const [token, setToken] = useState('');
+
+        // State for hospital data, popup visibility, and dropdown selection
+    const [hospitalData, setHospitalData] = useState([]);
+    const [isListPopupOpen, setIsListPopupOpen] = useState(false);
+    const [hospitalType, setHospitalType] = useState('โรงพยาบาลรัฐ');
+
+    const [isDeleteConfirmOpen, setDeleteConfirmOpen] = useState(false);
+    const [selectedHospital, setSelectedHospital] = useState(null);
+
+    const handleOpenPopup = () => setIsPopupOpen(true);
+    const handleClosePopup = () => setIsPopupOpen(false);
+
+    // Function to handle opening the popup
+    const handleOpenListPopup = () => {
+        setIsListPopupOpen(true);
+        fetchHospitalData(hospitalType); // Initial data load
+    };
+
+    const handleDeleteHospital = (hospitalId) => {
+        setSelectedHospital(hospitalId);
+        setDeleteConfirmOpen(true);
+    };
+
+    const confirmDeleteHospital = () => {
+        if (selectedHospital) {
+            // ลบข้อมูลโรงพยาบาลที่เลือก
+            // ใช้ selectedHospital ในการส่ง request ลบ
+            // (ใส่โค้ดการลบที่นี่ เช่น API call เพื่อดำเนินการลบข้อมูลใน backend)
+            console.log("Deleted hospital with ID:", selectedHospital);
+
+            // ปิดป็อปอัพและรีเซ็ต selectedHospital หลังลบ
+            setDeleteConfirmOpen(false);
+            setSelectedHospital(null);
+        }
+    };
+
+    const handleCancelDelete = () => {
+        setDeleteConfirmOpen(false);
+        setSelectedHospital(null);
+    };
+
+    // Function to fetch hospital data from the API
+    const fetchHospitalData = async (type) => {
+        setLoading(true);
+        try {
+            const response = await fetch(`http://localhost:443/get/hospital/post?type=${type}`);
+            if (response.ok) {
+                const data = await response.json();
+                setHospitalData(data);
+            } else {
+                console.error("Failed to fetch data");
+            }
+        } catch (error) {
+            console.error("Error fetching data:", error);
+        } finally {
+            setLoading(false);
+        }
+    };
+
+    // Handle hospital type selection change
+    const handleTypeChange = (event) => {
+        const selectedType = event.target.value;
+        setHospitalType(selectedType);
+        fetchHospitalData(selectedType);
+    };
+
+    // Function to handle closing the popup
+    const handleCloseListPopup = () => {
+        setIsListPopupOpen(false);
+        setHospitalData([]); // Clear data when closing
+    };
+
+    const handleAddHospital = () => {
+        // Add your submit logic here
+        console.log('Hospital Type:', hospitalType);
+        console.log('Hospital Name:', hospitalName);
+        console.log('Token:', token);
+        handleClosePopup();
+    };
 
     const handleOpenUserMenu = (event) => {
         setAnchorElUser(event.currentTarget);
@@ -219,10 +303,10 @@ const Hospital_News = () => {
     };
 
     const filteredData = data.filter(item => {
-        const governmentHospital = item.Hospital_Government ? item.Hospital_Government.toLowerCase() : '';
-        const privateHospital = item.Hospital_Private ? item.Hospital_Private.toLowerCase() : '';
+        const governmentHospital = item.Hospital_Government?.toLowerCase() || '';
+        const privateHospital = item.Hospital_Private?.toLowerCase() || '';
         const searchLower = searchTerm.toLowerCase();
-    
+        
         return governmentHospital.includes(searchLower) || privateHospital.includes(searchLower);
     });
  
@@ -379,6 +463,12 @@ const Hospital_News = () => {
                         <img src={HomeIcon} alt="HomeIcon" className='homeicon' />
                     </button>
                 </div>
+            <div className='Fixlocation'>
+                <button className="Dashboard-Internal-button-post" style={{ background: '#559cbf',color:'#ffffff' , fontSize:'14px' }} onClick={handleOpenPopup} >เพิ่มโรงพยาบาล</button>
+            </div>
+            <div className='Fixlocation'>
+                <button className="Dashboard-Internal-button-post" style={{ background: '#60a931',color:'#ffffff' , fontSize:'14px' }} onClick={handleOpenListPopup} >รายการโรงพยาบาล</button>
+            </div>
             </div>
             <Card className='cardStyle_New' style={{ backgroundColor: '#D9D9D9', boxShadow: 'none', borderRadius: '15px' }}>
                 <CardContent>
@@ -616,6 +706,163 @@ const Hospital_News = () => {
                 <DialogContent >
                     {previewImage && <img src={previewImage} alt="Preview" style={{ maxWidth: '100%', maxHeight: '100%' }} />}
                 </DialogContent>
+            </Dialog>
+            <Dialog open={isPopupOpen} onClose={handleClosePopup} maxWidth="sm" fullWidth>
+                <DialogTitle style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                    <Typography variant="h6" style={{ fontFamily: "'Kanit', sans-serif", color: '#333' }}>เพิ่มโรงพยาบาล</Typography>
+                    <IconButton onClick={handleClosePopup}>
+                        <CloseIcon />
+                    </IconButton>
+                </DialogTitle>
+                
+                <DialogContent dividers>
+                    <Box display="flex" flexDirection="column" gap={2} style={{ fontFamily: "'Kanit', sans-serif" }}>
+                        <FormControl fullWidth variant="outlined" style={{ marginBottom: '16px' }}>
+                            <InputLabel>ประเภทโรงพยาบาล</InputLabel>
+                            <Select
+                                value={hospitalType}
+                                onChange={(e) => setHospitalType(e.target.value)}
+                                label="ประเภทโรงพยาบาล"
+                            >
+                                <MenuItem value="public">โรงพยาบาลรัฐ</MenuItem>
+                                <MenuItem value="private">โรงพยาบาลเอกชน</MenuItem>
+                            </Select>
+                        </FormControl>
+
+                        <TextField
+                            fullWidth
+                            label="ชื่อโรงพยาบาล"
+                            variant="outlined"
+                            value={hospitalName}
+                            onChange={(e) => setHospitalName(e.target.value)}
+                        />
+
+                        <TextField
+                            fullWidth
+                            label="Token"
+                            variant="outlined"
+                            value={token}
+                            onChange={(e) => setToken(e.target.value)}
+                        />
+                    </Box>
+                </DialogContent>
+
+                <DialogActions>
+                    <Button onClick={handleClosePopup} color="secondary" style={{ fontFamily: "'Kanit', sans-serif" }}>
+                        ยกเลิก
+                    </Button>
+                    <Button onClick={handleAddHospital} variant="contained" color="primary" style={{ fontFamily: "'Kanit', sans-serif", backgroundColor: '#559cbf' }}>
+                        เพิ่มโรงพยาบาล
+                    </Button>
+                </DialogActions>
+            </Dialog>
+            <Dialog open={isListPopupOpen} onClose={handleCloseListPopup} maxWidth="md" fullWidth>
+                <DialogTitle>
+                    <Typography
+                        variant="h6"
+                        style={{ fontFamily: "'Kanit', sans-serif", fontWeight: 'bold', textAlign: 'center' }}
+                    >
+                        รายการโรงพยาบาล
+                    </Typography>
+                    <IconButton
+                        edge="end"
+                        color="inherit"
+                        onClick={handleCloseListPopup}
+                        aria-label="close"
+                        style={{ position: 'absolute', right: '20px', top: '20px' }}
+                    >
+                        <CloseIcon />
+                    </IconButton>
+                    <Box display="flex" alignItems="center" mb={2} justifyContent="center">
+                        <Typography
+                            variant="body1"
+                            style={{ fontFamily: "'Kanit', sans-serif", marginRight: '10px' }}
+                        >
+                            ประเภทโรงพยาบาล
+                        </Typography>
+                        <Select
+                            value={hospitalType}
+                            onChange={handleTypeChange}
+                            size="small"
+                            style={{ width: 'auto', fontFamily: "'Kanit', sans-serif", borderRadius: '8px', backgroundColor: '#f5f5f5' }}
+                        >
+                            <MenuItem value="โรงพยาบาลรัฐ">โรงพยาบาลรัฐ</MenuItem>
+                            <MenuItem value="โรงพยาบาลเอกชน">โรงพยาบาลเอกชน</MenuItem>
+                        </Select>
+                    </Box>
+                </DialogTitle>
+                <DialogContent>
+                    {loading ? (
+                        <Box display="flex" justifyContent="center" alignItems="center">
+                            <CircularProgress />
+                        </Box>
+                    ) : (
+                        <Box>
+                            {hospitalData.length > 0 ? (
+                                <Box display="flex" flexDirection="column" gap={2}>
+                                    {hospitalData.map((hospital, index) => (
+                                        <Box
+                                            key={index}
+                                            display="flex"
+                                            justifyContent="space-between"
+                                            alignItems="center"
+                                            p={1.5}
+                                            borderRadius="12px"
+                                            bgcolor="#f1f3f4"
+                                            boxShadow="0 4px 12px rgba(0, 0, 0, 0.1)"
+                                            style={{ transition: 'all 0.3s ease-in-out' }}
+                                        >
+                                            <Box display="flex" alignItems="center" style={{ width: '100%' }}>
+                                                <Typography
+                                                    variant="subtitle2"
+                                                    style={{
+                                                        fontWeight: 'bold',
+                                                        color: hospitalType === 'โรงพยาบาลรัฐ' ? '#3b82f6' : '#ef4444',
+                                                        marginRight: '10px',
+                                                        fontSize: '0.875rem',
+                                                    }}
+                                                >
+                                                    {hospitalType}
+                                                </Typography>
+                                                <Box flexGrow={1}>
+                                                    <Typography
+                                                        variant="body2"
+                                                        style={{ fontWeight: '500', fontSize: '0.875rem', color: '#333' }}
+                                                    >
+                                                        {hospital.name} : {hospital.Hospital}
+                                                    </Typography>
+                                                </Box>
+                                                <IconButton onClick={() => handleDeleteHospital(hospital.id)} size="small">
+                                                    <DeleteIcon style={{ color: '#e11d48', fontSize: '20px' }} />
+                                                </IconButton>
+                                            </Box>
+                                        </Box>
+                                    ))}
+                                </Box>
+                            ) : (
+                                <Typography
+                                    variant="body1"
+                                    align="center"
+                                    style={{ fontFamily: "'Kanit', sans-serif", color: '#888', marginTop: '10px' }}
+                                >
+                                    ไม่มีข้อมูลโรงพยาบาลที่เลือก
+                                </Typography>
+                            )}
+                        </Box>
+                    )}
+                </DialogContent>
+            </Dialog>
+            <Dialog open={isDeleteConfirmOpen} onClose={handleCancelDelete}>
+                <DialogTitle>ยืนยันการลบ</DialogTitle>
+                <DialogContent>
+                    <DialogContentText>
+                        คุณแน่ใจหรือไม่ว่าต้องการลบโรงพยาบาลนี้? การลบนี้ไม่สามารถย้อนกลับได้
+                    </DialogContentText>
+                </DialogContent>
+                <DialogActions>
+                    <Button onClick={handleCancelDelete} color="secondary">ยกเลิก</Button>
+                    <Button onClick={confirmDeleteHospital} color="primary">ยืนยัน</Button>
+                </DialogActions>
             </Dialog>
         </div>
     );
