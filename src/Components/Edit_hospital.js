@@ -25,7 +25,7 @@ import DialogActions from '@mui/material/DialogActions';
 import Button from '@mui/material/Button';
 
 const usernameJson = JSON.parse(localStorage.getItem('username'));
-const settings = ['กำหนดสิทธิ์','แก้ไขโรงพยาบาล' , 'Log','Internal INET','ข่าวสารโรงพยาบาล', 'ออกจากระบบ'];
+const settings = ['Internal INET','Internal V2','Report Team Iclaim','กำหนดสิทธิ์','แก้ไขโรงพยาบาล' , 'Log','ข่าวสารโรงพยาบาล', 'ออกจากระบบ'];
 
 const Edit_hospital = () => {
     const [anchorElUser, setAnchorElUser] = useState(null);
@@ -45,6 +45,15 @@ const Edit_hospital = () => {
     const isSmallScreen = useMediaQuery(theme.breakpoints.down('sm'));
 
     const navigate = useNavigate();
+
+    const handleReportTeamIClaim = () => {
+      navigate('/Report/Team/iClaim')
+      window.location.reload();
+    }
+    const handleInternalv2 = () => {
+      navigate('/Internal/v2')
+      window.location.reload();
+    }
 
     const handleDashboardInternalClick = () => {
         navigate('/Dashboard/Internal')
@@ -112,18 +121,15 @@ const Edit_hospital = () => {
       };
       fetchData();
     }, []);
-
-  // Function to handle log out after 10 minutes of inactivity
   useEffect(() => {
     let lastActivityTime = new Date().getTime();
 
     const checkInactivity = () => {
       const currentTime = new Date().getTime();
       const inactiveTime = currentTime - lastActivityTime;
-      const twoMinutes = 10 * 60 * 1000; // 10 minutes in milliseconds
+      const twoMinutes = 10 * 60 * 1000;
 
       if (inactiveTime > twoMinutes) {
-        // Log out if inactive for more than 10 minutes
         handleLogout();
       }
     };
@@ -132,9 +138,8 @@ const Edit_hospital = () => {
       lastActivityTime = new Date().getTime();
     };
 
-    const activityInterval = setInterval(checkInactivity, 60000); // Check every minute for inactivity
+    const activityInterval = setInterval(checkInactivity, 60000);
 
-    // Listen for user activity events
     window.addEventListener('mousemove', handleActivity);
     window.addEventListener('keydown', handleActivity);
 
@@ -234,7 +239,6 @@ const Edit_hospital = () => {
           console.error('Error Deleting hospital:', error);
         }
         setDeleteConfirmationDialogOpen(false);
-        // ตรวจสอบและลบโรงพยาบาล
     };
 
     return (
@@ -284,7 +288,7 @@ const Edit_hospital = () => {
                   }}
               >
                 {settings.map((setting) => (
-                  <MenuItem key={setting} style={{ padding: isSmallScreen ? '0 5px' : '5px 5px' }} onClick={setting === 'ออกจากระบบ' ? handleLogout : setting === 'แก้ไขโรงพยาบาล' ? handleEdithospitalClick :setting === 'กำหนดสิทธิ์' ? handleSetPermissions : setting === 'Log' ? handleLogClick : setting === 'Internal INET' ? handleInternaliNetClick : setting === 'ข่าวสารโรงพยาบาล' ? handleHospitalNews : null}>
+                  <MenuItem key={setting} style={{ padding: isSmallScreen ? '0 5px' : '5px 2px' }} onClick={setting === 'ออกจากระบบ' ? handleLogout : setting === 'แก้ไขโรงพยาบาล' ? handleEdithospitalClick :setting === 'กำหนดสิทธิ์' ? handleSetPermissions : setting === 'Log' ? handleLogClick : setting === 'Internal INET' ? handleInternaliNetClick : setting === 'ข่าวสารโรงพยาบาล' ? handleHospitalNews : setting === 'Internal V2' ? handleInternalv2 : setting === 'Report Team Iclaim' ? handleReportTeamIClaim : null}>
                 <Typography       
                 style={{
                   fontFamily: "'Kanit', sans-serif",
@@ -432,7 +436,7 @@ const EditHospitalDialog = ({ open, handleClose, hospital }) => {
 
       if (response.status === 200) {
         console.log("Hospital edited successfully");
-        window.location.reload(); // หรือจะใช้วิธีการอื่นในการอัพเดทข้อมูลหน้าจอตามต้องการ
+        window.location.reload();
       } else {
         console.error("Failed to edit hospital");
       }

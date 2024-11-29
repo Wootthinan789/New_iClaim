@@ -21,7 +21,7 @@ import HomeIcon from './images-iclaim/home-regular-60.png';
 import { useNavigate } from 'react-router-dom';
 import DeleteIcon from '@mui/icons-material/Delete';
 import VisibilityIcon from '@mui/icons-material/Visibility';
-import { useMediaQuery, useTheme, TextField, Button, Dialog, DialogContent, DialogActions ,CircularProgress,Select,InputLabel,FormControl,DialogTitle,DialogContentText} from '@mui/material';
+import { useMediaQuery, useTheme, TextField, Button, Snackbar, Alert, Dialog, DialogContent, DialogActions ,CircularProgress,Select,InputLabel,FormControl,DialogTitle,DialogContentText} from '@mui/material';
 import CloseIcon from '@mui/icons-material/Close';
 
 const Hospital_News = () => {
@@ -34,13 +34,17 @@ const Hospital_News = () => {
     const [selectedCheckboxes, setSelectedCheckboxes] = useState({});
     const [attachedFiles, setAttachedFiles] = useState([]);
     const [MessageText, setMessageText] = useState('')
-    const [charCount, setCharCount] = useState(0); // State เก็บจำนวนอักษรที่ป้อนเข้าไป
+    const [charCount, setCharCount] = useState(0);
     const [fileNames, setFileNames] = useState([]);
 
-    const [previewImage, setPreviewImage] = useState(null); // State to manage the image preview
-    const [isPreviewOpen, setIsPreviewOpen] = useState(false); // State to manage the preview dialog open/close
+    const [previewImage, setPreviewImage] = useState(null);
+    const [isPreviewOpen, setIsPreviewOpen] = useState(false);
     const [isFirstChecked, setIsFirstChecked] = useState(true);
     const [isSecondChecked, setIsSecondChecked] = useState(false);
+
+    const [openSnackbar, setOpenSnackbar] = useState(false);
+    const [snackbarMessage, setSnackbarMessage] = useState('');
+    const [snackbarSeverity, setSnackbarSeverity] = useState('success');
 
     const theme = useTheme();
     const isSmallScreen = useMediaQuery(theme.breakpoints.down('sm'));
@@ -51,54 +55,104 @@ const Hospital_News = () => {
     const [hospitalName, setHospitalName] = useState('');
     const [token, setToken] = useState('');
 
-        // State for hospital data, popup visibility, and dropdown selection
     const [hospitalData, setHospitalData] = useState([]);
     const [isListPopupOpen, setIsListPopupOpen] = useState(false);
-    const [hospitalType, setHospitalType] = useState('โรงพยาบาลรัฐ');
+    const [hospitalType, setHospitalType] = useState('');
 
-    const [isDeleteConfirmOpen, setDeleteConfirmOpen] = useState(false);
+    const [isDeleteConfirmOpen, setIsDeleteConfirmOpen] = useState(false);
     const [selectedHospital, setSelectedHospital] = useState(null);
 
     const handleOpenPopup = () => setIsPopupOpen(true);
     const handleClosePopup = () => setIsPopupOpen(false);
-
-    // Function to handle opening the popup
     const handleOpenListPopup = () => {
         setIsListPopupOpen(true);
-        fetchHospitalData(hospitalType); // Initial data load
+        fetchHospitalData(hospitalType);
     };
 
-    const handleDeleteHospital = (hospitalId) => {
-        setSelectedHospital(hospitalId);
-        setDeleteConfirmOpen(true);
+    const handleDeleteHospital = (hospital) => {
+        //console.log("Hospital to delete:", hospital);
+        setSelectedHospital(hospital);
+        setIsDeleteConfirmOpen(true);
     };
 
-    const confirmDeleteHospital = () => {
-        if (selectedHospital) {
-            // ลบข้อมูลโรงพยาบาลที่เลือก
-            // ใช้ selectedHospital ในการส่ง request ลบ
-            // (ใส่โค้ดการลบที่นี่ เช่น API call เพื่อดำเนินการลบข้อมูลใน backend)
-            console.log("Deleted hospital with ID:", selectedHospital);
-
-            // ปิดป็อปอัพและรีเซ็ต selectedHospital หลังลบ
-            setDeleteConfirmOpen(false);
-            setSelectedHospital(null);
+    const confirmDeleteHospital = async () => {
+        if (!selectedHospital) {
+            console.error("No hospital selected for deletion");
+            return;
+        }
+    
+        const payload = {
+            list_tpye: selectedHospital.list_type,
+            Hospital_: selectedHospital.Hospital
+        };
+    
+        console.log("Payload being sent:", payload);
+    
+        try {
+            //const response = await fetch("http://localhost:443/delete/hospital/post", {
+            const response = await fetch("https://rpa-apiprd.inet.co.th/delete/hospital/post", {
+                method: "DELETE",
+                headers: {
+                    "Content-Type": "application/json",
+                    "Cache-Control": "no-cache"
+                },
+                body: JSON.stringify(payload)
+            });
+    
+            if (response.ok) {
+                console.log("Delete successful");
+                setHospitalData((prevData) =>
+                    prevData.filter((hospital) => hospital.id !== selectedHospital.id)
+                );
+                try {
+                    const alertResponse = await axios.post("https://rpa-apiprd.inet.co.th/Alert/delete/data", payload);
+                    console.log("API Alert Response:", alertResponse);
+    
+                    if (alertResponse.status === 200) {
+                        console.log("แจ้งเตือนสำเร็จ");
+                    } else {
+                        console.error("ไม่สามารถแจ้งเตือนได้:", alertResponse);
+                    }
+                } catch (alertError) {
+                    console.error("เกิดข้อผิดพลาดขณะเรียก API แจ้งเตือน:", alertError);
+                }
+                handleClosePopup();
+                resetFormFields(); 
+                window.location.reload();
+            } else {
+                console.error("Failed to delete hospital", response.status, response.statusText);
+            }
+        } catch (error) {
+            console.error("Error deleting hospital:", error);
+        } finally {
+            console.log("Closing all popups");
+            setIsDeleteConfirmOpen(false);
+            setIsListPopupOpen(false);
+            console.log("isDeleteConfirmOpen:", isDeleteConfirmOpen);
+            console.log("isListPopupOpen:", isListPopupOpen);
         }
     };
-
+    
+    
     const handleCancelDelete = () => {
-        setDeleteConfirmOpen(false);
-        setSelectedHospital(null);
+        setIsDeleteConfirmOpen(false);
     };
-
-    // Function to fetch hospital data from the API
+    
     const fetchHospitalData = async (type) => {
         setLoading(true);
         try {
-            const response = await fetch(`http://localhost:443/get/hospital/post?type=${type}`);
+            const timestamp = new Date().getTime();
+            //const response = await fetch(`http://localhost:443/get/hospital/post?type=${type}&_=${timestamp}`);
+            const response = await fetch(`https://rpa-apiprd.inet.co.th/get/hospital/post?type=${type}&_=${timestamp}`);
             if (response.ok) {
                 const data = await response.json();
-                setHospitalData(data);
+                const updatedData = data.map((hospital) => ({
+                    ...hospital,
+                    list_type: type,
+                }));
+                console.log('Updated data:', updatedData);
+    
+                setHospitalData(updatedData);
             } else {
                 console.error("Failed to fetch data");
             }
@@ -108,57 +162,76 @@ const Hospital_News = () => {
             setLoading(false);
         }
     };
-
-    // Handle hospital type selection change
     const handleTypeChange = (event) => {
         const selectedType = event.target.value;
         setHospitalType(selectedType);
         fetchHospitalData(selectedType);
     };
 
-    // Function to handle closing the popup
     const handleCloseListPopup = () => {
         setIsListPopupOpen(false);
-        setHospitalData([]); // Clear data when closing
+        setHospitalData([]);
     };
 
     const handleAddHospital = async () => {
-            // ตรวจสอบข้อมูลก่อน
         if (!hospitalType || !hospitalName || !token) {
-            alert("กรุณากรอกข้อมูลให้ครบถ้วน");
+            setSnackbarMessage('กรุณากรอกข้อมูลให้ครบถ้วน');
+            setSnackbarSeverity('error');
+            setOpenSnackbar(true);
             return;
         }
-
-        // รวบรวมข้อมูลเป็น object
+    
         const newHospital = {
-            list_tpye: hospitalType, // จะเก็บเป็น "โรงพยาบาลรัฐ" หรือ "โรงพยาบาลเอกชน"
+            list_tpye: hospitalType,
             Hospital_: hospitalName,
             Token_: token,
         };
-
         console.log("ข้อมูลโรงพยาบาลที่เพิ่ม:", newHospital);
-        try {
-            // ส่งข้อมูลไปยัง API
-            const response = await axios.post(
-                "http://localhost:443/insert/hospital/post",
-                newHospital
-            );
     
-            // ตรวจสอบผลลัพธ์จาก API
+        try {
+            const response = await axios.post("https://rpa-apiprd.inet.co.th/insert/hospital/post", newHospital);
+            console.log("API Response:", response);
+    
             if (response.status === 200) {
                 console.log("เพิ่มโรงพยาบาลสำเร็จ:", response.data);
-                alert("เพิ่มโรงพยาบาลสำเร็จ!");
+                setSnackbarMessage('เพิ่มโรงพยาบาลสำเร็จ!');
+                setSnackbarSeverity('success');
+                setHospitalData((prevData) => [...prevData, newHospital]);
+                try {
+                    const alertResponse = await axios.post("https://rpa-apiprd.inet.co.th/Alert/insert/data", newHospital);
+                    console.log("API Alert Response:", alertResponse);
+    
+                    if (alertResponse.status === 200) {
+                        console.log("แจ้งเตือนสำเร็จ");
+                    } else {
+                        console.error("ไม่สามารถแจ้งเตือนได้:", alertResponse);
+                    }
+                } catch (alertError) {
+                    console.error("เกิดข้อผิดพลาดขณะเรียก API แจ้งเตือน:", alertError);
+                }
+                handleClosePopup();
+                resetFormFields(); 
+                window.location.reload();
             } else {
-                console.error("เกิดข้อผิดพลาดในการเพิ่มโรงพยาบาล:", response.data);
-                alert("ไม่สามารถเพิ่มโรงพยาบาลได้");
+                setSnackbarMessage('ไม่สามารถเพิ่มโรงพยาบาลได้');
+                setSnackbarSeverity('error');
             }
         } catch (error) {
             console.error("เกิดข้อผิดพลาด:", error);
-            alert("เกิดข้อผิดพลาดในการเชื่อมต่อกับเซิร์ฟเวอร์");
+            setSnackbarMessage('รายชื่อโรงพยาบาลนี้มีอยู่แล้ว!!');
+            setSnackbarSeverity('error');
         }
-    
-        // ปิด popup หลังจากเพิ่มข้อมูล
-        handleClosePopup();
+        setOpenSnackbar(true);
+    };    
+
+    const resetFormFields = () => {
+        setHospitalType('');
+        setHospitalName('');
+        setToken('');
+    };
+
+    const handleCloseSnackbar = () => {
+        setOpenSnackbar(false);
     };
 
     const handleOpenUserMenu = (event) => {
@@ -168,7 +241,6 @@ const Hospital_News = () => {
     const handleFirstToggle = () => {
         setIsFirstChecked(true);
         setIsSecondChecked(false);
-            // Clear the checkbox states
         setCheckedItems({});
         setSelectedCheckboxes({});
     };
@@ -176,11 +248,17 @@ const Hospital_News = () => {
     const handleSecondToggle = () => {
         setIsFirstChecked(false);
         setIsSecondChecked(true);
-            // Clear the checkbox states
         setCheckedItems({});
         setSelectedCheckboxes({});
     };
-
+    const handleReportTeamIClaim = () => {
+        navigate('/Report/Team/iClaim')
+        window.location.reload();
+    }
+    const handleInternalv2 = () => {
+        navigate('/Internal/v2')
+        window.location.reload();
+    }
     const handleHospitalNews = () => {
         navigate('/Hospital/News');
         window.location.reload();
@@ -226,19 +304,17 @@ const Hospital_News = () => {
         const fetchData = async () => {
             try {
                 let endpoint = '';
+                const timestamp = new Date().getTime();
+                
                 if (isFirstChecked) {
-                    // endpoint = 'http://localhost:443/get/data/hospital/government';
-                    endpoint = 'https://rpa-apiprd.inet.co.th:443/get/data/hospital/government';
+                    endpoint = `https://rpa-apiprd.inet.co.th:443/get/data/hospital/government?_=${timestamp}`;
                 } else if (isSecondChecked) {
-                    // endpoint = 'http://localhost:443/get/data/hospital/private';
-                    endpoint = 'https://rpa-apiprd.inet.co.th:443/get/data/hospital/private';
+                    endpoint = `https://rpa-apiprd.inet.co.th:443/get/data/hospital/private?_=${timestamp}`;
                 }
                 
                 const response = await axios.get(endpoint);
                 setData(response.data);
                 setLoading(false);
-    
-                // Log the response data
                 console.log(`Data from ${endpoint}:`, response.data);
             } catch (error) {
                 console.error('Error fetching data:', error);
@@ -267,8 +343,6 @@ const Hospital_News = () => {
         const { [hospitalKeyField]: hospital, [tokenKeyField]: token } = selectedItem;
 
         const updatedSelectedCheckboxes = { ...selectedCheckboxes };
-
-        // Check if this checkbox was previously selected
         if (isChecked && !updatedSelectedCheckboxes[hospitalKey]) {
             updatedSelectedCheckboxes[hospitalKey] = {
                 Hospital: hospital,
@@ -282,7 +356,6 @@ const Hospital_News = () => {
         setCheckedItems(updatedCheckedItems);
         setSelectedCheckboxes(updatedSelectedCheckboxes);
 
-        // Update the "Select All" checkbox state
         if (Object.keys(updatedCheckedItems).length === filteredData.length) {
             setCheckedItems((prevCheckedItems) => ({
                 ...prevCheckedItems,
@@ -344,28 +417,18 @@ const Hospital_News = () => {
     const handleSendMessage = async () => {
         setLoading(true);
         try {
-            // Step 1: Prepare message payload
             const messagePayload = {
                 message: MessageText,
                 selectedHospitals: Object.values(selectedCheckboxes)
             };
     
-            // Step 2: Prepare form data for files
             const formData = new FormData();
             attachedFiles.forEach((file) => {
                 formData.append('files', file);
             });
     
-            // Step 3: Append message data to form data
             formData.append('message', JSON.stringify(messagePayload));
-    
-            // Step 4: Send data to API endpoint
-            // const response = await axios.post('http://localhost:443/send/Message/New', formData, {
-            //     headers: {
-            //         'Content-Type': 'multipart/form-data',
-            //     },
-            // });
-            // Step 4: Send data to API endpoint
+            // Test http://localhost:443/send/Message/New
             const response = await axios.post('https://rpa-apiprd.inet.co.th:443/send/Message/New', formData, {
                 headers: {
                     'Content-Type': 'multipart/form-data',
@@ -373,13 +436,10 @@ const Hospital_News = () => {
             });
     
             console.log('Message sent successfully:', response.data);
-    
-            // Step 5: Clear message text and attached files after sending
             setMessageText('');
             setAttachedFiles([]);
             setFileNames([]);
     
-            // Optionally, reload or update UI after sending
             window.location.reload();
         } catch (error) {
             console.error('Error:', error);
@@ -410,7 +470,6 @@ const Hospital_News = () => {
     };
 
     const handleRemoveFile = (index) => {
-        // ลบไฟล์ออกจาก attachedFiles และ fileNames ตาม index ที่ระบุ
         const newAttachedFiles = attachedFiles.filter((file, i) => i !== index);
         const newFileNames = fileNames.filter((name, i) => i !== index);
     
@@ -477,8 +536,8 @@ const Hospital_News = () => {
                                 },
                             }}
                         >
-                            {['กำหนดสิทธิ์', 'แก้ไขโรงพยาบาล', 'Log', 'Internal INET', 'ข่าวสารโรงพยาบาล', 'ออกจากระบบ'].map((setting) => (
-                                <MenuItem key={setting} style={{ padding: isSmallScreen ? '0 5px' : '5px 5px' }} onClick={setting === 'ออกจากระบบ' ? handleLogout : setting === 'แก้ไขโรงพยาบาล' ? handleEdithospitalClick : setting === 'กำหนดสิทธิ์' ? handleSetPermissions : setting === 'Log' ? handleLogClick : setting === 'Internal INET' ? handleInternaliNetClick : setting === 'ข่าวสารโรงพยาบาล' ? handleHospitalNews : null}>
+                            {['Internal INET','Internal V2','Report Team Iclaim','กำหนดสิทธิ์','แก้ไขโรงพยาบาล' , 'Log','ข่าวสารโรงพยาบาล', 'ออกจากระบบ'].map((setting) => (
+                                <MenuItem key={setting} style={{ padding: isSmallScreen ? '0 5px' : '5px 2px' }} onClick={setting === 'ออกจากระบบ' ? handleLogout : setting === 'แก้ไขโรงพยาบาล' ? handleEdithospitalClick : setting === 'กำหนดสิทธิ์' ? handleSetPermissions : setting === 'Log' ? handleLogClick : setting === 'Internal INET' ? handleInternaliNetClick : setting === 'ข่าวสารโรงพยาบาล' ? handleHospitalNews : setting === 'Internal V2' ? handleInternalv2 : setting === 'Report Team Iclaim' ? handleReportTeamIClaim : null}>
                                     <Typography style={{ fontFamily: "'Kanit', sans-serif", padding: isSmallScreen ? '0 12px' : '0 10px', fontSize: isSmallScreen ? '8px' : '16px', margin: isSmallScreen ? '1px 0' : '0 0' }}>
                                         {setting}
                                     </Typography>
@@ -744,7 +803,7 @@ const Hospital_News = () => {
                 >
                     <Typography
                         variant="h6"
-                        component="div" // เปลี่ยนจาก h6 เป็น div เพื่อแก้ปัญหา nesting
+                        component="div"
                         style={{ fontFamily: "'Kanit', sans-serif", color: '#333' }}
                     >
                         เพิ่มโรงพยาบาล
@@ -792,6 +851,20 @@ const Hospital_News = () => {
                     <Button onClick={handleAddHospital} variant="contained" color="primary" style={{ fontFamily: "'Kanit', sans-serif", backgroundColor: '#559cbf' }}>
                         เพิ่มโรงพยาบาล
                     </Button>
+                    <Snackbar
+                        open={openSnackbar}
+                        autoHideDuration={6000}
+                        onClose={handleCloseSnackbar}
+                        anchorOrigin={{ vertical: 'bottom', horizontal: 'center' }}
+                    >
+                        <Alert
+                            onClose={handleCloseSnackbar}
+                            severity={snackbarSeverity}
+                            sx={{ width: '100%' }}
+                        >
+                            {snackbarMessage}
+                        </Alert>
+                    </Snackbar>
                 </DialogActions>
             </Dialog>
             <Dialog open={isListPopupOpen} onClose={handleCloseListPopup} maxWidth="md" fullWidth>
@@ -870,7 +943,7 @@ const Hospital_News = () => {
                                                         {hospital.name} : {hospital.Hospital}
                                                     </Typography>
                                                 </Box>
-                                                <IconButton onClick={() => handleDeleteHospital(hospital.id)} size="small">
+                                                <IconButton onClick={() => handleDeleteHospital(hospital)} size="small">
                                                     <DeleteIcon style={{ color: '#e11d48', fontSize: '20px' }} />
                                                 </IconButton>
                                             </Box>

@@ -33,7 +33,7 @@
   width: 90%;
 }
 .CardScrallber{
-  max-height: 450px;
+  max-height: 480px;
   overflow-y: auto;
 }
 .SelectallStyle{
@@ -42,7 +42,6 @@
   justify-content: center;
   margin-right: 75%;
   padding: 20px 2px 2px 2px;
-  
 }
 .BoxStyle {
   position: absolute;
@@ -180,9 +179,27 @@ button {
   transform: scale(1.10);
 }
 .custom-checkbox {
-  background-color: rgb(255, 255, 255);
-  border-radius: 50%;
+  display: flex;
   align-items: center;
+  justify-content: center;
+  background-color: #ffffff;
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  border: 1px solid #d9d9d9;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+  cursor: pointer;
+  transition: background-color 0.3s ease, box-shadow 0.3s ease;
+}
+
+.custom-checkbox:hover {
+  background-color: #f0f0f0;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
+}
+
+.custom-checkbox:active {
+  background-color: #e0e0e0;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
 }
 .custom-checkbox1 {
   display: flex;
@@ -385,7 +402,7 @@ button {
 @media (max-width: 768px) {
   .container,
   .CardScrallber{
-    max-height: 440px;
+    max-height: 400px;
     overflow-y: auto;
   }
   .container-approve-reject {
@@ -563,8 +580,27 @@ button {
     transform: scale(1.10);
   }
   .custom-checkbox {
-    background: none;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background-color: #ffffff;
+    width: 20px;
+    height: 20px;
     border-radius: 50%;
+    border: 1px solid #d9d9d9;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+    cursor: pointer;
+    transition: background-color 0.3s ease, box-shadow 0.3s ease;
+  }
+
+  .custom-checkbox:hover {
+    background-color: #f0f0f0;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
+  }
+
+  .custom-checkbox:active {
+    background-color: #e0e0e0;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
   }
   .Fixlocation-approve-reject {
     position: static;
@@ -785,8 +821,27 @@ button {
     transform: scale(1.10);
   }
   .custom-checkbox {
-    background: none;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background-color: #ffffff;
+    width: 20px;
+    height: 20px;
     border-radius: 50%;
+    border: 1px solid #d9d9d9;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+    cursor: pointer;
+    transition: background-color 0.3s ease, box-shadow 0.3s ease;
+  }
+
+  .custom-checkbox:hover {
+    background-color: #f0f0f0;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
+  }
+
+  .custom-checkbox:active {
+    background-color: #e0e0e0;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
   }
   .Fixlocation-approve-reject {
     position: static;

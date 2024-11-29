@@ -1,13 +1,33 @@
-.custom-checkbox-internal{
-  background-color: #ffffff;
-  border-radius: 50%;
-}
-.custom-checkbox-internal-1{
-  display: flex;
-  align-items: flex-start;
-  justify-content: center;
-  height: 60%;
-}
+  .custom-checkbox-internal-internalv1 {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background-color: #ffffff;
+    width: 20px;
+    height: 20px;
+    border-radius: 50%;
+    border: 1px solid #d9d9d9;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+    cursor: pointer;
+    transition: background-color 0.3s ease, box-shadow 0.3s ease;
+  }
+
+  .custom-checkbox-internal-internalv1:hover {
+    background-color: #f0f0f0;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
+  }
+
+  .custom-checkbox-internal-internalv1:active {
+    background-color: #e0e0e0;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+  }
+
+  .custom-checkbox-internal-1{
+    display: flex;
+    align-items: flex-start;
+    justify-content: center;
+    height: 60%;
+  }
 .selectAllContainer {
   display: flex;
   align-items: center;
@@ -219,21 +239,37 @@
       justify-content: center;
   }
 }
+.cardStyle-InV2 {
+    width: 90%;
+}
 @media (max-width: 1030px) {
   .CardScrallber-internal{
     max-height: 1000px;
     overflow-y: auto;
   }
 }
+@media (max-width: 480px) {
+  .cardStyle-InV2 {
+    width: 80%;
+    height: 50%;
+    margin-top: 10px;
+  }
+}
   @media (max-width: 768px) {
     .CardScrallber-internal{
-      max-height: 440px;
+      max-height: 400px;
       overflow-y: auto;
+    }
+    .cardStyle-InV2 {
+      width: 80%;
+      height: 50%;
+      margin-top: 10px;
     }
   }
   @media (max-width: 420px) {
-    .CardScrallber-internal{
-      max-height: 1000px;
-      overflow-y: auto;
+    .cardStyle-InV2 {
+      width: 80%;
+      height: 50%;
+      margin-top: 10px;
     }
   }

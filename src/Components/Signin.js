@@ -26,7 +26,7 @@ const useStyles = makeStyles((theme) => ({
     padding: theme.spacing(2),
     backgroundColor: 'rgba(255, 255, 255, 0.9)',
     borderRadius: theme.spacing(1),
-    width: '100%', // Adjusted width for smaller screens
+    width: '100%',
     maxWidth: 400
   },
   submit: {
@@ -83,7 +83,7 @@ const Signin = () => {
         localStorage.setItem('account_id', response['account_id']);
         localStorage.setItem('user_role', response['username']);
         localStorage.setItem('username', JSON.stringify(response));
-      // Extract username from localStorage
+
       const usernameRole = localStorage.getItem('user_role');
       // Call the role user API
     //   fetch(`http://localhost:443/Role-user?username_role=${usernameRole }`, {
@@ -100,16 +100,12 @@ const Signin = () => {
     })
     .then(data => data.json())
     .then(result => {
-      // Log the result to console
+
       const roles = result.map(entry => entry.role);
-      // Store the role in localStorage
       localStorage.setItem('role', roles[0]);
-      // Redirect to the dashboard page
       window.location.href = "/Dashboard/External";
     })
     .catch(error => {
-      // Log any errors
-      //console.error('Error:', error);
       localStorage.setItem('role', 'viewer');
       window.location.href = "/Dashboard/External";
     });
@@ -124,7 +120,6 @@ const Signin = () => {
       });
     }
   }
-  //  check role user
 
     return (
       <Grid container component="main" className='root'>

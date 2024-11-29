@@ -42,7 +42,7 @@ const Log = () => {
 
     const handleChange = (event) => {
         const selectedValue = event.target.value;
-        console.log('Selected value:', selectedValue); // เพิ่ม console.log เพื่อตรวจสอบค่าที่ถูกเลือก
+        console.log('Selected value:', selectedValue);
         if (selectedValue === 10) {
             setSelectedType("External 2");
         }else if (selectedValue === 20) {
@@ -50,21 +50,24 @@ const Log = () => {
         }else if (selectedValue === 30) {
             setSelectedType("Internal");
         }
-        console.log('Selected type:', selectedType); // เพิ่ม console.log เพื่อตรวจสอบค่า selectedType หลังจากการเปลี่ยนแปลง
+        else if (selectedValue === 40) {
+            setSelectedType("Internal v2");
+        }
+        else if (selectedValue === 50) {
+            setSelectedType("Report Team iClaim");
+        }
+        console.log('Selected type:', selectedType);
     };
     
-
-      // Function to handle log out after 10 minutes of inactivity
   useEffect(() => {
     let lastActivityTime = new Date().getTime();
 
     const checkInactivity = () => {
       const currentTime = new Date().getTime();
       const inactiveTime = currentTime - lastActivityTime;
-      const twoMinutes = 10 * 60 * 1000; // 10 minutes in milliseconds
+      const twoMinutes = 10 * 60 * 1000;
 
       if (inactiveTime > twoMinutes) {
-        // Log out if inactive for more than 10 minutes
         handleLogout();
       }
     };
@@ -73,9 +76,8 @@ const Log = () => {
       lastActivityTime = new Date().getTime();
     };
 
-    const activityInterval = setInterval(checkInactivity, 60000); // Check every minute for inactivity
+    const activityInterval = setInterval(checkInactivity, 60000);
 
-    // Listen for user activity events
     window.addEventListener('mousemove', handleActivity);
     window.addEventListener('keydown', handleActivity);
 
@@ -113,7 +115,7 @@ const Log = () => {
         console.error('Error fetching logs:', error.message);
         setLoading(false);
         if (error.message === 'Invalid data format' || error.message === 'No data available for selected date') {
-            setLogData([]); // กำหนด logData เป็นอาร์เรย์ว่างเมื่อไม่มีข้อมูลสำหรับวันที่เลือกหรือข้อมูลไม่ถูกต้อง
+            setLogData([]);
         }
     }
 }, [selectedType, selectedDate]);
@@ -130,6 +132,15 @@ const Log = () => {
         setPutDate(formattedDate);
         fetchLogs();
     };
+
+    const handleReportTeamIClaim = () => {
+        navigate('/Report/Team/iClaim')
+        window.location.reload();
+      }
+      const handleInternalv2 = () => {
+        navigate('/Internal/v2')
+        window.location.reload();
+      }
 
     const handleDashboardInternalClick = () => {
         navigate('/Dashboard/Internal')
@@ -253,8 +264,8 @@ const Log = () => {
                                 },
                             }}
                         >
-                            {['กำหนดสิทธิ์','แก้ไขโรงพยาบาล' , 'Log','Internal INET','ข่าวสารโรงพยาบาล', 'ออกจากระบบ'].map((setting) => (
-                                <MenuItem key={setting} style={{ padding: isSmallScreen ? '0 5px' : '5px 5px' }} onClick={setting === 'ออกจากระบบ' ? handleLogout : setting === 'แก้ไขโรงพยาบาล' ? handleEdithospitalClick :setting === 'กำหนดสิทธิ์' ? handleSetPermissions : setting === 'Log' ? handleLogClick : setting === 'Internal INET' ? handleInternaliNetClick : setting === 'ข่าวสารโรงพยาบาล' ? handleHospitalNews: null}>
+                            {['Internal INET','Internal V2','Report Team Iclaim','กำหนดสิทธิ์','แก้ไขโรงพยาบาล' , 'Log','ข่าวสารโรงพยาบาล', 'ออกจากระบบ'].map((setting) => (
+                                <MenuItem key={setting} style={{ padding: isSmallScreen ? '0 5px' : '5px 2px' }} onClick={setting === 'ออกจากระบบ' ? handleLogout : setting === 'แก้ไขโรงพยาบาล' ? handleEdithospitalClick :setting === 'กำหนดสิทธิ์' ? handleSetPermissions : setting === 'Log' ? handleLogClick : setting === 'Internal INET' ? handleInternaliNetClick : setting === 'ข่าวสารโรงพยาบาล' ? handleHospitalNews : setting === 'Internal V2' ? handleInternalv2 : setting === 'Report Team Iclaim' ? handleReportTeamIClaim : null}>
                                     <Typography style={{ fontFamily: "'Kanit', sans-serif", padding: isSmallScreen ? '0 12px' : '0 10px', fontSize: isSmallScreen ? '8px' : '16px', margin: isSmallScreen ? '1px 0' : '0 0' }}>
                                         {setting}
                                     </Typography>
@@ -325,6 +336,24 @@ const Log = () => {
                                 margin: '0',
                             }}
                             >Dashboard Internal</MenuItem>
+                            <MenuItem value={40}
+                            style={{
+                                fontFamily: "'Kanit', sans-serif",
+                                fontWeight: '700',
+                                textAlign:'center',
+                                fontSize: isSmallScreen ? '6px' : '16px',
+                                margin: '0',
+                            }}
+                            >Dashboard Internal V2</MenuItem>
+                            <MenuItem value={50}
+                            style={{
+                                fontFamily: "'Kanit', sans-serif",
+                                fontWeight: '700',
+                                textAlign:'center',
+                                fontSize: isSmallScreen ? '6px' : '16px',
+                                margin: '0',
+                            }}
+                            >Report Team Iclaim</MenuItem>
                         </Select>
                     </FormControl>
                 </div>

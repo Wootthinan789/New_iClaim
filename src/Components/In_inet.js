@@ -54,7 +54,14 @@ const Ininet = () => {
         navigate('/Dashboard/Internal');
         window.location.reload();
     };
-
+    const handleReportTeamIClaim = () => {
+        navigate('/Report/Team/iClaim')
+        window.location.reload();
+      }
+      const handleInternalv2 = () => {
+        navigate('/Internal/v2')
+        window.location.reload();
+      }
     const handleDashboardExternalClick = () => {
         navigate('/Dashboard/External');
         window.location.reload();
@@ -98,10 +105,9 @@ const Ininet = () => {
         const checkInactivity = () => {
           const currentTime = new Date().getTime();
           const inactiveTime = currentTime - lastActivityTime;
-          const twoMinutes = 10 * 60 * 1000; // 10 minutes in milliseconds
+          const twoMinutes = 10 * 60 * 1000;
     
           if (inactiveTime > twoMinutes) {
-            // Log out if inactive for more than 10 minutes
             handleLogout();
           }
         };
@@ -110,9 +116,7 @@ const Ininet = () => {
           lastActivityTime = new Date().getTime();
         };
     
-        const activityInterval = setInterval(checkInactivity, 60000); // Check every minute for inactivity
-    
-        // Listen for user activity events
+        const activityInterval = setInterval(checkInactivity, 60000);
         window.addEventListener('mousemove', handleActivity);
         window.addEventListener('keydown', handleActivity);
     
@@ -140,17 +144,13 @@ const Ininet = () => {
     const handleDateChange = (date) => {
         setSelectedDate(date);
         const formattedDate = date.toISOString().slice(0, 10);
-        setPutDate(formattedDate); // วันที่ที่แสดง
+        setPutDate(formattedDate);
         
-        // สร้างวันที่ใหม่เพิ่ม 1 วัน
         const nextDay = new Date(date);
-        nextDay.setDate(date.getDate() + 1); // เพิ่มวัน
-    
-        // ปรับปรุง currentApiDate ให้เป็นวันที่เพิ่ม 1 วัน
+        nextDay.setDate(date.getDate() + 1);
         const formattedApiDate = `${nextDay.getDate().toString().padStart(2, '0')}${(nextDay.getMonth() + 1).toString().padStart(2, '0')}${nextDay.getFullYear()}`;
         setCurrentApiDate(formattedApiDate);
     
-        // เรียก API โดยใช้วันที่เพิ่ม 1 วัน
         axios.get('https://rpa-apiprd.inet.co.th/iClaim/get/img', {
             params: {
                 date_on: formattedApiDate,
@@ -159,7 +159,7 @@ const Ininet = () => {
         })
         .then(response => {
             console.log("API response:", response.data);
-            setImages(response.data); // อัปเดต state ด้วยข้อมูลภาพ
+            setImages(response.data);
             setTotalItems(response.data.length);
         })
         .catch(error => {
@@ -176,12 +176,9 @@ const Ininet = () => {
         const formattedDate = previousDay.toISOString().slice(0, 10);
         setPutDate(formattedDate);
         console.log("Initial displayed date:", formattedDate);
-    
-        // กำหนด currentApiDate เป็นวันที่ปัจจุบันสำหรับ API
         const formattedApiDate = `${currentDate.getDate().toString().padStart(2, '0')}${(currentDate.getMonth() + 1).toString().padStart(2, '0')}${currentDate.getFullYear()}`;
         setCurrentApiDate(formattedApiDate);
     
-        // เรียก API โดยใช้วันที่ปัจจุบัน
         axios.get('https://rpa-apiprd.inet.co.th/iClaim/get/img', {
             params: {
                 date_on: formattedApiDate,
@@ -190,7 +187,7 @@ const Ininet = () => {
         })
         .then(response => {
             console.log("API response:", response.data);
-            setImages(response.data); // อัปเดต state ด้วยข้อมูลภาพ
+            setImages(response.data);
             setTotalItems(response.data.length);
         })
         .catch(error => {
@@ -218,12 +215,11 @@ const Ininet = () => {
             Swal.fire({
                 icon: 'success',
                 title: 'Success',
-                //text: 'Data sent successfully!',
                 timer: 2000,
                 showConfirmButton: false
             });
-            const response = await axios.post('http://localhost:443/Internal/send/data/inet', data);
-            //const response = await axios.post('https://rpa-apiprd.inet.co.th:443/Internal/send/data/inet', data);
+            //const response = await axios.post('http://localhost:443/Internal/send/data/inet', data);
+            const response = await axios.post('https://rpa-apiprd.inet.co.th:443/Internal/send/data/inet', data);
             console.log('API response:', response.data);
 
             const loginternal = mappedImages.map(async (image) => {
@@ -275,6 +271,14 @@ const Ininet = () => {
       };
     
     const handleRejectConfirm = async () => {
+        const isComplete = Object.keys(selectedItemsDetails).every(
+            (key) => selectedItemsDetails[key].rejectReason && selectedItemsDetails[key].rejectReason.trim() !== ""
+        );
+
+        if (!isComplete) {
+            alert("กรุณากรอกข้อมูลในทุกช่องก่อนยืนยัน");
+            return;
+        }
         const newDataArray = Object.keys(selectedItemsDetails).map((doc_id) => ({
             approve:selectedItemsDetails[doc_id].approve,
             date_on:selectedItemsDetails[doc_id].date_on, 
@@ -301,19 +305,12 @@ const Ininet = () => {
             //send date api reject to ake
             const response = await axios.post('https://rpa-apiprd.inet.co.th:443/rpa/iclaim/RejectImageInternalV2',data)
             console.log(`Data send success to api ake : `, response.data);
-
-                  // ส่งข้อมูลไปยัง API
-            // await axios.post("https://rpa-apiprd.inet.co.th:443/send-message/Reject", data);
-            // await axios.post("http://localhost:443/send-message/Reject", data);
-            // console.log("Data sent successfully send message Reject");
-
-                  // ส่งข้อมูลไปยัง API insert log
             const logPromises = selectedHospitalsArrayReject.map(async (checkbox) => {
                 const logData = {
                 doc_name: "-",
                 status: "Reject",
                 user_name: usernameJson.username,
-                remark: checkbox.title, // Use the checkbox title as the remark
+                remark: checkbox.title,
                 data_type: "Internal"
                 };
         
@@ -321,13 +318,11 @@ const Ininet = () => {
             console.log("Log data inserted successfully");
             });
             await Promise.all(logPromises);
-            //await axios.post("http://localhost:443/send-message/alertReject", data);
             await axios.post("https://rpa-apiprd.inet.co.th:443/send-message/alertReject", data);
             console.log("Data sent successfully send message alert Reject");
         } catch (error) {
             console.error('Error sending data:', error.message);
           }
-          // เคลียร์ข้อมูลของ textarea และปิด Modal
           setSelectedItemsDetails({});
           setOpenModal(false);
           window.location.reload();
@@ -339,13 +334,11 @@ const Ininet = () => {
             const isSelected = updated.has(doc_id);
             if (isSelected) {
                 updated.delete(doc_id);
-                // Remove the item from selectedItemsDetails
                 const newDetails = { ...selectedItemsDetails };
                 delete newDetails[doc_id];
                 setSelectedItemsDetails(newDetails);
             } else {
                 updated.add(doc_id);
-                // Find the image details and add it to selectedItemsDetails
                 const selectedItem = images.find(img => img.doc_id === doc_id);
                 setSelectedItemsDetails(prevDetails => ({
                     ...prevDetails,
@@ -363,13 +356,11 @@ const Ininet = () => {
                     }
                 }));
             }
-            // Check if all items are selected
             if (updated.size === images.length) {
                 setSelectAll(true);
             } else {
                 setSelectAll(false);
             }
-            // console.log('Selected items details:', Object.values(selectedItemsDetails).sort((a, b) => a.index - b.index));
             return updated;
         });
     };
@@ -381,8 +372,6 @@ const Ininet = () => {
         } else {
             const allDocIds = new Set(images.map(item => item.doc_id));
             setSelectedImages(allDocIds);
-    
-            // Update selectedItemsDetails with all images, preserving order
             const allDetails = images.reduce((acc, item) => {
                 acc[item.doc_id] = {
                     approve: item.approve,
@@ -401,10 +390,8 @@ const Ininet = () => {
             setSelectedItemsDetails(allDetails);
         }
         setSelectAll(!selectAll);
-        // console.log('Selected items details:', Object.values(selectedItemsDetails).sort((a, b) => a.index - b.index));
     };
     useEffect(() => {
-        // ทำอะไรก็ตามที่ต้องการเมื่อมีการเปลี่ยนแปลงใน selectedCheckboxes
          console.log('Selected checkboxes:', selectedItemsDetails);
       }, [selectedItemsDetails]);
     
@@ -457,8 +444,8 @@ const Ininet = () => {
                                 },
                             }}
                         >
-                            {['กำหนดสิทธิ์', 'แก้ไขโรงพยาบาล', 'Log', 'Internal INET', 'ข่าวสารโรงพยาบาล', 'ออกจากระบบ'].map((setting) => (
-                                <MenuItem key={setting} style={{ padding: isSmallScreen ? '0 5px' : '5px 5px' }} onClick={setting === 'ออกจากระบบ' ? handleLogout : setting === 'แก้ไขโรงพยาบาล' ? handleEdithospitalClick : setting === 'กำหนดสิทธิ์' ? handleSetPermissions : setting === 'Log' ? handleLogClick : setting === 'Internal INET' ? handleInternaliNetClick : setting === 'ข่าวสารโรงพยาบาล' ? handleHospitalNews : null}>
+                            {['Internal INET','Internal V2','Report Team Iclaim','กำหนดสิทธิ์','แก้ไขโรงพยาบาล' , 'Log','ข่าวสารโรงพยาบาล', 'ออกจากระบบ'].map((setting) => (
+                                <MenuItem key={setting} style={{ padding: isSmallScreen ? '0 5px' : '5px 2px' }} onClick={setting === 'ออกจากระบบ' ? handleLogout : setting === 'แก้ไขโรงพยาบาล' ? handleEdithospitalClick : setting === 'กำหนดสิทธิ์' ? handleSetPermissions : setting === 'Log' ? handleLogClick : setting === 'Internal INET' ? handleInternaliNetClick : setting === 'ข่าวสารโรงพยาบาล' ? handleHospitalNews : setting === 'Internal V2' ? handleInternalv2 : setting === 'Report Team Iclaim' ? handleReportTeamIClaim : null}>
                                     <Typography style={{ fontFamily: "'Kanit', sans-serif", padding: isSmallScreen ? '0 12px' : '0 10px', fontSize: isSmallScreen ? '8px' : '16px', margin: isSmallScreen ? '1px 0' : '0 0' }}>
                                         {setting}
                                     </Typography>
@@ -481,8 +468,8 @@ const Ininet = () => {
                         <img src={selectedItemsDetails[index].src} alt={`Image ${index + 1}`} className="imageInModal_External" />
                         <textarea
                         placeholder="เพิ่มรายละเอียดสำหรับรูปภาพนี้"
-                        value={selectedItemsDetails[index].rejectReason || ''} // ใช้ค่า rejectReason ของแต่ละรายการ
-                        onChange={(e) => handleRejectReasonChange(e, index)} // เพิ่มการเรียกใช้ฟังก์ชัน handleRejectReasonChange
+                        value={selectedItemsDetails[index].rejectReason || ''}
+                        onChange={(e) => handleRejectReasonChange(e, index)}
                         className="rejectReasonInput_External"
                         style={{fontFamily:"'Kanit', sans-serif"}}
                         />
@@ -531,15 +518,22 @@ const Ininet = () => {
                         selected={selectedDate} onChange={handleDateChange} dateFormat="dd/MM/yyyy" />
                 </div>
             </div>
+            <div style={{
+                textAlign: 'center',
+                fontFamily: "'Kanit', sans-serif",
+                fontSize: isSmallScreen ? '8px' : '18px',
+                marginBottom : isSmallScreen ? '6px' : '12px'
+            }}>
+                Internal INET
+            </div>
             <Card className='cardStyle_Log cardContainer' style={{ backgroundColor: '#D9D9D9', boxShadow: 'none', borderRadius: '15px' }}>
                 <CardContent className='CardScrallber-internal'>
                     {images.length > 0 ? (
                         images.map((item) => (
                             <div key={item.doc_id} style={{ padding: '10px', textAlign: 'center' }}>
                                 <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                                    
-                                    <label className="custom-checkbox-internal-1" style={{ marginRight: '10px' }}>
-                                        <label className="custom-checkbox-internal" >
+                                    <label className="custom-checkbox-internal-1" style={{ marginRight: isSmallScreen ?'2px' : '5px' ,marginBottom: isSmallScreen ?'3px' : '2px' }}>
+                                        <label className="custom-checkbox-internal-internalv1">
                                             <Checkbox
                                                 icon={<RadioButtonUncheckedIcon />}
                                                 checkedIcon={<CheckCircleIcon />}
@@ -548,7 +542,7 @@ const Ininet = () => {
                                                 onChange={() => handleCheckboxChange(item.doc_id)}
                                                 size="small"
                                             />
-                                            <span className='checkmark'></span>
+                                            <span className="checkmark"></span>
                                         </label>
                                     </label>
                                     <Typography
@@ -560,7 +554,7 @@ const Ininet = () => {
                                             border: '0.1px solid transparent',
                                             padding: isSmallScreen ? '5px 8px' : '5px 10px',
                                             marginBottom: '5px',
-                                            fontSize: isSmallScreen ? '8px' : '16px',
+                                            fontSize: isSmallScreen ? '6px' : '16px',
                                             color: selectedImages.has(item.doc_id) ? '#FFFF' : 'black',
                                             maxWidth: '80%',
                                             display: 'inline-block',
@@ -590,8 +584,8 @@ const Ininet = () => {
                 </CardContent>
             </Card>
             {images.length > 0 && (role === 'admin' || role === 'user' || role === 'Admin' || role === 'User') && (
-            <div className='selectAllContainer' style={{fontfamily: "'Kanit', sans-serif"}}>
-                    <label className="custom-checkbox-internal" >
+            <div className='selectAllContainer' style={{fontfamily: "'Kanit', sans-serif" ,marginRight: isSmallScreen ? '60%' : ''}}>
+                    <label className="custom-checkbox-internal-internalv1" >
                         <Checkbox
                             icon={<RadioButtonUncheckedIcon />}
                             checkedIcon={<CheckCircleIcon />}
@@ -599,7 +593,7 @@ const Ininet = () => {
                             checked={selectAll}
                             onChange={handleSelectAllChange}
                             size="small"
-                            className="custom-checkbox-internal"
+                            className="custom-checkbox-internal-internalv1"
                         />
                         <span className='checkmark'></span>
                     </label>
@@ -608,7 +602,7 @@ const Ininet = () => {
                       fontWeight: 'bold',
                       fontFamily: "'Kanit', sans-serif",
                       marginTop: '5px',
-                      margin: isSmallScreen ? '0px 0px 2px' : '0px 7px',
+                      margin: isSmallScreen ? '0px 10px 2px' : '0px 7px',
                       fontSize: isSmallScreen ? '10px' : '18px',
                     }}
                   >

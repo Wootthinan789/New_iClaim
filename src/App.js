@@ -11,8 +11,10 @@ import Profile from './Components/Profile';
 // import DownloadFile from './Components/DowloadFile';
 import SetPermissions from './Components/Set_Permissions';
 import Ininet from './Components/In_inet';
-import Hospital_News from './Components/Hospital_News';
+import HospitalNews from './Components/Hospital_News';
 import TestAPI from './Components/Test_Get_API'
+import InternalV2 from './Components/Internal_V2'
+import ReportTeamiClaim from './Components/Report_Team_Iclaim'
 
 const App = () =>{
   const token = localStorage.getItem("access_token");
@@ -71,11 +73,31 @@ const App = () =>{
               )
             } 
             />
+            <Route 
+            path="/Internal/v2" 
+            element={
+              (role === "admin" || role === "Admin" || role === "SuperAdmin" || role === "superadmin") ? (
+                <InternalV2/>
+              ) : (
+                <HospitalEditNotAllowed />
+              )
+            } 
+            />
           <Route
           path='/Hospital/News'
           element={
             (role === "admin" || role === "Admin" || role === "SuperAdmin" || role === "superadmin") ? (
-              <Hospital_News/>
+              <HospitalNews/>
+            ) : (
+              <HospitalEditNotAllowed/>
+            )
+          }
+          />
+          <Route
+          path='/Report/Team/iClaim'
+          element={
+            (role === "admin" || role === "Admin" || role === "SuperAdmin" || role === "superadmin") ? (
+              <ReportTeamiClaim/>
             ) : (
               <HospitalEditNotAllowed/>
             )

@@ -101,6 +101,14 @@ const Set_Permissions = () => {
     const handleOpenUserMenu = (event) => {
         setAnchorElUser(event.currentTarget);
     };
+    const handleReportTeamIClaim = () => {
+        navigate('/Report/Team/iClaim')
+        window.location.reload();
+      }
+      const handleInternalv2 = () => {
+        navigate('/Internal/v2')
+        window.location.reload();
+      }
     const handleHospitalNews = () => {
         navigate('/Hospital/News')
         window.location.reload();
@@ -199,7 +207,7 @@ const Set_Permissions = () => {
         .then(response => {
             console.log(response.data);
             setDeleteDialogOpen(false);
-            fetchUsernames(); // Refresh the usernames list
+            fetchUsernames();
             swal({
                 text: 'Deleted Successfully',
                 icon: 'success',
@@ -258,8 +266,8 @@ const Set_Permissions = () => {
                                 },
                             }}
                         >
-                            {['กำหนดสิทธิ์','แก้ไขโรงพยาบาล' , 'Log','Internal INET','ข่าวสารโรงพยาบาล', 'ออกจากระบบ'].map((setting) => (
-                                <MenuItem key={setting} style={{ padding: isSmallScreen ? '0 5px' : '5px 5px' }} onClick={setting === 'ออกจากระบบ' ? handleLogout : setting === 'แก้ไขโรงพยาบาล' ? handleEdithospitalClick :setting === 'กำหนดสิทธิ์' ? handleSetPermissions : setting === 'Log' ? handleLogClick : setting === 'Internal INET' ? handleInternaliNetClick : setting === 'ข่าวสารโรงพยาบาล' ? handleHospitalNews : null}>
+                            {['Internal INET','Internal V2','Report Team Iclaim','กำหนดสิทธิ์','แก้ไขโรงพยาบาล' , 'Log','ข่าวสารโรงพยาบาล', 'ออกจากระบบ'].map((setting) => (
+                                <MenuItem key={setting} style={{ padding: isSmallScreen ? '0 5px' : '5px 2px' }} onClick={setting === 'ออกจากระบบ' ? handleLogout : setting === 'แก้ไขโรงพยาบาล' ? handleEdithospitalClick :setting === 'กำหนดสิทธิ์' ? handleSetPermissions : setting === 'Log' ? handleLogClick : setting === 'Internal INET' ? handleInternaliNetClick : setting === 'ข่าวสารโรงพยาบาล' ? handleHospitalNews : setting === 'Internal V2' ? handleInternalv2 : setting === 'Report Team Iclaim' ? handleReportTeamIClaim : null}>
                                     <Typography style={{ fontFamily: "'Kanit', sans-serif", padding: isSmallScreen ? '0 12px' : '0 10px', fontSize: isSmallScreen ? '8px' : '16px', margin: isSmallScreen ? '1px 0' : '0 0' }}>
                                         {setting}
                                     </Typography>
