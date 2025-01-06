@@ -25,7 +25,7 @@ import DialogActions from '@mui/material/DialogActions';
 import Button from '@mui/material/Button';
 
 const usernameJson = JSON.parse(localStorage.getItem('username'));
-const settings = ['Internal INET','Internal V2','Report Team Iclaim','กำหนดสิทธิ์','แก้ไขโรงพยาบาล' , 'Log','ข่าวสารโรงพยาบาล', 'ออกจากระบบ'];
+const settings = ['External 3','Internal INET','Internal V2','Report Team Iclaim','กำหนดสิทธิ์','แก้ไขโรงพยาบาล' , 'Log','ข่าวสารโรงพยาบาล', 'ออกจากระบบ'];
 
 const Edit_hospital = () => {
     const [anchorElUser, setAnchorElUser] = useState(null);
@@ -45,7 +45,10 @@ const Edit_hospital = () => {
     const isSmallScreen = useMediaQuery(theme.breakpoints.down('sm'));
 
     const navigate = useNavigate();
-
+    const handleExternal3 = () => {
+      navigate('/Dashboard/External3')
+      window.location.reload();
+    }
     const handleReportTeamIClaim = () => {
       navigate('/Report/Team/iClaim')
       window.location.reload();
@@ -288,7 +291,7 @@ const Edit_hospital = () => {
                   }}
               >
                 {settings.map((setting) => (
-                  <MenuItem key={setting} style={{ padding: isSmallScreen ? '0 5px' : '5px 2px' }} onClick={setting === 'ออกจากระบบ' ? handleLogout : setting === 'แก้ไขโรงพยาบาล' ? handleEdithospitalClick :setting === 'กำหนดสิทธิ์' ? handleSetPermissions : setting === 'Log' ? handleLogClick : setting === 'Internal INET' ? handleInternaliNetClick : setting === 'ข่าวสารโรงพยาบาล' ? handleHospitalNews : setting === 'Internal V2' ? handleInternalv2 : setting === 'Report Team Iclaim' ? handleReportTeamIClaim : null}>
+                  <MenuItem key={setting} style={{ padding: isSmallScreen ? '0 5px' : '5px 2px' }} onClick={setting === 'ออกจากระบบ' ? handleLogout : setting === 'แก้ไขโรงพยาบาล' ? handleEdithospitalClick :setting === 'กำหนดสิทธิ์' ? handleSetPermissions : setting === 'Log' ? handleLogClick : setting === 'Internal INET' ? handleInternaliNetClick : setting === 'ข่าวสารโรงพยาบาล' ? handleHospitalNews : setting === 'Internal V2' ? handleInternalv2 : setting === 'Report Team Iclaim' ? handleReportTeamIClaim : setting === 'External 3'? handleExternal3 : null}>
                 <Typography       
                 style={{
                   fontFamily: "'Kanit', sans-serif",

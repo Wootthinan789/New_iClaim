@@ -56,6 +56,9 @@ const Log = () => {
         else if (selectedValue === 50) {
             setSelectedType("Report Team iClaim");
         }
+        else if (selectedValue === 60) {
+            setSelectedType("External 3");
+        }
         console.log('Selected type:', selectedType);
     };
     
@@ -132,7 +135,10 @@ const Log = () => {
         setPutDate(formattedDate);
         fetchLogs();
     };
-
+    const handleExternal3 = () => {
+        navigate('/Dashboard/External3')
+        window.location.reload();
+      }
     const handleReportTeamIClaim = () => {
         navigate('/Report/Team/iClaim')
         window.location.reload();
@@ -264,8 +270,8 @@ const Log = () => {
                                 },
                             }}
                         >
-                            {['Internal INET','Internal V2','Report Team Iclaim','กำหนดสิทธิ์','แก้ไขโรงพยาบาล' , 'Log','ข่าวสารโรงพยาบาล', 'ออกจากระบบ'].map((setting) => (
-                                <MenuItem key={setting} style={{ padding: isSmallScreen ? '0 5px' : '5px 2px' }} onClick={setting === 'ออกจากระบบ' ? handleLogout : setting === 'แก้ไขโรงพยาบาล' ? handleEdithospitalClick :setting === 'กำหนดสิทธิ์' ? handleSetPermissions : setting === 'Log' ? handleLogClick : setting === 'Internal INET' ? handleInternaliNetClick : setting === 'ข่าวสารโรงพยาบาล' ? handleHospitalNews : setting === 'Internal V2' ? handleInternalv2 : setting === 'Report Team Iclaim' ? handleReportTeamIClaim : null}>
+                            {['External 3','Internal INET','Internal V2','Report Team Iclaim','กำหนดสิทธิ์','แก้ไขโรงพยาบาล' , 'Log','ข่าวสารโรงพยาบาล', 'ออกจากระบบ'].map((setting) => (
+                                <MenuItem key={setting} style={{ padding: isSmallScreen ? '0 5px' : '5px 2px' }} onClick={setting === 'ออกจากระบบ' ? handleLogout : setting === 'แก้ไขโรงพยาบาล' ? handleEdithospitalClick :setting === 'กำหนดสิทธิ์' ? handleSetPermissions : setting === 'Log' ? handleLogClick : setting === 'Internal INET' ? handleInternaliNetClick : setting === 'ข่าวสารโรงพยาบาล' ? handleHospitalNews : setting === 'Internal V2' ? handleInternalv2 : setting === 'Report Team Iclaim' ? handleReportTeamIClaim : setting === 'External 3'? handleExternal3 : null}>
                                     <Typography style={{ fontFamily: "'Kanit', sans-serif", padding: isSmallScreen ? '0 12px' : '0 10px', fontSize: isSmallScreen ? '8px' : '16px', margin: isSmallScreen ? '1px 0' : '0 0' }}>
                                         {setting}
                                     </Typography>
@@ -309,15 +315,6 @@ const Log = () => {
                             onChange={handleChange}
                             defaultValue={10}
                         >
-                            <MenuItem value={10} 
-                            style={{
-                                fontFamily: "'Kanit', sans-serif",
-                                fontWeight: '700',
-                                textAlign:'center',
-                                fontSize: isSmallScreen ? '6px' : '16px',
-                                margin: '0',
-                            }}
-                            >Dashboard External 2</MenuItem>
                             <MenuItem value={20}
                             style={{
                                 fontFamily: "'Kanit', sans-serif",
@@ -327,6 +324,24 @@ const Log = () => {
                                 margin: '0',
                             }}
                             >Dashboard External 1</MenuItem>
+                            <MenuItem value={10} 
+                            style={{
+                                fontFamily: "'Kanit', sans-serif",
+                                fontWeight: '700',
+                                textAlign:'center',
+                                fontSize: isSmallScreen ? '6px' : '16px',
+                                margin: '0',
+                            }}
+                            >Dashboard External 2</MenuItem>
+                            <MenuItem value={60}
+                            style={{
+                                fontFamily: "'Kanit', sans-serif",
+                                fontWeight: '700',
+                                textAlign:'center',
+                                fontSize: isSmallScreen ? '6px' : '16px',
+                                margin: '0',
+                            }}
+                            >Dashboard External 3</MenuItem>
                             <MenuItem value={30}
                             style={{
                                 fontFamily: "'Kanit', sans-serif",

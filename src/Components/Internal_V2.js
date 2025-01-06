@@ -27,7 +27,7 @@ import Checkbox from '@mui/material/Checkbox';
 import RadioButtonUncheckedIcon from '@mui/icons-material/RadioButtonUnchecked';
 import CheckCircleIcon from '@mui/icons-material/CheckCircle';
 
-const settings = ['Internal INET','Internal V2','Report Team Iclaim','กำหนดสิทธิ์','แก้ไขโรงพยาบาล' , 'Log','ข่าวสารโรงพยาบาล', 'ออกจากระบบ'];
+const settings = ['External 3','Internal INET','Internal V2','Report Team Iclaim','กำหนดสิทธิ์','แก้ไขโรงพยาบาล' , 'Log','ข่าวสารโรงพยาบาล', 'ออกจากระบบ'];
 
 const Internal_V2 = () => {
   const [anchorElUser, setAnchorElUser] = useState(null);
@@ -92,6 +92,10 @@ const Internal_V2 = () => {
       localStorage.removeItem("role")
       window.location.href = "/";
   };
+  const handleExternal3 = () => {
+    navigate('/Dashboard/External3')
+    window.location.reload();
+  }
   const handleLogClick = () => {
       navigate('/Log')
     }
@@ -433,7 +437,7 @@ const handleSelectAllChange = () => {
 
               style={{    
                 padding: isSmallScreen ? '0 5px' : '5px 2px',}}
-              onClick={setting === 'ออกจากระบบ' ? handleLogout : setting === 'Log' ?  handleLogClick : setting === 'แก้ไขโรงพยาบาล' ? handleEdithospitalClick : setting === 'กำหนดสิทธิ์' ? handleSetPermissions : setting === 'Internal INET' ? handleInternaliNetClick : setting === 'ข่าวสารโรงพยาบาล' ? handleHospitalNews : setting === 'Internal V2' ? handleInternalv2 : setting === 'Report Team Iclaim' ? handleReportTeamIClaim : null}
+              onClick={setting === 'ออกจากระบบ' ? handleLogout : setting === 'Log' ?  handleLogClick : setting === 'แก้ไขโรงพยาบาล' ? handleEdithospitalClick : setting === 'กำหนดสิทธิ์' ? handleSetPermissions : setting === 'Internal INET' ? handleInternaliNetClick : setting === 'ข่าวสารโรงพยาบาล' ? handleHospitalNews : setting === 'Internal V2' ? handleInternalv2 : setting === 'Report Team Iclaim' ? handleReportTeamIClaim : setting === 'External 3'? handleExternal3 : null}
               
             >
               <Typography       

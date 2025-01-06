@@ -15,6 +15,7 @@ import HospitalNews from './Components/Hospital_News';
 import TestAPI from './Components/Test_Get_API'
 import InternalV2 from './Components/Internal_V2'
 import ReportTeamiClaim from './Components/Report_Team_Iclaim'
+import External3 from './Components/External3';
 
 const App = () =>{
   const token = localStorage.getItem("access_token");
@@ -32,6 +33,10 @@ const App = () =>{
           <Route path="/" element={<Profile/>} />
           <Route path="/Dashboard/External" element={<Profile/>} />
           <Route path="/Dashboard/Internal" element={<Internal/>} />
+          <Route path="/Dashboard/External3" element={<External3/>} />
+          <Route path="/Internal/inet" element={<Ininet/>} />
+          <Route path="/Internal/v2" element={<InternalV2/>} />
+          <Route path="/Report/Team/iClaim" element={<ReportTeamiClaim/>} />
           <Route path='/TEST/API' element={<TestAPI/>} />
           <Route 
           path="/Set/Permission" 
@@ -63,26 +68,6 @@ const App = () =>{
               )
             }
           />
-          <Route 
-            path="/Internal/inet" 
-            element={
-              (role === "admin" || role === "Admin" || role === "SuperAdmin" || role === "superadmin") ? (
-                <Ininet/>
-              ) : (
-                <HospitalEditNotAllowed />
-              )
-            } 
-            />
-            <Route 
-            path="/Internal/v2" 
-            element={
-              (role === "admin" || role === "Admin" || role === "SuperAdmin" || role === "superadmin") ? (
-                <InternalV2/>
-              ) : (
-                <HospitalEditNotAllowed />
-              )
-            } 
-            />
           <Route
           path='/Hospital/News'
           element={
@@ -93,18 +78,6 @@ const App = () =>{
             )
           }
           />
-          <Route
-          path='/Report/Team/iClaim'
-          element={
-            (role === "admin" || role === "Admin" || role === "SuperAdmin" || role === "superadmin") ? (
-              <ReportTeamiClaim/>
-            ) : (
-              <HospitalEditNotAllowed/>
-            )
-          }
-          />
-          {/* <Route path="/Test/Style" element={<Teststyle/>} />
-          <Route path="/Download/File" element={<DownloadFile/>} /> */}
         </Routes>
       </BrowserRouter>
     </div>
@@ -121,7 +94,7 @@ const HospitalEditNotAllowed = () => {
     });
   }, []);
 
-  return <Navigate to="/" replace state={{ from: "/Edit/Hospital" }} />; // Redirect back to home
+  return <Navigate to="/" replace state={{ from: "/Edit/Hospital" }} />;
 };
 
 export default App;

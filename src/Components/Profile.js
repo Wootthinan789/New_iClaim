@@ -1,3 +1,4 @@
+// External 2
 import React, { useState, useEffect } from 'react';
 import  axios  from 'axios';
 import './Style/Profile.css';
@@ -31,7 +32,7 @@ import RadioButtonUncheckedIcon from '@mui/icons-material/RadioButtonUnchecked';
 import CheckCircleIcon from '@mui/icons-material/CheckCircle';
 
 //let username = "วุฒินันท์ ปรางมาศ";
-const settings = ['Internal INET','Internal V2','Report Team Iclaim','กำหนดสิทธิ์','แก้ไขโรงพยาบาล' , 'Log','ข่าวสารโรงพยาบาล', 'ออกจากระบบ'];
+const settings = ['External 3','Internal INET','Internal V2','Report Team Iclaim','กำหนดสิทธิ์','แก้ไขโรงพยาบาล' , 'Log','ข่าวสารโรงพยาบาล', 'ออกจากระบบ'];
 
 const Profile = () => {
   const [countries, setCountries] = useState([]);
@@ -175,6 +176,7 @@ const Profile = () => {
         message: selectedHospitalsArray
       };
       console.log(data)
+      //await axios.post("http://localhost:443/send-message", data);
       await axios.post("https://rpa-apiprd.inet.co.th:443/send-message", data);
       console.log("Data sent successfully send message");
       
@@ -203,6 +205,7 @@ const Profile = () => {
       window.location.reload();
     },2500);
   };
+
   useEffect(() => {
     let lastActivityTime = new Date().getTime();
 
@@ -245,6 +248,11 @@ const Profile = () => {
   }
   const handleInternalv2 = () => {
     navigate('/Internal/v2')
+    window.location.reload();
+  }
+
+  const handleExternal3 = () => {
+    navigate('/Dashboard/External3')
     window.location.reload();
   }
 
@@ -448,7 +456,7 @@ const handleSelectAllCheckboxChange = (event) => {
 
                 style={{    
                   padding: isSmallScreen ? '0 5px' : '5px 2px',}}
-                onClick={setting === 'ออกจากระบบ' ? handleLogout : setting === 'Log' ?  handleLogClick : setting === 'แก้ไขโรงพยาบาล' ? handleEdithospitalClick : setting === 'กำหนดสิทธิ์' ? handleSetPermissions : setting === 'Internal INET' ? handleInternaliNetClick : setting === 'ข่าวสารโรงพยาบาล' ? handleHospitalNews : setting === 'Internal V2' ? handleInternalv2 : setting === 'Report Team Iclaim' ? handleReportTeamIClaim : null}
+                onClick={setting === 'ออกจากระบบ' ? handleLogout : setting === 'Log' ?  handleLogClick : setting === 'แก้ไขโรงพยาบาล' ? handleEdithospitalClick : setting === 'กำหนดสิทธิ์' ? handleSetPermissions : setting === 'Internal INET' ? handleInternaliNetClick : setting === 'ข่าวสารโรงพยาบาล' ? handleHospitalNews : setting === 'Internal V2' ? handleInternalv2 : setting === 'Report Team Iclaim' ? handleReportTeamIClaim : setting === 'External 3'? handleExternal3 : null}
                 
               >
                 <Typography       

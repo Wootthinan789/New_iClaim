@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import  axios  from 'axios';
-import './Style/Internal.css';
+import './Style/Profile.css';
 import AppBar from '@mui/material/AppBar';
 import Box from '@mui/material/Box';
 import Toolbar from '@mui/material/Toolbar';
@@ -25,7 +25,7 @@ import logo from './images-iclaim/download (2).png';
 import employee from './images-iclaim/employee.png'
 import HomeIcon from './images-iclaim/home-regular-60.png';
 import SuccessIcon from './images-iclaim/checked.png';
-import FailIcon from './images-iclaim/cancel.png';
+// import FailIcon from './images-iclaim/cancel.png';
 import { useNavigate } from 'react-router-dom';
 import RadioButtonUncheckedIcon from '@mui/icons-material/RadioButtonUnchecked';
 import CheckCircleIcon from '@mui/icons-material/CheckCircle';
@@ -33,7 +33,7 @@ import CheckCircleIcon from '@mui/icons-material/CheckCircle';
 //let username = "วุฒินันท์ ปรางมาศ";
 const settings = ['External 3','Internal INET','Internal V2','Report Team Iclaim','กำหนดสิทธิ์','แก้ไขโรงพยาบาล' , 'Log','ข่าวสารโรงพยาบาล', 'ออกจากระบบ'];
 
-const Internal = () => {
+const External3 = () => {
   const [countries, setCountries] = useState([]);
   const [loading, setLoading] = useState(true);
   const [selectedDate, setSelectedDate] = useState(new Date());
@@ -52,20 +52,37 @@ const Internal = () => {
   const [selectedCheckboxCount, setSelectedCheckboxCount] = useState(0);
 
   const [selectAll, setSelectAll] = useState(false);
-  const role = localStorage.getItem("role")
-  
   const theme = useTheme();
   const isSmallScreen = useMediaQuery(theme.breakpoints.down('sm'));
 
+  const role = localStorage.getItem("role")
+
   const handleDateChange = (date) => {
     setSelectedDate(date);
-    const formattedDate = date.toISOString().slice(0, 10);
+    const formattedDate = date
+      .toLocaleDateString('en-GB', {
+        day: '2-digit',
+        month: '2-digit',
+        year: 'numeric',
+      })
+      .replace(/\//g, '');
     setPutDate(formattedDate);
+    console.log("formattedDate : ",formattedDate)
   };
+  
   useEffect(() => {
-    const formattedDate = selectedDate.toISOString().slice(0, 10);
+    const formattedDate = selectedDate
+      .toLocaleDateString('en-GB', {
+        day: '2-digit',
+        month: '2-digit',
+        year: 'numeric',
+      })
+      .replace(/\//g, '');
     setPutDate(formattedDate);
+    console.log("formattedDate : ",formattedDate)
   }, [selectedDate]);
+  
+  
   useEffect(() => {
     const currentDate = new Date();
     const previousDay = new Date(currentDate);
@@ -74,10 +91,7 @@ const Internal = () => {
   }, []);
 
   const navigate = useNavigate();
-  const handleDashboardExternalClick = () => {
-      navigate('/Dashboard/External')
-      window.location.reload();
-    };
+
   const handleDashboardInternalClick = () => {
       navigate('/Dashboard/Internal')
       window.location.reload();
@@ -102,6 +116,112 @@ const Internal = () => {
         rejectReason: value
       }
     }));
+  };
+  
+  const handleRejectConfirm = async () => {
+    const isComplete = Object.keys(selectedCheckboxes).every(
+    (key) => selectedCheckboxes[key].rejectReason && selectedCheckboxes[key].rejectReason.trim() !== ""
+    );
+        
+    if (!isComplete) {
+        alert("กรุณากรอกข้อมูลในทุกช่องก่อนยืนยัน");
+    return;
+    }
+    const newDataArray = Object.keys(selectedCheckboxes).map((index) => ({
+      doc_id: selectedCheckboxes[index].id_hospital,
+      date_on: putdate,
+      src_img: selectedCheckboxes[index].src_img_Array,
+      token: selectedCheckboxes[index].token,
+      user_approve: selectedCheckboxes[index].user_name,
+      user_name: selectedCheckboxes[index].user_name,
+      menu: selectedCheckboxes[index].menu,
+      title: selectedCheckboxes[index].title,
+      rejectReason: selectedCheckboxes[index].rejectReason
+    }));
+    try {
+      const selectedHospitalsArrayReject = Object.values(newDataArray);
+      const data = {
+        message: selectedHospitalsArrayReject
+      };
+      console.log("data : ",data)
+      const response = await axios.post('https://rpa-apiprd.inet.co.th:443/rpa/iclaim/RejectImageExternalV3', data);
+      console.log("Data sent successfully ake : ", response.data);
+      await axios.post("https://rpa-apiprd.inet.co.th:443/send-message/Reject", data);
+      console.log("Data sent successfully send message Reject");
+      const logPromises = selectedHospitalsArrayReject.map(async (checkbox) => {
+        const logData = {
+          doc_name: "-",
+          status: "Reject",
+          user_name: usernameJson.username,
+          remark: checkbox.title,
+          data_type: "External 3"
+        };
+  
+      await axios.post("https://rpa-apiprd.inet.co.th:443/iClaim/insert/log", logData);
+      console.log("Log data inserted successfully");
+    });
+    await Promise.all(logPromises);
+      await axios.post("https://rpa-apiprd.inet.co.th:443/send-message/alertReject", data);
+      console.log("Data sent successfully send message alert Reject");
+
+    } catch (error) {
+      console.error('Error sending data:', error.message);
+    }
+    setSelectedCheckboxes({});
+    setOpenModal(false);
+    // window.location.reload();
+  };
+  const handleOpenUserMenu = (event) => {
+    setAnchorElUser(event.currentTarget);
+  };
+
+  const handleCloseUserMenu = () => {
+    setAnchorElUser(null);
+  };
+
+  const handleApproveButtonClick = async () => {
+    if (Object.keys(selectedCheckboxes).length === 0) {
+      console.error('No data selected for processing');
+      return;
+    }
+      setNotification({ message: 'Successfully approved', show: true });
+      setDarkBackground(true);
+
+  
+    try {
+      const selectedHospitalsArray = Object.values(selectedCheckboxes);
+      const data = {
+        message: selectedHospitalsArray
+      };
+      console.log(data)
+      //await axios.post("http://localhost:443/send-message", data);
+      await axios.post("https://rpa-apiprd.inet.co.th:443/send-message", data);
+      console.log("Data sent successfully send message");
+      
+      const logPromises = selectedHospitalsArray.map(async (checkbox) => {
+        const logData = {
+          doc_name: "-",
+          status: "Approved",
+          user_name: usernameJson.username,
+          remark: checkbox.title,
+          data_type: "External 3"
+        };
+        await axios.post("https://rpa-apiprd.inet.co.th:443/iClaim/insert/log", logData);
+        console.log("Log data inserted successfully for", checkbox.title);
+      })
+      await Promise.all(logPromises);
+      await axios.post("https://rpa-apiprd.inet.co.th:443/send-message/alert", data);
+      console.log("Data sent successfully for alert message");
+    } catch (error) {
+      console.error('Error:', error.message);
+    }
+    setTimeout(() => {
+      setNotification({ message: '', show: false });
+      setDarkBackground(false);
+    }, 2500);
+    setTimeout(() =>{
+      window.location.reload();
+    },2500);
   };
 
   useEffect(() => {
@@ -131,126 +251,6 @@ const Internal = () => {
       window.removeEventListener('keydown', handleActivity);
     };
   }, []);
-  
-  const handleRejectConfirm = async () => {
-    const isComplete = Object.keys(selectedCheckboxes).every(
-      (key) => selectedCheckboxes[key].rejectReason && selectedCheckboxes[key].rejectReason.trim() !== ""
-      );
-          
-      if (!isComplete) {
-          alert("กรุณากรอกข้อมูลในทุกช่องก่อนยืนยัน");
-      return;
-      }
-    const newDataArray = Object.keys(selectedCheckboxes).map((index) => ({
-      id_hospital: selectedCheckboxes[index].id_hospital,
-      img_7_Array: selectedCheckboxes[index].img_7_Array,
-      token: selectedCheckboxes[index].token,
-      user_name: selectedCheckboxes[index].user_name,
-      menu: selectedCheckboxes[index].menu,
-      title: selectedCheckboxes[index].title,
-      rejectReason: selectedCheckboxes[index].rejectReason
-    }));
-    
-    console.log(newDataArray);
-  
-    try {
-      const selectedHospitalsArrayReject = Object.values(newDataArray);
-      const data = {
-        message: selectedHospitalsArrayReject
-      };
-      console.log(data)
-      //await axios.post("http://localhost:443/send-message/Reject", data);
-      await axios.post("https://rpa-apiprd.inet.co.th:443/send-message/Reject", data);
-      console.log("Data sent successfully send message Reject");
-
-      // const response = await axios.post('https://203.154.39.190:5000/rpa/iclaim/InsertRequest', data);
-      const response = await axios.post('https://rpa-apiprd.inet.co.th:443/rpa/iclaim/InsertRequest', data);
-      console.log("Data sent successfully ake : ", response.data);
-
-      // ส่งข้อมูลไปยัง API insert log
-      const logPromises = selectedHospitalsArrayReject.map(async (checkbox) => {
-        const logData = {
-          doc_name: "-",
-          status: "Reject",
-          user_name: usernameJson.username,
-          remark: checkbox.title,
-          data_type: "External 1"
-        };
-  
-      await axios.post("https://rpa-apiprd.inet.co.th:443/iClaim/insert/log", logData);
-      console.log("Log data inserted successfully");
-    });
-    await Promise.all(logPromises);
-
-      //await axios.post("http://localhost:443/send-message/alertReject", data);
-      await axios.post("https://rpa-apiprd.inet.co.th:443/send-message/alertReject", data);
-      console.log("Data sent successfully send message alert Reject");
-
-    } catch (error) {
-      console.error('Error sending data:', error.message);
-    }
-    setSelectedCheckboxes({});
-    setOpenModal(false);
-    window.location.reload();
-  };
-  
-  const handleOpenUserMenu = (event) => {
-    setAnchorElUser(event.currentTarget);
-  };
-
-  const handleCloseUserMenu = () => {
-    setAnchorElUser(null);
-  };
-
-  const handleApproveButtonClick = async () => {
-    if (Object.keys(selectedCheckboxes).length === 0) {
-      console.error('ไม่ได้เลือกข้อมูลใด ๆ เพื่อดำเนินการ');
-      return;
-    }
-  
-    setNotification({ message: 'ยืนยันเรียบร้อยแล้ว', show: true });
-    setDarkBackground(true);
-  
-    try {
-      const selectedHospitalsArray = Object.values(selectedCheckboxes);
-      const data = {
-        message: selectedHospitalsArray
-      };
-      console.log(data)
-      // ส่งข้อมูลไปยัง API ส่งรูปไปยัง Line notify
-      //await axios.post("http://localhost:443/send-message", data);
-      await axios.post("https://rpa-apiprd.inet.co.th:443/send-message", data);
-      console.log("Data sent successfully send message");
-
-      const logPromises = selectedHospitalsArray.map(async (checkbox) => {
-        const logData = {
-          doc_name: "-",
-          status: "Approved",
-          user_name: usernameJson.username,
-          remark: checkbox.title,
-          data_type: "External 1"
-        };
-      // ส่งข้อมูลเข้า log
-      await axios.post("https://rpa-apiprd.inet.co.th:443/iClaim/insert/log", logData);
-      console.log("Log data inserted successfully for", checkbox.title);
-    });
-    await Promise.all(logPromises);
-      //await axios.post("http://localhost:443/send-message/alert", data);
-      await axios.post("https://rpa-apiprd.inet.co.th:443/send-message/alert", data);
-      console.log("Data sent successfully send message alert");
-
-    } catch (error) {
-      console.error('Error sending data:', error.message);
-    }
-  
-    setTimeout(() => {
-      setNotification({ message: '', show: false });
-      setDarkBackground(false);
-    }, 2500);
-    window.location.reload();
-  };
-  
-
 
   const handleLogout = () => {
     localStorage.removeItem("access_token");
@@ -260,10 +260,6 @@ const Internal = () => {
     localStorage.removeItem("role")
     window.location.href = "/";
   };
-  const handleExternal3 = () => {
-    navigate('/Dashboard/External3')
-    window.location.reload();
-  }
   const handleReportTeamIClaim = () => {
     navigate('/Report/Team/iClaim')
     window.location.reload();
@@ -272,54 +268,63 @@ const Internal = () => {
     navigate('/Internal/v2')
     window.location.reload();
   }
-  const handleLogClick = () => {
-    navigate('/Log')
+
+  const handleExternal3 = () => {
+    navigate('/Dashboard/External3')
     window.location.reload();
   }
+
+  const handleLogClick = () => {
+    navigate('/Log')
+  }
+
   const handleHospitalNews = () => {
     navigate('/Hospital/News')
     window.location.reload();
   }
-  const handleInternaliNetClick = () => {
-    navigate('/Internal/inet')
-    window.location.reload();
-  }
+
   const handleEdithospitalClick = () => {
     navigate('/Edit/Hospital')
+    window.location.reload();
+  }
+  const handleDashboardExternalClick = () => {
+    navigate('/Dashboard/External')
+    window.location.reload();
+};
+  const handleInternaliNetClick = () => {
+    navigate('/Internal/inet')
     window.location.reload();
   }
   const handleSetPermissions = () => {
     navigate('/Set/Permission')
     window.location.reload();
-}
-
+  }
   const handleCheckboxChange = (event, index) => {
     const isChecked = event.target.checked;
     setCheckedItems(prevState => ({
       ...prevState,
       [index]: isChecked
     }));
-
     setSelectedCheckboxCount(prevCount =>
       isChecked ? prevCount + 1 : prevCount - 1
     );
+
     
     if (isChecked) {
       const checkboxData = countries[index];
       const id_hospital = checkboxData.id_hospital;
-      const img_7_Array = checkboxData.img_7;
-      const title = checkboxData.title;
+      const src_img_Array = checkboxData.src_img;
+      const title = checkboxData.title_name;
       const token = keyIds.find((hospital) => hospital.id === id_hospital)?.token;
 
       const selectedCheckbox = {
         id_hospital: id_hospital,
-        img_7_Array: img_7_Array,
+        src_img_Array: src_img_Array,
         token: token,
         user_name: usernameJson.username,
-        menu : "External 1",
+        menu : "External 3",
         title:title
       };
-
       setSelectedCheckboxes(prevState => ({
         ...prevState,
         [index]: selectedCheckbox
@@ -333,7 +338,7 @@ const Internal = () => {
     }
   };
   useEffect(() => {
-  console.log('Selected checkboxes:', selectedCheckboxes);
+   console.log('Selected checkboxes:', selectedCheckboxes);
 }, [selectedCheckboxes]);
 
   useEffect(() => {
@@ -357,21 +362,20 @@ const Internal = () => {
 const handleSelectAllCheckboxChange = (event) => {
   const isChecked = event.target.checked;
   const newSelectedCheckboxes = isChecked ? countries.map((country, index) => {
-    const { id_hospital, img_7: img_7_Array, title } = country;
+    const { id_hospital, src_img : src_img_Array, title_name : title } = country;
     const token = keyIds.find((hospital) => hospital.id === id_hospital)?.token;
     return {
       id_hospital,
-      img_7_Array,
+      src_img_Array,
       token,
       user_name: usernameJson.username,
-      menu : "External 1",
+      menu : "External 3",
       title
     };
   }) : [];
 
   setSelectedCheckboxes(isChecked ? newSelectedCheckboxes : {});
   setSelectAll(isChecked);
-
   const updatedCheckedItems = {};
   countries.forEach((_, index) => {
     updatedCheckedItems[index] = isChecked;
@@ -388,7 +392,8 @@ const handleSelectAllCheckboxChange = (event) => {
   useEffect(() => {
     const fetchCountries = async () => {
       try {
-        const response = await fetch(`https://rpa-apiprd.inet.co.th:443/iClaim/list?date_on=${putdate}`);
+
+        const response = await fetch(`https://rpa-apiprd.inet.co.th/iClaim/get/img?id_process=Src_000004&date_on=${putdate}`);
         const data = await response.json();
         if (!Array.isArray(data) || data.length === 0) {
           setCountries([]);
@@ -406,6 +411,8 @@ const handleSelectAllCheckboxChange = (event) => {
     fetchCountries();
   }, [putdate]);
   
+  useEffect(() => {
+  }, [putdate]);
 
   useEffect(() => {
     const initialCheckedItems = {};
@@ -464,9 +471,10 @@ const handleSelectAllCheckboxChange = (event) => {
             >
               {settings.map((setting) => (
                 <MenuItem key={setting} 
+
                 style={{    
                   padding: isSmallScreen ? '0 5px' : '5px 2px',}}
-                onClick={setting === 'ออกจากระบบ' ? handleLogout : setting === 'Log' ? handleLogClick : setting === 'แก้ไขโรงพยาบาล' ? handleEdithospitalClick : setting === 'กำหนดสิทธิ์' ? handleSetPermissions : setting === 'Internal INET' ? handleInternaliNetClick : setting === 'ข่าวสารโรงพยาบาล' ? handleHospitalNews : setting === 'Internal V2' ? handleInternalv2 : setting === 'Report Team Iclaim' ? handleReportTeamIClaim : setting === 'External 3'? handleExternal3 : null}
+                onClick={setting === 'ออกจากระบบ' ? handleLogout : setting === 'Log' ?  handleLogClick : setting === 'แก้ไขโรงพยาบาล' ? handleEdithospitalClick : setting === 'กำหนดสิทธิ์' ? handleSetPermissions : setting === 'Internal INET' ? handleInternaliNetClick : setting === 'ข่าวสารโรงพยาบาล' ? handleHospitalNews : setting === 'Internal V2' ? handleInternalv2 : setting === 'Report Team Iclaim' ? handleReportTeamIClaim : setting === 'External 3'? handleExternal3 : null}
                 
               >
                 <Typography       
@@ -493,19 +501,19 @@ const handleSelectAllCheckboxChange = (event) => {
           <div className="contentContainer">
             {Object.keys(selectedCheckboxes).map((index) => (
               <div key={index}>
-                <img src={selectedCheckboxes[index].img_7_Array} alt={`Image ${index + 1}`} className="imageInModal_Internal" />
+                <img src={selectedCheckboxes[index].src_img_Array} alt={`Image ${index + 1}`} className="imageInModal_External" />
                 <textarea
                   placeholder="เพิ่มรายละเอียดสำหรับรูปภาพนี้"
                   value={selectedCheckboxes[index].rejectReason || ''}
                   onChange={(e) => handleRejectReasonChange(e, index)}
-                  className="rejectReasonInput_Internal"
+                  className="rejectReasonInput_External"
                   style={{fontFamily:"'Kanit', sans-serif"}}
                 />
               </div>
             ))}
           </div>
           <div className="buttonContainer">
-          <Button
+            <Button
               variant="contained"
               style={{ backgroundColor: '#1095c6', color: 'white', fontFamily: "'Kanit', sans-serif" }}
               onClick={handleRejectConfirm}
@@ -537,23 +545,31 @@ const handleSelectAllCheckboxChange = (event) => {
           </button>
         </div>
         <div className='Fixlocation'>
-        <button className="Dashboard-Internal-button" onClick={handleDashboardInternalClick} style={{ background: '#2D7951' }}>External 1</button>
+          <button className="Dashboard-Internal-button" onClick={handleDashboardInternalClick}>External 1</button>
         </div>
         <div className='Fixlocation'>
-        <button className="Dashboard-Internal-button" onClick={handleDashboardExternalClick} >External 2</button>
+          <button className="Dashboard-Internal-button" onClick={handleDashboardExternalClick}>External 2</button>
         </div>
         <div className='Fixlocation'>
           <DatePicker className='Dashboard-Internal-button-date'
             selected={selectedDate} onChange={handleDateChange} dateFormat="dd/MM/yyyy" />
         </div>
       </div>
+      <div style={{
+                textAlign: 'center',
+                fontFamily: "'Kanit', sans-serif",
+                fontSize: isSmallScreen ? '8px' : '18px',
+                marginBottom : isSmallScreen ? '6px' : '12px'
+            }}>
+                External 3
+            </div>
       <Card className='cardStyle_Log cardContainer' style={{ backgroundColor: '#D9D9D9', boxShadow: 'none', borderRadius: '15px' }}>
         {loading ? (
           <p style={{ textAlign: "center" }}>Loading...</p>
         ) : countries && countries.length > 0 ? (
           <CardContent className='CardScrallber'>
             {countries.map((country, index) => (
-              <div key={index}                 
+              <div key={index}                
               style={{
                 marginBottom: '20px',
                 textAlign: 'center',
@@ -592,13 +608,13 @@ const handleSelectAllCheckboxChange = (event) => {
                           color: checkedItems[index] ? '#FFFF' : 'black',
                         }}
                       >
-                        {index + 1}. {country.title}
+                        {index + 1}. {country.title_name}
                       </Typography>
                     }
                   />
                 </FormGroup>
                 <img
-                  src={country.img_7}
+                  src={country.src_img}
                   alt={`iClaim${index + 1}`}
                   style={{
                     width: '70%',
@@ -611,13 +627,14 @@ const handleSelectAllCheckboxChange = (event) => {
                 />
               </div>
             ))}
+
           </CardContent>
         ) : (
           <p style={{ textAlign: "center", fontFamily: "'Kanit', sans-serif", fontSize: isSmallScreen ? '8px' : '20px', }}>ไม่มีข้อมูลสําหรับวันที่เลือก</p>
         )}
       </Card>
       {!loading && countries && countries.length > 0 && (role === 'admin' || role === 'user' || role === 'Admin' || role === 'User') && (
-     <div className='SelectallStyle' style={{fontfamily: "'Kanit', sans-serif" ,marginRight: isSmallScreen ? '50%' : '75%'}}>
+      <div className='SelectallStyle' style={{fontfamily: "'Kanit', sans-serif" ,marginRight: isSmallScreen ? '50%' : '75%'}}>
       <FormGroup row>
               <FormControlLabel
                 control={
@@ -638,6 +655,7 @@ const handleSelectAllCheckboxChange = (event) => {
                     style={{
                       fontWeight: 'bold',
                       fontFamily: "'Kanit', sans-serif",
+                      marginTop: '5px',
                       margin: isSmallScreen ? '0px 10px 2px' : '0px 7px',
                       fontSize: isSmallScreen ? '10px' : '18px',
                     }}
@@ -646,8 +664,8 @@ const handleSelectAllCheckboxChange = (event) => {
                   </Typography>
                 }
               />
-            </FormGroup>
-            </div>
+        </FormGroup>
+      </div>
       )}
       {!loading && countries && countries.length > 0 && (role === 'admin' || role === 'user' || role === 'Admin' || role === 'User') && (
         <div className='container-approve-reject'>
@@ -663,4 +681,4 @@ const handleSelectAllCheckboxChange = (event) => {
   );
 };
 
-export default Internal;
+export default External3;
