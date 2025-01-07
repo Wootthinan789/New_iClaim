@@ -66,9 +66,16 @@ const External3 = () => {
         year: 'numeric',
       })
       .replace(/\//g, '');
+  
+    const month = formattedDate.slice(2, 4); // ดึงค่าเดือน
+    const year = formattedDate.slice(4); // ดึงค่าปี
+    const thaiMonth = convertMonthToThai(month);
+  
     setPutDate(formattedDate);
-    console.log("formattedDate : ",formattedDate)
+    console.log("formattedDate : ", formattedDate);
+    console.log("เดือนภาษาไทย : ", thaiMonth, "ปี : ", year);
   };
+  
   
   useEffect(() => {
     const formattedDate = selectedDate
@@ -82,6 +89,14 @@ const External3 = () => {
     console.log("formattedDate : ",formattedDate)
   }, [selectedDate]);
   
+  const convertMonthToThai = (month) => {
+    const months = [
+      "มกราคม", "กุมภาพันธ์", "มีนาคม", "เมษายน", 
+      "พฤษภาคม", "มิถุนายน", "กรกฎาคม", "สิงหาคม", 
+      "กันยายน", "ตุลาคม", "พฤศจิกายน", "ธันวาคม"
+    ];
+    return months[parseInt(month, 10) - 1];
+  };
   
   useEffect(() => {
     const currentDate = new Date();
@@ -317,13 +332,17 @@ const External3 = () => {
       const title = checkboxData.title_name;
       const token = keyIds.find((hospital) => hospital.id === id_hospital)?.token;
 
+      const month = putdate.slice(2, 4);
+      const year = putdate.slice(4);
+      const thaiMonth = convertMonthToThai(month);
+
       const selectedCheckbox = {
         id_hospital: id_hospital,
         src_img_Array: src_img_Array,
         token: token,
         user_name: usernameJson.username,
         menu : "External 3",
-        title:title
+        title: `${title} ยอดเคลมประจำเดือน ${thaiMonth} ${year}`,
       };
       setSelectedCheckboxes(prevState => ({
         ...prevState,
@@ -364,13 +383,16 @@ const handleSelectAllCheckboxChange = (event) => {
   const newSelectedCheckboxes = isChecked ? countries.map((country, index) => {
     const { id_hospital, src_img : src_img_Array, title_name : title } = country;
     const token = keyIds.find((hospital) => hospital.id === id_hospital)?.token;
+    const month = putdate.slice(2, 4);
+    const year = putdate.slice(4);
+    const thaiMonth = convertMonthToThai(month);
     return {
       id_hospital,
       src_img_Array,
       token,
       user_name: usernameJson.username,
       menu : "External 3",
-      title
+      title: `${title} ยอดเคลมประจำเดือน ${thaiMonth} ${year}`,
     };
   }) : [];
 
