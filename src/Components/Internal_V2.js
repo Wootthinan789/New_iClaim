@@ -351,11 +351,11 @@ const handleSelectAllChange = () => {
             timer: 2000,
             showConfirmButton: false
         });
-        const response = await axios.post('http://localhost:443/Internal/send/data/inetv2', data);
-        //const response = await axios.post('https://rpa-apiprd.inet.co.th:443/Internal/send/data/inetv2', data);
+        //const response = await axios.post('http://localhost:443/Internal/send/data/inetv2', data);
+        const response = await axios.post('https://rpa-apiprd.inet.co.th:443/Internal/send/data/inetv2', data);
         console.log('API response:', response.data);
 
-        const response2 = await axios.post('http://localhost:443/OnePlatform/sendToOneplatform', mappedImages);
+        const response2 = await axios.post('https://rpa-apiprd.inet.co.th/OnePlatform/sendToOneplatform', mappedImages);
         console.log('API OnePlatform response:', response2.mappedImages);
 
         const loginternalv2 = mappedImages.map(async (image) => {

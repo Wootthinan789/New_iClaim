@@ -222,11 +222,11 @@ const Ininet = () => {
                 timer: 2000,
                 showConfirmButton: false
             });
-            const response = await axios.post('http://localhost:443/Internal/send/data/inet', data);
-            //const response = await axios.post('https://rpa-apiprd.inet.co.th:443/Internal/send/data/inet', data);
-            //console.log('API response:', response.data);
+            //const response = await axios.post('http://localhost:443/Internal/send/data/inet', data);
+            const response = await axios.post('https://rpa-apiprd.inet.co.th:443/Internal/send/data/inet', data);
+            console.log('API response:', response.data);
             console.log('mappedImages : ' , mappedImages);
-            const response2 = await axios.post('http://localhost:443/OnePlatform/sendToOneplatform', mappedImages);
+            const response2 = await axios.post('https://rpa-apiprd.inet.co.th/OnePlatform/sendToOneplatform', mappedImages);
             console.log('API OnePlatform response:', response2.mappedImages);
 
             const loginternal = mappedImages.map(async (image) => {
@@ -241,7 +241,7 @@ const Ininet = () => {
             await axios.post("https://rpa-apiprd.inet.co.th:443/iClaim/insert/log", logData);
             //console.log("Log data inserted successfully for", image.title);
             })
-            //window.location.reload();
+            window.location.reload();
             await Promise.all(loginternal);
 
         } catch (error) {
