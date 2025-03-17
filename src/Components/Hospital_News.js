@@ -23,6 +23,7 @@ import DeleteIcon from '@mui/icons-material/Delete';
 import VisibilityIcon from '@mui/icons-material/Visibility';
 import { useMediaQuery, useTheme, TextField, Button, Snackbar, Alert, Dialog, DialogContent, DialogActions ,CircularProgress,Select,InputLabel,FormControl,DialogTitle,DialogContentText} from '@mui/material';
 import CloseIcon from '@mui/icons-material/Close';
+import { Email } from '@material-ui/icons';
 
 const Hospital_News = () => {
     const [anchorElUser, setAnchorElUser] = useState(null);
@@ -83,7 +84,7 @@ const Hospital_News = () => {
     
         const payload = {
             list_tpye: selectedHospital.list_type,
-            Hospital_: selectedHospital.Hospital
+            Hospital_: selectedHospital.Hospital 
         };
     
         console.log("Payload being sent:", payload);
@@ -143,6 +144,7 @@ const Hospital_News = () => {
         try {
             const timestamp = new Date().getTime();
             //const response = await fetch(`http://localhost:443/get/hospital/post?type=${type}&_=${timestamp}`);
+            //ใช้แสดงรายการโรงพยาบาล
             const response = await fetch(`https://rpa-apiprd.inet.co.th/get/hospital/post?type=${type}&_=${timestamp}`);
             if (response.ok) {
                 const data = await response.json();
@@ -292,11 +294,7 @@ const Hospital_News = () => {
     };
 
     const handleLogout = () => {
-        localStorage.removeItem("access_token");
-        localStorage.removeItem("username");
-        localStorage.removeItem("account_id");
-        localStorage.removeItem("user_role");
-        localStorage.removeItem("role");
+        localStorage.clear();
         window.location.href = "/";
     };
 
@@ -311,9 +309,11 @@ const Hospital_News = () => {
                 const timestamp = new Date().getTime();
                 
                 if (isFirstChecked) {
-                    endpoint = `https://rpa-apiprd.inet.co.th:443/get/data/hospital/government?_=${timestamp}`;
+                    endpoint = `http://localhost:443/get/data/hospital/government/new?_=${timestamp}`;
+                    //endpoint = `https://rpa-apiprd.inet.co.th:443/get/data/hospital/government?_=${timestamp}`;
                 } else if (isSecondChecked) {
-                    endpoint = `https://rpa-apiprd.inet.co.th:443/get/data/hospital/private?_=${timestamp}`;
+                    endpoint = `http://localhost:443/get/data/hospital/private/new?_=${timestamp}`;
+                    //endpoint = `https://rpa-apiprd.inet.co.th:443/get/data/hospital/private?_=${timestamp}`;
                 }
                 
                 const response = await axios.get(endpoint);
@@ -325,7 +325,7 @@ const Hospital_News = () => {
                 setLoading(false);
             }
         };
-    
+
         fetchData();
     }, [isFirstChecked, isSecondChecked]);
 
@@ -333,33 +333,37 @@ const Hospital_News = () => {
         const isChecked = event.target.checked;
         const hospitalKey = isFirstChecked ? item.Hospital_Government : item.Hospital_Private;
         const updatedCheckedItems = { ...checkedItems, [hospitalKey]: isChecked };
-
-        let hospitalKeyField, tokenKeyField;
+    
+        let hospitalKeyField, tokenKeyField, emailField;
         if (isFirstChecked) {
             hospitalKeyField = 'Hospital_Government';
             tokenKeyField = 'Token_Government';
+            emailField = 'Email';
         } else if (isSecondChecked) {
             hospitalKeyField = 'Hospital_Private';
             tokenKeyField = 'Token_Private';
+            emailField = Email;
         }
-
+    
         const selectedItem = item;
         const { [hospitalKeyField]: hospital, [tokenKeyField]: token } = selectedItem;
-
+        const email = emailField ? selectedItem[emailField] : null;
+    
         const updatedSelectedCheckboxes = { ...selectedCheckboxes };
         if (isChecked && !updatedSelectedCheckboxes[hospitalKey]) {
             updatedSelectedCheckboxes[hospitalKey] = {
                 Hospital: hospital,
                 Token: token,
                 user_name: usernameJson.username,
+                ...(email ? { Email: email } : {}),
             };
         } else if (!isChecked && updatedSelectedCheckboxes[hospitalKey]) {
             delete updatedSelectedCheckboxes[hospitalKey];
         }
-
+    
         setCheckedItems(updatedCheckedItems);
         setSelectedCheckboxes(updatedSelectedCheckboxes);
-
+    
         if (Object.keys(updatedCheckedItems).length === filteredData.length) {
             setCheckedItems((prevCheckedItems) => ({
                 ...prevCheckedItems,
@@ -371,9 +375,10 @@ const Hospital_News = () => {
                 return rest;
             });
         }
-
+    
         console.log('Current selected checkboxes:', updatedSelectedCheckboxes);
     };
+    
 
     const handleSelectAll = (event) => {
         if (Object.keys(checkedItems).length === filteredData.length) {
@@ -395,7 +400,7 @@ const Hospital_News = () => {
                         hospitalKeyField = 'Hospital_Private';
                         tokenKeyField = 'Token_Private';
                     }
-                    const { [hospitalKeyField]: hospital, [tokenKeyField]: token } = item;
+                    const { [hospitalKeyField]: hospital, [tokenKeyField]: token  } = item;
                     newSelectedCheckboxes[hospitalKey] = {
                         Hospital: hospital,
                         Token: token,
@@ -432,8 +437,10 @@ const Hospital_News = () => {
             });
     
             formData.append('message', JSON.stringify(messagePayload));
-            // Test http://localhost:443/send/Message/New
-            const response = await axios.post('https://rpa-apiprd.inet.co.th:443/send/Message/New', formData, {
+            
+            // Test http://localhost:443/send/Message/New  https://rpa-apiprd.inet.co.th:443/send/Message/New
+            // const response = await axios.post('http://localhost:443/send/Message/New', formData, {
+            const response = await axios.post('http://localhost:443/api/test/send-email/iClaim/new/post', formData, {
                 headers: {
                     'Content-Type': 'multipart/form-data',
                 },
@@ -444,7 +451,7 @@ const Hospital_News = () => {
             setAttachedFiles([]);
             setFileNames([]);
     
-            window.location.reload();
+            // window.location.reload();
         } catch (error) {
             console.error('Error:', error);
         }

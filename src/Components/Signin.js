@@ -37,8 +37,8 @@ const useStyles = makeStyles((theme) => ({
 
 async function loginUser(credentials) {
   const { username, password } = credentials;
-  const clientId = '885';
-  const secretKey = 'TW0rWlcSRxKkkLWxBHQF6gTkeQDIEWchsswv34fh';
+  const clientId = '1117';
+  const secretKey = 'iFQYwseyMH68yu3nqYsNnUNxZ9Ciefc7a3tfSeAt';
   
   const body = {
     grant_type: "password",

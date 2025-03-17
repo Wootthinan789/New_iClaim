@@ -47,8 +47,7 @@ const Home = () => {
   };
 
   const handleLogout = () => {
-    localStorage.removeItem("accessToken");
-    localStorage.removeItem("user");
+    localStorage.clear();
     window.location.href = "/";
   };
 

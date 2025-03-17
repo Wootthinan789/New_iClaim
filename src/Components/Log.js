@@ -191,11 +191,7 @@ const Log = () => {
     };
 
     const handleLogout = () => {
-        localStorage.removeItem("access_token");
-        localStorage.removeItem("username");
-        localStorage.removeItem("account_id")
-        localStorage.removeItem("user_role")
-        localStorage.removeItem("role")
+        localStorage.clear();
         window.location.href = "/";
     };
 
