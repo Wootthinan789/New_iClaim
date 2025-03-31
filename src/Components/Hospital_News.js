@@ -309,11 +309,11 @@ const Hospital_News = () => {
                 const timestamp = new Date().getTime();
                 
                 if (isFirstChecked) {
-                    endpoint = `http://localhost:443/get/data/hospital/government/new?_=${timestamp}`;
-                    //endpoint = `https://rpa-apiprd.inet.co.th:443/get/data/hospital/government?_=${timestamp}`;
+                    //:443/get/data/hospital/government/new?_=${timestamp}`;
+                     endpoint = `https://rpa-apiprd.inet.co.th:443/get/data/hospital/government/new?_=${timestamp}`;
                 } else if (isSecondChecked) {
-                    endpoint = `http://localhost:443/get/data/hospital/private/new?_=${timestamp}`;
-                    //endpoint = `https://rpa-apiprd.inet.co.th:443/get/data/hospital/private?_=${timestamp}`;
+                    //endpoint = `http://localhost:443/get/data/hospital/private/new?_=${timestamp}`;
+                     endpoint = `https://rpa-apiprd.inet.co.th:443/get/data/hospital/private/new?_=${timestamp}`;
                 }
                 
                 const response = await axios.get(endpoint);
@@ -342,7 +342,7 @@ const Hospital_News = () => {
         } else if (isSecondChecked) {
             hospitalKeyField = 'Hospital_Private';
             tokenKeyField = 'Token_Private';
-            emailField = Email;
+            emailField = "Email";
         }
     
         const selectedItem = item;
@@ -428,36 +428,35 @@ const Hospital_News = () => {
         try {
             const messagePayload = {
                 message: MessageText,
-                selectedHospitals: Object.values(selectedCheckboxes)
+                selectedHospitals: Object.values(selectedCheckboxes),
             };
+            console.log('Message payload:', messagePayload);
     
             const formData = new FormData();
-            attachedFiles.forEach((file) => {
-                formData.append('files', file);
-            });
-    
+            attachedFiles.forEach((file) => formData.append('files', file));
             formData.append('message', JSON.stringify(messagePayload));
-            
-            // Test http://localhost:443/send/Message/New  https://rpa-apiprd.inet.co.th:443/send/Message/New
-            // const response = await axios.post('http://localhost:443/send/Message/New', formData, {
-            const response = await axios.post('http://localhost:443/api/test/send-email/iClaim/new/post', formData, {
-                headers: {
-                    'Content-Type': 'multipart/form-data',
-                },
-            });
+    
+            // ส่ง request และจัดการ error อย่างถูกต้อง
+            const response = await axios.post(
+                'https://rpa-apiprd.inet.co.th:443/send/Message/New/PRD',
+                formData,
+                { headers: { 'Content-Type': 'multipart/form-data' } }
+            );
     
             console.log('Message sent successfully:', response.data);
+    
+            // ล้าง state
             setMessageText('');
             setAttachedFiles([]);
             setFileNames([]);
-    
-            // window.location.reload();
+            window.location.reload();
         } catch (error) {
-            console.error('Error:', error);
+            console.error('Error sending message:', error);
+        } finally {
+            setLoading(false);
         }
-        //window.location.reload();
     };
-
+    
     const handleChange = (event) => {
         const text = event.target.value;
         setMessageText(text);
@@ -586,6 +585,7 @@ const Hospital_News = () => {
                                 border: 'none',
                                 height: '420px',
                                 backgroundColor: 'rgb(238, 239, 239)',
+                                
                             }}>
                             <CardContent>
                                 <input

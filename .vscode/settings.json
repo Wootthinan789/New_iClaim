@@ -1,9 +1,4 @@
 {
-    "discord.lowerDetailsNoWorkspaceFound": "Write code",
-    "discord.lowerDetailsIdling": "Write code",
-    "discord.lowerDetailsEditing": "Write code",
-    "discord.lowerDetailsDebugging": "Write code",
-    "discord.detailsDebugging": "Write code",
-    "discord.detailsIdling": "Hello :)",
-    "discord.largeImageIdling": "Write code"
+    "vscode-pets.petSize": "medium",
+    "vscode-pets.theme": "forest"
 }

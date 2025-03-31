@@ -30,6 +30,7 @@ import SuccessIcon from './images-iclaim/checked.png';
 import { useNavigate } from 'react-router-dom';
 import RadioButtonUncheckedIcon from '@mui/icons-material/RadioButtonUnchecked';
 import CheckCircleIcon from '@mui/icons-material/CheckCircle';
+import { Email } from '@material-ui/icons';
 
 //let username = "วุฒินันท์ ปรางมาศ";
 const settings = ['External 3','Internal INET','Internal V2','Report Team Iclaim','กำหนดสิทธิ์','แก้ไขโรงพยาบาล' , 'Log','ข่าวสารโรงพยาบาล', 'ออกจากระบบ'];
@@ -176,8 +177,8 @@ const Profile = () => {
         message: selectedHospitalsArray
       };
       console.log(data)
-      //await axios.post("http://localhost:443/send-message", data);
-      await axios.post("https://rpa-apiprd.inet.co.th:443/send-message", data);
+      // await axios.post("http://localhost:443/send-message/uat", data);
+      await axios.post("https://rpa-apiprd.inet.co.th:443/prd/send-message/mail", data);
       console.log("Data sent successfully send message");
       
       const logPromises = selectedHospitalsArray.map(async (checkbox) => {
@@ -306,7 +307,9 @@ const Profile = () => {
         token: token,
         user_name: usernameJson.username,
         menu : "External 2",
-        title:title
+        title:`1. ${title}`,
+        Email: keyIds.find((hospital) => hospital.id === id_hospital)?.Email,
+        hospital: keyIds.find((hospital) => hospital.id === id_hospital)?.hospital
       };
       setSelectedCheckboxes(prevState => ({
         ...prevState,
@@ -328,11 +331,14 @@ const Profile = () => {
     const fetchData = async () => {
         try {
             const response = await axios.get(`https://rpa-apiprd.inet.co.th:443/iClaim/list/hospital`);
+            // const response = await axios.get(`http://localhost:443/iClaim/list/hospital`);
             const data = response.data;
             setKeyIds(data.map(hospital => ({
                 id: hospital.id,
+                hospital: hospital.hospital,
                 matched: hospital.id === id_hospital,
                 token: hospital.token,
+                Email: hospital.Email
             })));
         } catch (error) {
             console.error("เกิดข้อผิดพลาดในการดึงข้อมูลจาก API:", error);
@@ -353,7 +359,9 @@ const handleSelectAllCheckboxChange = (event) => {
       token,
       user_name: usernameJson.username,
       menu : "External 2",
-      title
+      title: `1. ${title}`,  
+      Email: keyIds.find((hospital) => hospital.id === id_hospital)?.Email,
+      hospital: keyIds.find((hospital) => hospital.id === id_hospital)?.hospital
     };
   }) : [];
 
