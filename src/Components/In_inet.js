@@ -219,9 +219,9 @@ const Ininet = () => {
                 showConfirmButton: false
             });
             //const response = await axios.post('http://localhost:443/Internal/send/data/inet', data);
-            const response = await axios.post('https://rpa-apiprd.inet.co.th:443/Internal/send/data/inet', data);
-            console.log('API response:', response.data);
-            console.log('mappedImages : ' , mappedImages);
+            // const response = await axios.post('https://rpa-apiprd.inet.co.th:443/Internal/send/data/inet', data);
+            // console.log('API response:', response.data);
+            // console.log('mappedImages : ' , mappedImages);
             const response2 = await axios.post('https://rpa-apiprd.inet.co.th/OnePlatform/sendToOneplatform', mappedImages);
             console.log('API OnePlatform response:', response2.mappedImages);
 

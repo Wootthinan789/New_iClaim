@@ -203,55 +203,99 @@ const Internal = () => {
     setAnchorElUser(null);
   };
 
-  const handleApproveButtonClick = async () => {
+  // const handleApproveButtonClick = async () => {
+  //   if (Object.keys(selectedCheckboxes).length === 0) {
+  //     console.error('ไม่ได้เลือกข้อมูลใด ๆ เพื่อดำเนินการ');
+  //     return;
+  //   }
+  
+  //   setNotification({ message: 'Successfully approved', show: true });
+  //   setDarkBackground(true);
+  
+  //   try {
+  //     const selectedHospitalsArray = Object.values(selectedCheckboxes);
+  //     const data = {
+  //       message: selectedHospitalsArray
+  //     };
+  //     console.log(data)
+  //     // ส่งข้อมูลไปยัง API ส่งรูปไปยัง Line notify
+  //     await axios.post("http://localhost:443/send-message/uat", data);
+  //     // await axios.post("https://rpa-apiprd.inet.co.th:443/prd/send-message/mail", data);
+  //     console.log("Data sent successfully send message");
+
+  //     const logPromises = selectedHospitalsArray.map(async (checkbox) => {
+  //       const logData = {
+  //         doc_name: "-",
+  //         status: "Approved",
+  //         user_name: usernameJson.username,
+  //         remark: checkbox.title,
+  //         data_type: "External 1"
+  //       };
+  //     // ส่งข้อมูลเข้า log
+  //     await axios.post("https://rpa-apiprd.inet.co.th:443/iClaim/insert/log", logData);
+  //     console.log("Log data inserted successfully for", checkbox.title);
+  //   });
+  //   await Promise.all(logPromises);
+  //     //await axios.post("http://localhost:443/send-message/alert", data);
+  //     await axios.post("https://rpa-apiprd.inet.co.th:443/send-message/alert", data);
+  //     console.log("Data sent successfully send message alert");
+
+  //   } catch (error) {
+  //     console.error('Error sending data:', error.message);
+  //   }
+  
+  //   setTimeout(() => {
+  //     setNotification({ message: '', show: false });
+  //     setDarkBackground(false);
+  //   }, 2500);
+  //   window.location.reload();
+  // };
+  
+  const handleApproveButtonClick = () => {
     if (Object.keys(selectedCheckboxes).length === 0) {
       console.error('ไม่ได้เลือกข้อมูลใด ๆ เพื่อดำเนินการ');
       return;
     }
   
-    setNotification({ message: 'ยืนยันเรียบร้อยแล้ว', show: true });
+    setNotification({ message: 'Successfully approved', show: true });
     setDarkBackground(true);
-  
-    try {
-      const selectedHospitalsArray = Object.values(selectedCheckboxes);
-      const data = {
-        message: selectedHospitalsArray
-      };
-      console.log(data)
-      // ส่งข้อมูลไปยัง API ส่งรูปไปยัง Line notify
-      // await axios.post("http://localhost:443/send-message", data);
-      await axios.post("https://rpa-apiprd.inet.co.th:443/prd/send-message/mail", data);
-      console.log("Data sent successfully send message");
-
-      const logPromises = selectedHospitalsArray.map(async (checkbox) => {
-        const logData = {
-          doc_name: "-",
-          status: "Approved",
-          user_name: usernameJson.username,
-          remark: checkbox.title,
-          data_type: "External 1"
-        };
-      // ส่งข้อมูลเข้า log
-      await axios.post("https://rpa-apiprd.inet.co.th:443/iClaim/insert/log", logData);
-      console.log("Log data inserted successfully for", checkbox.title);
-    });
-    await Promise.all(logPromises);
-      //await axios.post("http://localhost:443/send-message/alert", data);
-      await axios.post("https://rpa-apiprd.inet.co.th:443/send-message/alert", data);
-      console.log("Data sent successfully send message alert");
-
-    } catch (error) {
-      console.error('Error sending data:', error.message);
-    }
   
     setTimeout(() => {
       setNotification({ message: '', show: false });
       setDarkBackground(false);
+      window.location.reload();
     }, 2500);
-    window.location.reload();
-  };
   
-
+    const selectedHospitalsArray = Object.values(selectedCheckboxes);
+    const data = {
+      message: selectedHospitalsArray
+    };
+    console.log(data);
+  
+    (async () => {
+      try {
+        const logPromises = selectedHospitalsArray.map(async (checkbox) => {
+          const logData = {
+            doc_name: "-",
+            status: "Approved",
+            user_name: usernameJson.username,
+            remark: checkbox.title,
+            data_type: "External 1"
+          };
+          await axios.post("https://rpa-apiprd.inet.co.th:443/iClaim/insert/log", logData);
+          console.log("Log data inserted successfully for", checkbox.title);
+        });
+  
+        // await axios.post("http://localhost:443/send-message/uat", data);
+        await axios.post("https://rpa-apiprd.inet.co.th:443/prd/send-message/mail", data);
+        console.log("Data sent successfully send message");
+  
+        await Promise.all(logPromises);
+      } catch (error) {
+        console.error('Error:', error.message);
+      }
+    })();
+  };
 
   const handleLogout = () => {
     localStorage.clear();
