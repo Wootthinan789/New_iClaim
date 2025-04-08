@@ -392,19 +392,24 @@ const Hospital_News = () => {
                 filteredData.forEach((item) => {
                     const hospitalKey = isFirstChecked ? item.Hospital_Government : item.Hospital_Private;
                     newCheckedItems[hospitalKey] = true;
-                    let hospitalKeyField, tokenKeyField;
+                    let hospitalKeyField, tokenKeyField, emailField;
                     if (isFirstChecked) {
                         hospitalKeyField = 'Hospital_Government';
                         tokenKeyField = 'Token_Government';
+                        emailField = 'Email';
                     } else if (isSecondChecked) {
                         hospitalKeyField = 'Hospital_Private';
                         tokenKeyField = 'Token_Private';
+                        emailField = 'Email';
                     }
-                    const { [hospitalKeyField]: hospital, [tokenKeyField]: token  } = item;
+                    const selectedItem = item;
+                    const { [hospitalKeyField]: hospital, [tokenKeyField]: token } = selectedItem;
+                    const email = emailField ? selectedItem[emailField] : null;
                     newSelectedCheckboxes[hospitalKey] = {
                         Hospital: hospital,
                         Token: token,
                         user_name: usernameJson.username,
+                        ...(email ? { Email: email } : {}),
                     };
                 });
             }
@@ -436,26 +441,41 @@ const Hospital_News = () => {
             attachedFiles.forEach((file) => formData.append('files', file));
             formData.append('message', JSON.stringify(messagePayload));
     
-            // ส่ง request และจัดการ error อย่างถูกต้อง
-            const response = await axios.post(
-                'https://rpa-apiprd.inet.co.th:443/send/Message/New/PRD',
+            // ส่ง request แบบไม่รอผลลัพธ์
+            // axios.post(
+            //     'http://localhost:443/send/Message/New/PRD/test',
+            //     formData,
+            //     { headers: { 'Content-Type': 'multipart/form-data' } }
+            // ).then((response) => {
+            //     console.log('Message sent successfully:', response.data);
+            // }).catch((error) => {
+            //     console.error('Error sending message:', error);
+            // });
+
+            axios.post(
+                'https://rpa-apiprd.inet.co.th/send/Message/New/PRD',
                 formData,
                 { headers: { 'Content-Type': 'multipart/form-data' } }
-            );
+            ).then((response) => {
+                console.log('Message sent successfully:', response.data);
+            }).catch((error) => {
+                console.error('Error sending message:', error);
+            });
     
-            console.log('Message sent successfully:', response.data);
-    
-            // ล้าง state
+            // ล้าง state ทันที
             setMessageText('');
             setAttachedFiles([]);
             setFileNames([]);
+    
+            // รีเฟรชหน้าโดยไม่ต้องรอ API
             window.location.reload();
         } catch (error) {
-            console.error('Error sending message:', error);
+            console.error('Error preparing message:', error);
         } finally {
             setLoading(false);
         }
     };
+    
     
     const handleChange = (event) => {
         const text = event.target.value;
