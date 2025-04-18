@@ -152,7 +152,7 @@ const Profile = () => {
     }
     setSelectedCheckboxes({});
     setOpenModal(false);
-    window.location.reload();
+    //window.location.reload();
   };
   const handleOpenUserMenu = (event) => {
     setAnchorElUser(event.currentTarget);
@@ -426,11 +426,11 @@ const handleSelectAllCheckboxChange = (event) => {
             <Tooltip>
               <IconButton onClick={handleOpenUserMenu} sx={{ p: 0 }}>
                 <Box className='Box2'>
-                    <Avatar
-                            alt="employee.png"
-                            src={employee}
-                            className='Avatar-img'
-                    />
+                  <Avatar
+                    alt="employee.png"
+                    src={employee}
+                    className='Avatar-img'
+                  />
                   <Typography variant="body1" style={{ fontSize: isSmallScreen ? '8px' : '16px', fontWeight: 'bold', fontFamily: "'Kanit', sans-serif" }}>
                     {usernameJson.username}
                   </Typography>
@@ -439,7 +439,7 @@ const handleSelectAllCheckboxChange = (event) => {
               </IconButton>
             </Tooltip>
             <Menu
-              style={{position:'fixed'}}
+              style={{ position: 'fixed' }}
               className='Menu-list'
               id="menu-appbar"
               anchorEl={anchorElUser}
@@ -456,28 +456,44 @@ const handleSelectAllCheckboxChange = (event) => {
               onClose={handleCloseUserMenu}
               PaperProps={{
                 style: {
-                  maxHeight:isSmallScreen ? '' : 'auto',
+                  maxHeight: isSmallScreen ? '' : 'auto',
                   width: isSmallScreen ? '108px' : '155px',
                 },
               }}
             >
               {settings.map((setting) => (
-                <MenuItem key={setting} 
-
-                style={{    
-                  padding: isSmallScreen ? '0 5px' : '5px 2px',}}
-                onClick={setting === 'ออกจากระบบ' ? handleLogout : setting === 'Log' ?  handleLogClick : setting === 'แก้ไขโรงพยาบาล' ? handleEdithospitalClick : setting === 'กำหนดสิทธิ์' ? handleSetPermissions : setting === 'Internal INET' ? handleInternaliNetClick : setting === 'ข่าวสารโรงพยาบาล' ? handleHospitalNews : setting === 'Internal V2' ? handleInternalv2 : setting === 'Report Team Iclaim' ? handleReportTeamIClaim : setting === 'External 3'? handleExternal3 : null}
-                
-              >
-                <Typography       
-                style={{
-                  fontFamily: "'Kanit', sans-serif",
-                  padding: isSmallScreen ? '0 12px' : '0 10px',
-                  fontSize: isSmallScreen ? '8px' : '16px',
-                  margin: isSmallScreen ? '1px 0' : '0 0',
+                <MenuItem
+                  key={setting}
+                  onClick={
+                    setting === 'ออกจากระบบ' ? handleLogout :
+                    setting === 'Log' ? handleLogClick :
+                    setting === 'แก้ไขโรงพยาบาล' ? handleEdithospitalClick :
+                    setting === 'กำหนดสิทธิ์' ? handleSetPermissions :
+                    setting === 'Internal INET' ? handleInternaliNetClick :
+                    setting === 'ข่าวสารโรงพยาบาล' ? handleHospitalNews :
+                    setting === 'Internal V2' ? handleInternalv2 :
+                    setting === 'Report Team Iclaim' ? handleReportTeamIClaim :
+                    setting === 'External 3' ? handleExternal3 : null
+                  }
+                  style={{
+                    paddingTop: isSmallScreen ? '2px' : '8px',
+                    paddingBottom: isSmallScreen ? '2px' : '8px',
+                    paddingLeft: isSmallScreen ? '8px' : '16px',
+                    paddingRight: isSmallScreen ? '8px' : '16px',
+                    minHeight: isSmallScreen ? '28px' : 'auto', // ย่อความสูงในมือถือ
                   }}
-                  >{setting}</Typography>
-              </MenuItem>
+                >
+                  <Typography
+                    style={{
+                      fontFamily: "'Kanit', sans-serif",
+                      fontSize: isSmallScreen ? '10px' : '16px',
+                      lineHeight: isSmallScreen ? '1.2' : '1.5', // ลดระยะบรรทัดในมือถือ
+                    }}
+                  >
+                    {setting}
+                  </Typography>
+                </MenuItem>
+
               ))}
             </Menu>
           </Box>

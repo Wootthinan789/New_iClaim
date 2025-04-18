@@ -531,47 +531,102 @@ const Hospital_News = () => {
                     <Box className='Box1'>
                         <Tooltip>
                             <IconButton onClick={handleOpenUserMenu} sx={{ p: 0 }}>
-                                <Box className='Box2'>
-                                    <Avatar
-                                        alt="employee.png"
-                                        src={employee}
-                                        className='Avatar-img'
-                                    />
-                                    <Typography variant="body1" style={{ fontSize: isSmallScreen ? '8px' : '16px', fontWeight: 'bold', fontFamily: "'Kanit', sans-serif" }}>
-                                        {usernameJson.username}
-                                    </Typography>
-                                    <KeyboardArrowDownIcon />
-                                </Box>
+                            <Box
+                                className='Box2'
+                                sx={{
+                                display: 'flex',
+                                alignItems: 'center',
+                                gap: isSmallScreen ? '4px' : '8px',
+                                }}
+                            >
+                                <Avatar
+                                alt="employee.png"
+                                src={employee}
+                                className='Avatar-img'
+                                sx={{
+                                    width: isSmallScreen ? 24 : 40,
+                                    height: isSmallScreen ? 24 : 40,
+                                }}
+                                />
+                                <Typography
+                                variant="body1"
+                                sx={{
+                                    fontSize: isSmallScreen ? '10px' : '16px',
+                                    fontWeight: 'bold',
+                                    fontFamily: "'Kanit', sans-serif",
+                                }}
+                                >
+                                {usernameJson.username}
+                                </Typography>
+                                <KeyboardArrowDownIcon
+                                sx={{ fontSize: isSmallScreen ? '16px' : '24px' }}
+                                />
+                            </Box>
                             </IconButton>
                         </Tooltip>
+
                         <Menu
                             className='Menu-list'
                             id="menu-appbar"
                             anchorEl={anchorElUser}
                             anchorOrigin={{
-                                vertical: 'top',
-                                horizontal: 'right',
+                            vertical: 'top',
+                            horizontal: 'right',
                             }}
                             keepMounted
                             transformOrigin={{
-                                vertical: 'top',
-                                horizontal: 'right',
+                            vertical: 'top',
+                            horizontal: 'right',
                             }}
                             open={Boolean(anchorElUser)}
                             onClose={handleCloseUserMenu}
                             PaperProps={{
-                                style: {
-                                    maxHeight: isSmallScreen ? '' : 'auto',
-                                    width: isSmallScreen ? '108px' : '155px',
-                                },
+                            style: {
+                                maxHeight: isSmallScreen ? '' : 'auto',
+                                width: isSmallScreen ? '120px' : '155px',
+                            },
                             }}
                         >
-                            {['External 3','Internal INET','Internal V2','Report Team Iclaim','กำหนดสิทธิ์','แก้ไขโรงพยาบาล' , 'Log','ข่าวสารโรงพยาบาล', 'ออกจากระบบ'].map((setting) => (
-                                <MenuItem key={setting} style={{ padding: isSmallScreen ? '0 5px' : '5px 2px' }} onClick={setting === 'ออกจากระบบ' ? handleLogout : setting === 'แก้ไขโรงพยาบาล' ? handleEdithospitalClick : setting === 'กำหนดสิทธิ์' ? handleSetPermissions : setting === 'Log' ? handleLogClick : setting === 'Internal INET' ? handleInternaliNetClick : setting === 'ข่าวสารโรงพยาบาล' ? handleHospitalNews : setting === 'Internal V2' ? handleInternalv2 : setting === 'Report Team Iclaim' ? handleReportTeamIClaim : setting === 'External 3'? handleExternal3 : null}>
-                                    <Typography style={{ fontFamily: "'Kanit', sans-serif", padding: isSmallScreen ? '0 12px' : '0 10px', fontSize: isSmallScreen ? '8px' : '16px', margin: isSmallScreen ? '1px 0' : '0 0' }}>
-                                        {setting}
-                                    </Typography>
-                                </MenuItem>
+                            {[
+                            'External 3',
+                            'Internal INET',
+                            'Internal V2',
+                            'Report Team Iclaim',
+                            'กำหนดสิทธิ์',
+                            'แก้ไขโรงพยาบาล',
+                            'Log',
+                            'ข่าวสารโรงพยาบาล',
+                            'ออกจากระบบ'
+                            ].map((setting) => (
+                            <MenuItem
+                                key={setting}
+                                onClick={
+                                setting === 'ออกจากระบบ' ? handleLogout :
+                                setting === 'แก้ไขโรงพยาบาล' ? handleEdithospitalClick :
+                                setting === 'กำหนดสิทธิ์' ? handleSetPermissions :
+                                setting === 'Log' ? handleLogClick :
+                                setting === 'Internal INET' ? handleInternaliNetClick :
+                                setting === 'ข่าวสารโรงพยาบาล' ? handleHospitalNews :
+                                setting === 'Internal V2' ? handleInternalv2 :
+                                setting === 'Report Team Iclaim' ? handleReportTeamIClaim :
+                                setting === 'External 3' ? handleExternal3 : null
+                                }
+                                sx={{
+                                px: isSmallScreen ? 1 : 2,
+                                py: isSmallScreen ? 0.5 : 1,
+                                minHeight: isSmallScreen ? '28px' : 'auto',
+                                }}
+                            >
+                                <Typography
+                                sx={{
+                                    fontFamily: "'Kanit', sans-serif",
+                                    fontSize: isSmallScreen ? '10px' : '16px',
+                                    lineHeight: isSmallScreen ? '1.2' : '1.5',
+                                }}
+                                >
+                                {setting}
+                                </Typography>
+                            </MenuItem>
                             ))}
                         </Menu>
                     </Box>
@@ -635,6 +690,7 @@ const Hospital_News = () => {
                                             checked={isFirstChecked}
                                             onChange={handleFirstToggle}
                                             className="custom-radio"
+                                            style={{cursor : "pointer"}}
                                             />
                                             โรงพยาบาลรัฐ
                                         </label>
@@ -644,6 +700,7 @@ const Hospital_News = () => {
                                                 checked={isSecondChecked}
                                                 onChange={handleSecondToggle}
                                                 className="custom-radio"
+                                                style={{cursor : "pointer"}}
                                             />
                                             โรงพยาบาลเอกชน
                                         </label>
@@ -671,6 +728,7 @@ const Hospital_News = () => {
                                                         <tr key={`${item.hospital}-${index}`}>
                                                             <td>
                                                                 <input
+                                                                    style={{cursor : "pointer"}}
                                                                     type="checkbox"
                                                                     checked={checkedItems[isFirstChecked ? item.Hospital_Government : item.Hospital_Private] || false}
                                                                     onChange={(event) => handleCheckboxChange(event, item)}

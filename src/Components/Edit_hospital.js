@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import './Style/Edit_hospital.css'
+import './Style/Edit_hospital.css';
 import AppBar from '@mui/material/AppBar';
 import Box from '@mui/material/Box';
 import Toolbar from '@mui/material/Toolbar';
@@ -11,18 +11,13 @@ import Tooltip from '@mui/material/Tooltip';
 import MenuItem from '@mui/material/MenuItem';
 import KeyboardArrowDownIcon from '@mui/icons-material/KeyboardArrowDown';
 import Card from '@mui/material/Card';
-import { useMediaQuery, useTheme } from '@mui/material';
 import 'react-datepicker/dist/react-datepicker.css';
 import logo from './images-iclaim/download (2).png';
 import employee from './images-iclaim/employee.png'
 import HomeIcon from './images-iclaim/home-regular-60.png';
 import { useNavigate } from 'react-router-dom';
 import axios from "axios";
-import Dialog from '@mui/material/Dialog';
-import DialogTitle from '@mui/material/DialogTitle';
-import DialogContent from '@mui/material/DialogContent';
-import DialogActions from '@mui/material/DialogActions';
-import Button from '@mui/material/Button';
+import { Dialog, DialogTitle, DialogContent, DialogActions, Button, useMediaQuery, useTheme } from '@mui/material';
 
 const usernameJson = JSON.parse(localStorage.getItem('username'));
 const settings = ['External 3','Internal INET','Internal V2','Report Team Iclaim','กำหนดสิทธิ์','แก้ไขโรงพยาบาล' , 'Log','ข่าวสารโรงพยาบาล', 'ออกจากระบบ'];
@@ -34,12 +29,11 @@ const Edit_hospital = () => {
     const [searchTerm, setSearchTerm] = useState('');
     const [selectedHospital, setSelectedHospital] = useState(null);
     const [openAddDialog, setOpenAddDialog] = useState(false);
-    const [newHospitalData, setNewHospitalData] = useState({ hospital: '', token: '' });
+    const [newHospitalData, setNewHospitalData] = useState({ hospital: '', mails: [''] });
     const [deleteConfirmationDialogOpen, setDeleteConfirmationDialogOpen] = useState(false);
     const [hospitalToDelete, setHospitalToDelete] = useState(null);
     
     //const [editedHospitalData, setEditedHospitalData] = useState({ hospital: '', token: '' });
-
 
     const theme = useTheme();
     const isSmallScreen = useMediaQuery(theme.breakpoints.down('sm'));
@@ -153,32 +147,29 @@ const Edit_hospital = () => {
       return item.hospital.toLowerCase().includes(searchTerm.toLowerCase());
     }) : [];
 
-    const handleOpenEditDialog = (hospital) => {
-        console.log("Fetching hospital ID:", hospital.id);
-        setSelectedHospital(hospital);
-    };
-
     const handleOpenAddDialog = () => {
       setOpenAddDialog(true);
     };
 
     const handleAddHospital = async () => {
-      console.log("Adding new hospital:", newHospitalData);
-      console.log("Hospital:", newHospitalData.hospital);
-      console.log("Token:", newHospitalData.token);
+      const cleanedMails = newHospitalData.mails.filter(mail => mail.trim() !== '');
+  
+      console.log("📦 ส่งข้อมูลโรงพยาบาล:", newHospitalData.hospital);
+      console.log("📬 รายการอีเมลที่จะส่ง:", cleanedMails);
+  
       const data = {
         hospital: newHospitalData.hospital,
-        token:newHospitalData.token,
-        username:usernameJson.username,
-        remark:'add hospital and token'
+        mails: cleanedMails,
+        username: usernameJson.username,
+        remark: 'add hospital and mails'
       };
-      console.log("data : ",data)
+  
       try {
         const response = await axios.post(
           'https://rpa-apiprd.inet.co.th:443/iClaim/add/hospital',
           {
             hospital_name: newHospitalData.hospital,
-            token_line: newHospitalData.token
+            mails: cleanedMails
           },
           {
             headers: {
@@ -186,7 +177,7 @@ const Edit_hospital = () => {
             }
           }
         );
-    
+  
         if (response.status === 200) {
           console.log("Hospital added successfully");
           window.location.reload();
@@ -196,16 +187,15 @@ const Edit_hospital = () => {
       } catch (error) {
         console.error('Error adding hospital:', error);
       }
+  
       try {
         await axios.post("https://rpa-apiprd.inet.co.th:443/Server/Hospital", data);
-        //await axios.post("https://localhost:443/Server/Hospital",data)
-        console.log("Data sent successfully send message");
+        console.log("Data sent successfully to server");
       } catch (error) {
-        console.log('Error send hospital and Token to Line notify' , error)
+        console.log('Error sending hospital and mails to server:', error);
       }
-
-      setOpenAddDialog(false);
-      setNewHospitalData({ hospital: '', token: '' });
+  
+      setNewHospitalData({ hospital: '', mails: [''] });
     };
 
     const handleOpenDeleteConfirmationDialog = (hospital) => {
@@ -248,58 +238,99 @@ const Edit_hospital = () => {
               <img src={logo} alt="Logo" className='logoStyle' />
             </Box>
             <Box sx={{ flexGrow: 1 }} />
-            <Box className='Box1'>
-              <Tooltip>
-                <IconButton onClick={handleOpenUserMenu} sx={{ p: 0 }}>
-                  <Box className='Box2'>
-                    <Avatar
-                            alt="employee.png"
-                            src={employee}
-                            className='Avatar-img'
-                    />
-                    <Typography variant="body1" style={{ fontSize: isSmallScreen ? '8px' : '16px', fontWeight: 'bold', fontFamily: "'Kanit', sans-serif" }}>
-                      {usernameJson.username}
-                    </Typography>
-                    <KeyboardArrowDownIcon />
-                  </Box>
-                </IconButton>
-              </Tooltip>
-              <Menu
-                className='Menu-list'
-                id="menu-appbar"
-                anchorEl={anchorElUser}
-                anchorOrigin={{
-                  vertical: 'top',
-                  horizontal: 'right',
-                }}
-                keepMounted
-                transformOrigin={{
-                  vertical: 'top',
-                  horizontal: 'right',
-                }}
-                open={Boolean(anchorElUser)}
-                onClose={handleCloseUserMenu}
-                PaperProps={{
-                    style: {
-                      maxHeight:isSmallScreen ? '' : 'auto', 
-                      width: isSmallScreen ? '108px' : '155px', 
-                    },
+          <Box className='Box1'>
+            <Tooltip>
+              <IconButton onClick={handleOpenUserMenu} sx={{ p: 0 }}>
+                <Box
+                  className='Box2'
+                  sx={{
+                    display: 'flex',
+                    alignItems: 'center',
+                    gap: isSmallScreen ? '4px' : '8px', // ระยะห่างระหว่าง avatar และ text
                   }}
-              >
-                {settings.map((setting) => (
-                  <MenuItem key={setting} style={{ padding: isSmallScreen ? '0 5px' : '5px 2px' }} onClick={setting === 'ออกจากระบบ' ? handleLogout : setting === 'แก้ไขโรงพยาบาล' ? handleEdithospitalClick :setting === 'กำหนดสิทธิ์' ? handleSetPermissions : setting === 'Log' ? handleLogClick : setting === 'Internal INET' ? handleInternaliNetClick : setting === 'ข่าวสารโรงพยาบาล' ? handleHospitalNews : setting === 'Internal V2' ? handleInternalv2 : setting === 'Report Team Iclaim' ? handleReportTeamIClaim : setting === 'External 3'? handleExternal3 : null}>
-                <Typography       
-                style={{
-                  fontFamily: "'Kanit', sans-serif",
-                  padding: isSmallScreen ? '0 12px' : '0 10px',
-                  fontSize: isSmallScreen ? '12px' : '16px',
-                  margin: isSmallScreen ? '1px 0' : '0 0',
+                >
+                  <Avatar
+                    alt="employee.png"
+                    src={employee}
+                    className='Avatar-img'
+                    sx={{
+                      width: isSmallScreen ? 24 : 40,
+                      height: isSmallScreen ? 24 : 40,
+                    }}
+                  />
+                  <Typography
+                    variant="body1"
+                    sx={{
+                      fontSize: isSmallScreen ? '10px' : '16px',
+                      fontWeight: 'bold',
+                      fontFamily: "'Kanit', sans-serif",
+                    }}
+                  >
+                    {usernameJson.username}
+                  </Typography>
+                  <KeyboardArrowDownIcon
+                    sx={{ fontSize: isSmallScreen ? '16px' : '24px' }}
+                  />
+                </Box>
+              </IconButton>
+            </Tooltip>
+
+            <Menu
+              style={{ position: 'fixed' }}
+              className='Menu-list'
+              id="menu-appbar"
+              anchorEl={anchorElUser}
+              anchorOrigin={{
+                vertical: 'top',
+                horizontal: 'right',
+              }}
+              keepMounted
+              transformOrigin={{
+                vertical: 'top',
+                horizontal: 'right',
+              }}
+              open={Boolean(anchorElUser)}
+              onClose={handleCloseUserMenu}
+              PaperProps={{
+                style: {
+                  maxHeight: isSmallScreen ? '' : 'auto',
+                  width: isSmallScreen ? '120px' : '155px',
+                },
+              }}
+            >
+              {settings.map((setting) => (
+                <MenuItem
+                  key={setting}
+                  onClick={
+                    setting === 'ออกจากระบบ' ? handleLogout :
+                    setting === 'Log' ? handleLogClick :
+                    setting === 'แก้ไขโรงพยาบาล' ? handleEdithospitalClick :
+                    setting === 'กำหนดสิทธิ์' ? handleSetPermissions :
+                    setting === 'Internal INET' ? handleInternaliNetClick :
+                    setting === 'ข่าวสารโรงพยาบาล' ? handleHospitalNews :
+                    setting === 'Internal V2' ? handleInternalv2 :
+                    setting === 'Report Team Iclaim' ? handleReportTeamIClaim :
+                    setting === 'External 3' ? handleExternal3 : null
+                  }
+                  sx={{
+                    px: isSmallScreen ? 1 : 2,
+                    py: isSmallScreen ? 0.5 : 1,
+                    minHeight: isSmallScreen ? '28px' : 'auto',
                   }}
-                  >{setting}</Typography>
-                  </MenuItem>
-                ))}
-              </Menu>
-            </Box>
+                >
+                  <Typography
+                    sx={{
+                      fontFamily: "'Kanit', sans-serif",
+                      fontSize: isSmallScreen ? '10px' : '16px',
+                      lineHeight: isSmallScreen ? '1.2' : '1.5',
+                    }}
+                  >
+                    {setting}
+                  </Typography>
+                </MenuItem>
+              ))}
+            </Menu>
+          </Box>
           </Toolbar>
         </AppBar>
         <div className='container'>
@@ -331,9 +362,31 @@ const Edit_hospital = () => {
               <table className='table_Style'>
                 <thead>
                   <tr>
-                    <th className='Name_Hospital_Style' style={{ padding: isSmallScreen ? '0px 30px 0px 30px' : '5px' }}>Hospital</th>
-                    <th className='Token_Style' style={{ padding: isSmallScreen ? '0' : '5px' }}>Token</th>
-                    <th>
+                    <th
+                      className='Name_Hospital_Style'
+                      style={{
+                        padding: isSmallScreen ? '0px 30px 0px 30px' : '5px',
+                        width: '40%',
+                      }}
+                    >
+                      ชื่อโรงพยาบาล
+                    </th>
+                    <th
+                      className='Token_Style'
+                      style={{
+                        padding: isSmallScreen ? '0' : '5px',
+                        width: '60%',
+                        wordBreak: 'break-word',
+                        whiteSpace: 'normal',
+                      }}
+                    >
+                      Mail
+                    </th>
+                    <th
+                      style={{
+                        paddingLeft: isSmallScreen ? '9px' : '15px',
+                        minWidth: isSmallScreen ? '30px' : '80px',
+                      }}>
                       <button className='button_Add_Hospital' onClick={handleOpenAddDialog}>เพิ่ม</button>
                     </th>
                   </tr>
@@ -341,11 +394,22 @@ const Edit_hospital = () => {
                 <tbody>
                   {filteredData.map((item, index) => (
                     <tr key={index}>
-                      <td className='data_Style'>{item.hospital}</td>
-                      <td className='data_Style'>{item.token}</td>
-                      {/* <td className='data_Style'>
-                        <button className='button_Edit' onClick={() => handleOpenEditDialog(item)}>แก้ไข</button>
-                      </td> */}
+                      <td
+                        className='data_Style'
+                        style={{ width: '40%' }}
+                      >
+                        {item.hospital}
+                      </td>
+                      <td
+                        className='data_Style'
+                        style={{
+                          width: '60%',
+                          wordBreak: 'break-word',
+                          whiteSpace: 'normal',
+                        }}
+                      >
+                        {Array.isArray(item.Email) ? item.Email.join(', ') : item.Email}
+                      </td>
                       <td className='data_Style'>
                         <button className='button_Delete' onClick={() => handleOpenDeleteConfirmationDialog(item)}>ลบ</button>
                       </td>
@@ -376,36 +440,177 @@ const Edit_hospital = () => {
       </div>
     );
   };
+  
 //เพิ่มโรงพยาบาล
 const AddHospitalDialog = ({ open, handleClose, newHospitalData, setNewHospitalData, handleAddHospital }) => {
+  const handleMailChange = (index, value) => {
+    const updatedMails = [...newHospitalData.mails];
+    updatedMails[index] = value;
+
+    console.log(`📧 พิมพ์ Mail ช่องที่ ${index + 1}:`, value);
+    console.log("📋 รายการอีเมลทั้งหมดตอนนี้:", updatedMails);
+
+    setNewHospitalData({ ...newHospitalData, mails: updatedMails });
+  };
+  
+  const handleAddMailField = () => {
+    setNewHospitalData({ ...newHospitalData, mails: [...newHospitalData.mails, ''] });
+  };
+  const handleRemoveMailField = (index) => {
+    const updatedMails = [...newHospitalData.mails];
+    updatedMails.splice(index, 1);
+    setNewHospitalData({ ...newHospitalData, mails: updatedMails });
+  };
   return (
-    <Dialog open={open} onClose={handleClose}>
-      <DialogTitle style={{textAlign:'center', fontFamily:"'Kanit', sans-serif",fontWeight:'400',}}>เพิ่มโรงพยาบาล</DialogTitle>
+    <Dialog
+      open={open}
+      onClose={handleClose}
+      fullWidth
+      maxWidth="sm"
+      PaperProps={{
+        style: {
+          borderRadius: '20px',
+          padding: '10px',
+        }
+      }}
+    >
+      <DialogTitle
+        sx={{
+          textAlign: 'center',
+          fontFamily: "'Kanit', sans-serif",
+          fontWeight: 400,
+          fontSize: { xs: '18px', sm: '20px', md: '20px', lg: '24px' }
+        }}
+      >
+        เพิ่มโรงพยาบาล
+      </DialogTitle>
+
       <DialogContent>
-        <div style={{ marginBottom: '20px' }}>
-          <label htmlFor="hospitalName" style={{textAlign:'center', fontFamily:"'Kanit', sans-serif",padding:'0 10px'}}>ชื่อโรงพยาบาล :</label>
-          <input
-            style={{fontFamily:"'Kanit', sans-serif"}}
-            id="hospitalName"
-            type="text"
-            value={newHospitalData.hospital}
-            onChange={(e) => setNewHospitalData({ ...newHospitalData, hospital: e.target.value })}
-          />
+        <div style={{ marginBottom: '20px', display: 'flex', justifyContent: 'center' }}>
+          <div style={{ width: '100%', maxWidth: '300px' }}>
+            <label htmlFor="hospitalName" style={{ fontFamily: "'Kanit', sans-serif", marginBottom: '5px', display: 'block' }}>
+              ชื่อโรงพยาบาล :
+            </label>
+            <input
+              className='Style_Dialog_Edit'
+              style={{
+                fontFamily: "'Kanit', sans-serif",
+                width: '100%',
+                padding: '8px',
+                borderRadius: '5px',
+                border: '1px solid #ccc',
+              }}
+              id="hospitalName"
+              type="text"
+              value={newHospitalData.hospital}
+              onChange={(e) => {
+                const value = e.target.value;
+                console.log("📌 พิมพ์ชื่อโรงพยาบาล:", value);
+                setNewHospitalData({ ...newHospitalData, hospital: value });
+              }}
+            />
+          </div>
         </div>
-        <div style={{ marginBottom: '20px',marginLeft:'57px' }}>
-          <label htmlFor="hospitalToken" style={{textAlign:'center', fontFamily:"'Kanit', sans-serif",padding:'0 10px'}}>Token:</label>
-          <input
-            style={{fontFamily:"'Kanit', sans-serif"}}
-            id="hospitalToken"
-            type="text"
-            value={newHospitalData.token}
-            onChange={(e) => setNewHospitalData({ ...newHospitalData, token: e.target.value })}
-          />
+
+        {newHospitalData.mails.map((mail, index) => (
+          <div key={index} style={{ marginBottom: '20px', display: 'flex', justifyContent: 'center' }}>
+            <div style={{ width: '100%', maxWidth: '300px' }}>
+              <label
+                htmlFor={`hospitalMail-${index}`}
+                style={{ fontFamily: "'Kanit', sans-serif", marginBottom: '5px', display: 'block' }}
+              >
+                Mail {index + 1} :
+              </label>
+              <div style={{ display: 'flex', alignItems: 'center' }}>
+                <input
+                  id={`hospitalMail-${index}`}
+                  type="text"
+                  value={mail}
+                  onChange={(e) => handleMailChange(index, e.target.value)}
+                  style={{
+                    fontFamily: "'Kanit', sans-serif",
+                    flexGrow: 1,
+                    padding: '8px',
+                    borderRadius: '5px',
+                    border: '1px solid #ccc'
+                  }}
+                />
+                {newHospitalData.mails.length > 1 && (
+                  <button
+                    onClick={() => handleRemoveMailField(index)}
+                    style={{
+                      background: 'transparent',
+                      border: 'none',
+                      color: 'red',
+                      fontSize: '10px',
+                      cursor: 'pointer',
+                      marginLeft: '10px'
+                    }}
+                    title="ลบช่องนี้"
+                  >
+                    ❌
+                  </button>
+                )}
+              </div>
+            </div>
+          </div>
+        ))}
+        <div style={{ textAlign: 'center', marginBottom: '20px' }}>
+          <Button
+            variant="outlined"
+            onClick={handleAddMailField}
+            sx={{
+              fontFamily: "'Kanit', sans-serif",
+              color: 'white',
+              border:'none',
+              backgroundColor: '#717d7e',
+              borderRadius: '20px',
+              width: '120px',
+              '&:hover': {
+                backgroundColor: '#4d5656',
+                color: 'white',
+                border:'none'
+              }
+            }}
+          >
+            + เพิ่ม Mail
+          </Button>
         </div>
       </DialogContent>
-      <DialogActions>
-        <Button style={{color:'white',background:'#CD6155',fontFamily:"'Kanit', sans-serif",borderRadius:'20px',}} onClick={handleClose}>ยกเลิก</Button>
-        <Button style={{color:'white',background:'#2E86C1',fontFamily:"'Kanit', sans-serif",borderRadius:'20px'}} onClick={handleAddHospital}>เพิ่ม</Button>
+
+      <DialogActions sx={{ justifyContent: 'center' }}>
+        <Button
+          sx={{
+            color: 'white',
+            backgroundColor: '#cb4335',
+            fontFamily: "'Kanit', sans-serif",
+            borderRadius: '20px',
+            mx: 1,
+            '&:hover': {
+              backgroundColor: '#7b241c',
+              color: 'white'
+            }
+          }}
+          onClick={handleClose}
+        >
+          ยกเลิก
+        </Button>
+        <Button
+          sx={{
+            color: 'white',
+            backgroundColor: '#2874a6',
+            fontFamily: "'Kanit', sans-serif",
+            borderRadius: '20px',
+            mx: 1,
+            '&:hover': {
+              backgroundColor: '#154360',
+              color: 'white'
+            }
+          }}
+          onClick={handleAddHospital}
+        >
+          เพิ่ม
+        </Button>
       </DialogActions>
     </Dialog>
   );

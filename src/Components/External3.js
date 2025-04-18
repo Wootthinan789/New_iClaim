@@ -203,40 +203,41 @@ const External3 = () => {
       setDarkBackground(true);
 
   
-    try {
-      const selectedHospitalsArray = Object.values(selectedCheckboxes);
-      const data = {
-        message: selectedHospitalsArray
-      };
-      console.log(data)
-      //await axios.post("http://localhost:443/send-message", data);
-      await axios.post("https://rpa-apiprd.inet.co.th:443/send-message", data);
-      console.log("Data sent successfully send message");
-      
-      const logPromises = selectedHospitalsArray.map(async (checkbox) => {
-        const logData = {
-          doc_name: "-",
-          status: "Approved",
-          user_name: usernameJson.username,
-          remark: checkbox.title,
-          data_type: "External 3"
-        };
-        await axios.post("https://rpa-apiprd.inet.co.th:443/iClaim/insert/log", logData);
-        console.log("Log data inserted successfully for", checkbox.title);
-      })
-      await Promise.all(logPromises);
-      await axios.post("https://rpa-apiprd.inet.co.th:443/send-message/alert", data);
-      console.log("Data sent successfully for alert message");
-    } catch (error) {
-      console.error('Error:', error.message);
-    }
     setTimeout(() => {
       setNotification({ message: '', show: false });
       setDarkBackground(false);
-    }, 2500);
-    setTimeout(() =>{
       window.location.reload();
-    },2500);
+    }, 2500);
+  
+    const selectedHospitalsArray = Object.values(selectedCheckboxes);
+    const data = {
+      message: selectedHospitalsArray
+    };
+    console.log(data);
+  
+    (async () => {
+      try {
+        const logPromises = selectedHospitalsArray.map(async (checkbox) => {
+          const logData = {
+            doc_name: "-",
+            status: "Approved",
+            user_name: usernameJson.username,
+            remark: checkbox.title,
+            data_type: "External 3"
+          };
+          await axios.post("https://rpa-apiprd.inet.co.th:443/iClaim/insert/log", logData);
+          console.log("Log data inserted successfully for", checkbox.title);
+        });
+  
+        // await axios.post("http://localhost:443/send-message/uat", data);
+        await axios.post("https://rpa-apiprd.inet.co.th:443/prd/send-message/mail", data);
+        console.log("Data sent successfully send message");
+  
+        await Promise.all(logPromises);
+      } catch (error) {
+        console.error('Error:', error.message);
+      }
+    })();
   };
 
   useEffect(() => {
@@ -339,6 +340,8 @@ const External3 = () => {
         user_name: usernameJson.username,
         menu : "External 3",
         title: `${title} ยอดเคลมประจำเดือน ${thaiMonth} ${year}`,
+        Email: keyIds.find((hospital) => hospital.id === id_hospital)?.Email,
+        hospital: keyIds.find((hospital) => hospital.id === id_hospital)?.hospital
       };
       setSelectedCheckboxes(prevState => ({
         ...prevState,
@@ -364,7 +367,9 @@ const External3 = () => {
             setKeyIds(data.map(hospital => ({
                 id: hospital.id,
                 matched: hospital.id === id_hospital,
+                hospital : hospital.hospital,
                 token: hospital.token,
+                Email: hospital.Email,
             })));
         } catch (error) {
             console.error("เกิดข้อผิดพลาดในการดึงข้อมูลจาก API:", error);
@@ -389,6 +394,8 @@ const handleSelectAllCheckboxChange = (event) => {
       user_name: usernameJson.username,
       menu : "External 3",
       title: `${title} ยอดเคลมประจำเดือน ${thaiMonth} ${year}`,
+      Email: keyIds.find((hospital) => hospital.id === id_hospital)?.Email,
+      hospital: keyIds.find((hospital) => hospital.id === id_hospital)?.hospital
     };
   }) : [];
 
@@ -451,21 +458,42 @@ const handleSelectAllCheckboxChange = (event) => {
           <Box className='Box1'>
             <Tooltip>
               <IconButton onClick={handleOpenUserMenu} sx={{ p: 0 }}>
-                <Box className='Box2'>
-                    <Avatar
-                            alt="employee.png"
-                            src={employee}
-                            className='Avatar-img'
-                    />
-                  <Typography variant="body1" style={{ fontSize: isSmallScreen ? '8px' : '16px', fontWeight: 'bold', fontFamily: "'Kanit', sans-serif" }}>
+                <Box
+                  className='Box2'
+                  sx={{
+                    display: 'flex',
+                    alignItems: 'center',
+                    gap: isSmallScreen ? '4px' : '8px', // ระยะห่างระหว่าง avatar และ text
+                  }}
+                >
+                  <Avatar
+                    alt="employee.png"
+                    src={employee}
+                    className='Avatar-img'
+                    sx={{
+                      width: isSmallScreen ? 24 : 40,
+                      height: isSmallScreen ? 24 : 40,
+                    }}
+                  />
+                  <Typography
+                    variant="body1"
+                    sx={{
+                      fontSize: isSmallScreen ? '10px' : '16px',
+                      fontWeight: 'bold',
+                      fontFamily: "'Kanit', sans-serif",
+                    }}
+                  >
                     {usernameJson.username}
                   </Typography>
-                  <KeyboardArrowDownIcon />
+                  <KeyboardArrowDownIcon
+                    sx={{ fontSize: isSmallScreen ? '16px' : '24px' }}
+                  />
                 </Box>
               </IconButton>
             </Tooltip>
+
             <Menu
-              style={{position:'fixed'}}
+              style={{ position: 'fixed' }}
               className='Menu-list'
               id="menu-appbar"
               anchorEl={anchorElUser}
@@ -482,28 +510,41 @@ const handleSelectAllCheckboxChange = (event) => {
               onClose={handleCloseUserMenu}
               PaperProps={{
                 style: {
-                  maxHeight:isSmallScreen ? '' : 'auto',
-                  width: isSmallScreen ? '108px' : '155px',
+                  maxHeight: isSmallScreen ? '' : 'auto',
+                  width: isSmallScreen ? '120px' : '155px',
                 },
               }}
             >
               {settings.map((setting) => (
-                <MenuItem key={setting} 
-
-                style={{    
-                  padding: isSmallScreen ? '0 5px' : '5px 2px',}}
-                onClick={setting === 'ออกจากระบบ' ? handleLogout : setting === 'Log' ?  handleLogClick : setting === 'แก้ไขโรงพยาบาล' ? handleEdithospitalClick : setting === 'กำหนดสิทธิ์' ? handleSetPermissions : setting === 'Internal INET' ? handleInternaliNetClick : setting === 'ข่าวสารโรงพยาบาล' ? handleHospitalNews : setting === 'Internal V2' ? handleInternalv2 : setting === 'Report Team Iclaim' ? handleReportTeamIClaim : setting === 'External 3'? handleExternal3 : null}
-                
-              >
-                <Typography       
-                style={{
-                  fontFamily: "'Kanit', sans-serif",
-                  padding: isSmallScreen ? '0 12px' : '0 10px',
-                  fontSize: isSmallScreen ? '8px' : '16px',
-                  margin: isSmallScreen ? '1px 0' : '0 0',
+                <MenuItem
+                  key={setting}
+                  onClick={
+                    setting === 'ออกจากระบบ' ? handleLogout :
+                    setting === 'Log' ? handleLogClick :
+                    setting === 'แก้ไขโรงพยาบาล' ? handleEdithospitalClick :
+                    setting === 'กำหนดสิทธิ์' ? handleSetPermissions :
+                    setting === 'Internal INET' ? handleInternaliNetClick :
+                    setting === 'ข่าวสารโรงพยาบาล' ? handleHospitalNews :
+                    setting === 'Internal V2' ? handleInternalv2 :
+                    setting === 'Report Team Iclaim' ? handleReportTeamIClaim :
+                    setting === 'External 3' ? handleExternal3 : null
+                  }
+                  sx={{
+                    px: isSmallScreen ? 1 : 2,
+                    py: isSmallScreen ? 0.5 : 1,
+                    minHeight: isSmallScreen ? '28px' : 'auto',
                   }}
-                  >{setting}</Typography>
-              </MenuItem>
+                >
+                  <Typography
+                    sx={{
+                      fontFamily: "'Kanit', sans-serif",
+                      fontSize: isSmallScreen ? '10px' : '16px',
+                      lineHeight: isSmallScreen ? '1.2' : '1.5',
+                    }}
+                  >
+                    {setting}
+                  </Typography>
+                </MenuItem>
               ))}
             </Menu>
           </Box>

@@ -2,6 +2,12 @@
   font-family: 'Kanit', sans-serif;
   font-size: 16px;
 }
+.Title-Dialog {
+  text-align: center;
+  font-family: 'Kanit', sans-serif;
+  font-weight: 400;
+  font-size: 24; /* หรือขนาดที่คุณต้องการ เช่น 28px, 32px, 2rem */
+}
 .hard_title {
   text-align: center; /* จัดข้อความให้อยู่ตรงกลาง */
   margin-top: 20px; /* เพิ่มระยะห่างด้านบน */
@@ -20,6 +26,7 @@
   height: auto;
   overflow-y: auto;
 }
+
 .hard_name{
   display: grid;
   place-items: center;
@@ -40,7 +47,7 @@
   font-weight: 700;
 }
 .data_Style{
-  padding: 10px;
+  padding: 6px;
   text-align: center;
   background-color: none;
   font-family: 'Kanit', sans-serif;
@@ -80,7 +87,7 @@
   font-weight: 600;
 }
 .button_Add_Hospital{
-  background-color: rgb(13, 107, 21);
+  background-color: #239b56;
   font-family: 'Kanit', sans-serif;
   border-radius: 10px;
   margin-left: auto; /* จัดตำแหน่งข้อความให้อยู่กึ่งกลาง */
@@ -90,6 +97,9 @@
   color: #ffffff;
   height: 30px;
   font-size: 16px;
+}
+.button_Add_Hospital:hover {
+  background-color: #196f3d;
 }
 
 .background-profile {
@@ -489,6 +499,12 @@
   }
   
   @media (max-width: 480px) {
+    .Title-Dialog {
+      text-align: center;
+      font-family: 'Kanit', sans-serif;
+      font-weight: 400;
+      font-size: 14; /* หรือขนาดที่คุณต้องการ เช่น 28px, 32px, 2rem */
+    }
     .button_Edit{
       background-color: #1480d3;
       border-radius: 10px;

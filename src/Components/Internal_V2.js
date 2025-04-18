@@ -392,65 +392,99 @@ const handleSelectAllChange = () => {
           <img src={logo} alt="Logo" className='logoStyle' />
         </Box>
         <Box sx={{ flexGrow: 1 }} />
-        <Box className='Box1'>
-          <Tooltip>
-            <IconButton onClick={handleOpenUserMenu} sx={{ p: 0 }}>
-              <Box className='Box2'>
+          <Box className='Box1'>
+            <Tooltip>
+              <IconButton onClick={handleOpenUserMenu} sx={{ p: 0 }}>
+                <Box
+                  className='Box2'
+                  sx={{
+                    display: 'flex',
+                    alignItems: 'center',
+                    gap: isSmallScreen ? '4px' : '8px', // ระยะห่างระหว่าง avatar และ text
+                  }}
+                >
                   <Avatar
-                          alt="employee.png"
-                          src={employee}
-                          className='Avatar-img'
+                    alt="employee.png"
+                    src={employee}
+                    className='Avatar-img'
+                    sx={{
+                      width: isSmallScreen ? 24 : 40,
+                      height: isSmallScreen ? 24 : 40,
+                    }}
                   />
-                <Typography variant="body1" style={{ fontSize: isSmallScreen ? '8px' : '16px', fontWeight: 'bold', fontFamily: "'Kanit', sans-serif" }}>
-                  {usernameJson.username}
-                </Typography>
-                <KeyboardArrowDownIcon />
-              </Box>
-            </IconButton>
-          </Tooltip>
-          <Menu
-            style={{position:'fixed'}}
-            className='Menu-list'
-            id="menu-appbar"
-            anchorEl={anchorElUser}
-            anchorOrigin={{
-              vertical: 'top',
-              horizontal: 'right',
-            }}
-            keepMounted
-            transformOrigin={{
-              vertical: 'top',
-              horizontal: 'right',
-            }}
-            open={Boolean(anchorElUser)}
-            onClose={handleCloseUserMenu}
-            PaperProps={{
-              style: {
-                maxHeight:isSmallScreen ? '' : 'auto',
-                width: isSmallScreen ? '108px' : '155px',
-              },
-            }}
-          >
-            {settings.map((setting) => (
-              <MenuItem key={setting} 
+                  <Typography
+                    variant="body1"
+                    sx={{
+                      fontSize: isSmallScreen ? '10px' : '16px',
+                      fontWeight: 'bold',
+                      fontFamily: "'Kanit', sans-serif",
+                    }}
+                  >
+                    {usernameJson.username}
+                  </Typography>
+                  <KeyboardArrowDownIcon
+                    sx={{ fontSize: isSmallScreen ? '16px' : '24px' }}
+                  />
+                </Box>
+              </IconButton>
+            </Tooltip>
 
-              style={{    
-                padding: isSmallScreen ? '0 5px' : '5px 2px',}}
-              onClick={setting === 'ออกจากระบบ' ? handleLogout : setting === 'Log' ?  handleLogClick : setting === 'แก้ไขโรงพยาบาล' ? handleEdithospitalClick : setting === 'กำหนดสิทธิ์' ? handleSetPermissions : setting === 'Internal INET' ? handleInternaliNetClick : setting === 'ข่าวสารโรงพยาบาล' ? handleHospitalNews : setting === 'Internal V2' ? handleInternalv2 : setting === 'Report Team Iclaim' ? handleReportTeamIClaim : setting === 'External 3'? handleExternal3 : null}
-              
+            <Menu
+              style={{ position: 'fixed' }}
+              className='Menu-list'
+              id="menu-appbar"
+              anchorEl={anchorElUser}
+              anchorOrigin={{
+                vertical: 'top',
+                horizontal: 'right',
+              }}
+              keepMounted
+              transformOrigin={{
+                vertical: 'top',
+                horizontal: 'right',
+              }}
+              open={Boolean(anchorElUser)}
+              onClose={handleCloseUserMenu}
+              PaperProps={{
+                style: {
+                  maxHeight: isSmallScreen ? '' : 'auto',
+                  width: isSmallScreen ? '120px' : '155px',
+                },
+              }}
             >
-              <Typography       
-              style={{
-                fontFamily: "'Kanit', sans-serif",
-                padding: isSmallScreen ? '0 12px' : '0 10px',
-                fontSize: isSmallScreen ? '8px' : '16px',
-                margin: isSmallScreen ? '1px 0' : '0 0',
-                }}
-                >{setting}</Typography>
-            </MenuItem>
-            ))}
-          </Menu>
-        </Box>
+              {settings.map((setting) => (
+                <MenuItem
+                  key={setting}
+                  onClick={
+                    setting === 'ออกจากระบบ' ? handleLogout :
+                    setting === 'Log' ? handleLogClick :
+                    setting === 'แก้ไขโรงพยาบาล' ? handleEdithospitalClick :
+                    setting === 'กำหนดสิทธิ์' ? handleSetPermissions :
+                    setting === 'Internal INET' ? handleInternaliNetClick :
+                    setting === 'ข่าวสารโรงพยาบาล' ? handleHospitalNews :
+                    setting === 'Internal V2' ? handleInternalv2 :
+                    setting === 'Report Team Iclaim' ? handleReportTeamIClaim :
+                    setting === 'External 3' ? handleExternal3 : null
+                  }
+                  sx={{
+                    px: isSmallScreen ? 1 : 2,
+                    py: isSmallScreen ? 0.5 : 1,
+                    minHeight: isSmallScreen ? '28px' : 'auto',
+                  }}
+                >
+                  <Typography
+                    sx={{
+                      fontFamily: "'Kanit', sans-serif",
+                      fontSize: isSmallScreen ? '10px' : '16px',
+                      lineHeight: isSmallScreen ? '1.2' : '1.5',
+                    }}
+                  >
+                    {setting}
+                  </Typography>
+                </MenuItem>
+              ))}
+            </Menu>
+          </Box>
       </Toolbar>
     </AppBar>
           <Modal
@@ -567,8 +601,8 @@ const handleSelectAllChange = () => {
                                   src={item.src_img}
                                   alt={item.title_name}
                                   style={{
-                                      width: '70%',
-                                      borderRadius: '15px',
+                                      width: isSmallScreen ? '80%' : '70%',
+                                      borderRadius: isSmallScreen ? '' : '15px',
                                       display: 'block',
                                       margin: '0 auto',
                                   }}
