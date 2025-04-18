@@ -40,7 +40,7 @@
   font-family: 'Kanit', sans-serif;
 }
 .Token_Style{
-  font-size: 18px;
+  font-size: 8px;
   background-color: #F2F2F2;
   border-radius: 0 8px 8px 0;;
   font-family: 'Kanit', sans-serif;
@@ -550,7 +550,7 @@
       font-weight: 700;
     }
     .Name_Hospital_Style{
-      font-size: 10px;
+      font-size: 8px;
       background-color: #F2F2F2;
       border-radius: 8px 0 0 8px;
       width: auto;
