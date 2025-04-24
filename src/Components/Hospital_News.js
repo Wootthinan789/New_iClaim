@@ -63,6 +63,9 @@ const Hospital_News = () => {
     const [isDeleteConfirmOpen, setIsDeleteConfirmOpen] = useState(false);
     const [selectedHospital, setSelectedHospital] = useState(null);
 
+    const [tokenList, setTokenList] = useState(['']);
+
+
     const handleOpenPopup = () => setIsPopupOpen(true);
     const handleClosePopup = () => setIsPopupOpen(false);
     const handleOpenListPopup = () => {
@@ -176,7 +179,8 @@ const Hospital_News = () => {
     };
 
     const handleAddHospital = async () => {
-        if (!hospitalType || !hospitalName || !token) {
+        // ตรวจสอบว่าไม่มีช่องไหนว่าง
+        if (!hospitalType || !hospitalName || tokenList.some(token => token.trim() === '')) {
             setSnackbarMessage('กรุณากรอกข้อมูลให้ครบถ้วน');
             setSnackbarSeverity('error');
             setOpenSnackbar(true);
@@ -186,12 +190,14 @@ const Hospital_News = () => {
         const newHospital = {
             list_tpye: hospitalType,
             Hospital_: hospitalName,
-            Token_: token,
+            Mail: JSON.stringify(tokenList), // เปลี่ยนจาก Token_ เป็น Mail
         };
+    
         console.log("ข้อมูลโรงพยาบาลที่เพิ่ม:", newHospital);
     
         try {
-            const response = await axios.post("https://rpa-apiprd.inet.co.th/insert/hospital/post", newHospital);
+            // const response = await axios.post("http://localhost:443/insert/hospital/post", newHospital);
+            const response = await axios.post("https://rpa-apiprd.inet.co.th:443/insert/hospital/post", newHospital);
             console.log("API Response:", response);
     
             if (response.status === 200) {
@@ -199,18 +205,7 @@ const Hospital_News = () => {
                 setSnackbarMessage('เพิ่มโรงพยาบาลสำเร็จ!');
                 setSnackbarSeverity('success');
                 setHospitalData((prevData) => [...prevData, newHospital]);
-                try {
-                    const alertResponse = await axios.post("https://rpa-apiprd.inet.co.th/Alert/insert/data", newHospital);
-                    console.log("API Alert Response:", alertResponse);
     
-                    if (alertResponse.status === 200) {
-                        console.log("แจ้งเตือนสำเร็จ");
-                    } else {
-                        console.error("ไม่สามารถแจ้งเตือนได้:", alertResponse);
-                    }
-                } catch (alertError) {
-                    console.error("เกิดข้อผิดพลาดขณะเรียก API แจ้งเตือน:", alertError);
-                }
                 handleClosePopup();
                 resetFormFields(); 
                 window.location.reload();
@@ -223,13 +218,14 @@ const Hospital_News = () => {
             setSnackbarMessage('รายชื่อโรงพยาบาลนี้มีอยู่แล้ว!!');
             setSnackbarSeverity('error');
         }
+    
         setOpenSnackbar(true);
-    };    
-
+    };
+    
     const resetFormFields = () => {
         setHospitalType('');
         setHospitalName('');
-        setToken('');
+        setTokenList(['']);
     };
 
     const handleCloseSnackbar = () => {
@@ -309,11 +305,11 @@ const Hospital_News = () => {
                 const timestamp = new Date().getTime();
                 
                 if (isFirstChecked) {
-                    //:443/get/data/hospital/government/new?_=${timestamp}`;
-                     endpoint = `https://rpa-apiprd.inet.co.th:443/get/data/hospital/government/new?_=${timestamp}`;
+                    endpoint = `https://rpa-apiprd.inet.co.th:443/get/data/hospital/government/new?_=${timestamp}`;
+                    //  endpoint = `https://rpa-apiprd.inet.co.th:443/get/data/hospital/government/new?_=${timestamp}`;
                 } else if (isSecondChecked) {
-                    //endpoint = `http://localhost:443/get/data/hospital/private/new?_=${timestamp}`;
-                     endpoint = `https://rpa-apiprd.inet.co.th:443/get/data/hospital/private/new?_=${timestamp}`;
+                    endpoint = `https://rpa-apiprd.inet.co.th:443/get/data/hospital/private/new?_=${timestamp}`;
+                    //  endpoint = `https://rpa-apiprd.inet.co.th:443/get/data/hospital/private/new?_=${timestamp}`;
                 }
                 
                 const response = await axios.get(endpoint);
@@ -334,15 +330,17 @@ const Hospital_News = () => {
         const hospitalKey = isFirstChecked ? item.Hospital_Government : item.Hospital_Private;
         const updatedCheckedItems = { ...checkedItems, [hospitalKey]: isChecked };
     
-        let hospitalKeyField, tokenKeyField, emailField;
+        let hospitalKeyField, tokenKeyField, emailField, TypeHospital;
         if (isFirstChecked) {
             hospitalKeyField = 'Hospital_Government';
             tokenKeyField = 'Token_Government';
             emailField = 'Email';
+            TypeHospital = 'โรงพยาบาลรัฐ';
         } else if (isSecondChecked) {
             hospitalKeyField = 'Hospital_Private';
             tokenKeyField = 'Token_Private';
             emailField = "Email";
+            TypeHospital = 'โรงพยาบาลเอกชน';
         }
     
         const selectedItem = item;
@@ -356,6 +354,7 @@ const Hospital_News = () => {
                 Token: token,
                 user_name: usernameJson.username,
                 ...(email ? { Email: email } : {}),
+                list_type: TypeHospital,
             };
         } else if (!isChecked && updatedSelectedCheckboxes[hospitalKey]) {
             delete updatedSelectedCheckboxes[hospitalKey];
@@ -392,15 +391,17 @@ const Hospital_News = () => {
                 filteredData.forEach((item) => {
                     const hospitalKey = isFirstChecked ? item.Hospital_Government : item.Hospital_Private;
                     newCheckedItems[hospitalKey] = true;
-                    let hospitalKeyField, tokenKeyField, emailField;
+                    let hospitalKeyField, tokenKeyField, emailField, TypeHospital;
                     if (isFirstChecked) {
                         hospitalKeyField = 'Hospital_Government';
                         tokenKeyField = 'Token_Government';
                         emailField = 'Email';
+                        TypeHospital = 'โรงพยาบาลรัฐ';
                     } else if (isSecondChecked) {
                         hospitalKeyField = 'Hospital_Private';
                         tokenKeyField = 'Token_Private';
                         emailField = 'Email';
+                        TypeHospital = 'โรงพยาบาลเอกชน';
                     }
                     const selectedItem = item;
                     const { [hospitalKeyField]: hospital, [tokenKeyField]: token } = selectedItem;
@@ -410,6 +411,7 @@ const Hospital_News = () => {
                         Token: token,
                         user_name: usernameJson.username,
                         ...(email ? { Email: email } : {}),
+                        list_type: TypeHospital,
                     };
                 });
             }
@@ -886,6 +888,7 @@ const Hospital_News = () => {
                     {previewImage && <img src={previewImage} alt="Preview" style={{ maxWidth: '100%', maxHeight: '100%' }} />}
                 </DialogContent>
             </Dialog>
+             {/* ------------------------------------------------------------------------------------------------------------------------ */}
             <Dialog open={isPopupOpen} onClose={handleClosePopup} maxWidth="sm" fullWidth>
             <DialogTitle
                     style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}
@@ -900,39 +903,62 @@ const Hospital_News = () => {
                     <IconButton onClick={handleClosePopup}>
                         <CloseIcon />
                     </IconButton>
-                </DialogTitle>
+            </DialogTitle>
                 <DialogContent dividers>
-                    <Box display="flex" flexDirection="column" gap={2} style={{ fontFamily: "'Kanit', sans-serif" }}>
-                        <FormControl fullWidth variant="outlined" style={{ marginBottom: '16px' }}>
-                            <InputLabel>ประเภทโรงพยาบาล</InputLabel>
-                            <Select
-                                value={hospitalType}
-                                onChange={(e) => setHospitalType(e.target.value)}
-                                label="ประเภทโรงพยาบาล"
-                            >
-                                <MenuItem value="โรงพยาบาลรัฐ">โรงพยาบาลรัฐ</MenuItem>
-                                <MenuItem value="โรงพยาบาลเอกชน">โรงพยาบาลเอกชน</MenuItem>
-                            </Select>
-                        </FormControl>
+                <Box display="flex" flexDirection="column" gap={2} style={{ fontFamily: "'Kanit', sans-serif" }}>
+                    <FormControl fullWidth variant="outlined">
+                        <InputLabel>ประเภทโรงพยาบาล</InputLabel>
+                        <Select
+                            value={hospitalType}
+                            onChange={(e) => setHospitalType(e.target.value)}
+                            label="ประเภทโรงพยาบาล"
+                        >
+                            <MenuItem value="โรงพยาบาลรัฐ">โรงพยาบาลรัฐ</MenuItem>
+                            <MenuItem value="โรงพยาบาลเอกชน">โรงพยาบาลเอกชน</MenuItem>
+                        </Select>
+                    </FormControl>
 
+                    <TextField
+                        fullWidth
+                        label="ชื่อโรงพยาบาล"
+                        variant="outlined"
+                        value={hospitalName}
+                        onChange={(e) => setHospitalName(e.target.value)}
+                    />
+
+                    {tokenList.map((token, index) => (
+                    <Box key={index} display="flex" alignItems="center" gap={1}>
                         <TextField
                             fullWidth
-                            label="ชื่อโรงพยาบาล"
-                            variant="outlined"
-                            value={hospitalName}
-                            onChange={(e) => setHospitalName(e.target.value)}
-                        />
-
-                        <TextField
-                            fullWidth
-                            label="Token"
+                            label={`Mail ${index + 1}`}
                             variant="outlined"
                             value={token}
-                            onChange={(e) => setToken(e.target.value)}
+                            onChange={(e) => {
+                                const newTokens = [...tokenList];
+                                newTokens[index] = e.target.value;
+                                setTokenList(newTokens);
+                            }}
                         />
-                    </Box>
+                        <IconButton
+                            onClick={() => {
+                                const newTokens = tokenList.filter((_, i) => i !== index);
+                                setTokenList(newTokens);
+                            }}
+                                        color="error"
+                                    >
+                                        <CloseIcon />
+                                    </IconButton>
+                                </Box>
+                        ))}
+                <Button
+                    variant="outlined"
+                    onClick={() => setTokenList([...tokenList, ''])}
+                    style={{ fontFamily: "'Kanit', sans-serif", marginTop: '8px', alignSelf: 'flex-start' }}
+                >
+                    + เพิ่ม Mail
+                </Button>
+            </Box>
                 </DialogContent>
-
                 <DialogActions>
                     <Button onClick={handleClosePopup} color="secondary" style={{ fontFamily: "'Kanit', sans-serif" }}>
                         ยกเลิก
@@ -956,6 +982,7 @@ const Hospital_News = () => {
                     </Snackbar>
                 </DialogActions>
             </Dialog>
+            {/* ------------------------------------------------------------------------------------------------------------------------ */}
             <Dialog open={isListPopupOpen} onClose={handleCloseListPopup} maxWidth="md" fullWidth>
                 <DialogTitle>
                     <Typography
