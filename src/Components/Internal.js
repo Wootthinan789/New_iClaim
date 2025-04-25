@@ -353,7 +353,7 @@ const Internal = () => {
       const token = keyIds.find((hospital) => hospital.id === id_hospital)?.token;
 
       const selectedCheckbox = {
-        id_hospital: id_hospital,
+        id_hospital: `${id_hospital}-External1`,
         img_7_Array: img_7_Array,
         token: token,
         user_name: usernameJson.username,
@@ -406,7 +406,7 @@ const handleSelectAllCheckboxChange = (event) => {
     const { id_hospital, img_7: img_7_Array, title } = country;
     const token = keyIds.find((hospital) => hospital.id === id_hospital)?.token;
     return {
-      id_hospital,
+      id_hospital: `${id_hospital}-External1`,
       img_7_Array,
       token,
       user_name: usernameJson.username,

@@ -152,7 +152,7 @@ const Profile = () => {
     }
     setSelectedCheckboxes({});
     setOpenModal(false);
-    //window.location.reload();
+    window.location.reload();
   };
   const handleOpenUserMenu = (event) => {
     setAnchorElUser(event.currentTarget);
@@ -303,7 +303,7 @@ const Profile = () => {
       const token = keyIds.find((hospital) => hospital.id === id_hospital)?.token;
 
       const selectedCheckbox = {
-        id_hospital: id_hospital,
+        id_hospital: `${id_hospital}-External2`,
         img_6_Array: img_6_Array,
         token: token,
         user_name: usernameJson.username,
@@ -355,7 +355,7 @@ const handleSelectAllCheckboxChange = (event) => {
     const { id_hospital, img_6: img_6_Array, title } = country;
     const token = keyIds.find((hospital) => hospital.id === id_hospital)?.token;
     return {
-      id_hospital,
+      id_hospital : `${id_hospital}-External2`,
       img_6_Array,
       token,
       user_name: usernameJson.username,
