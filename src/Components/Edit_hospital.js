@@ -32,6 +32,9 @@ const Edit_hospital = () => {
     const [newHospitalData, setNewHospitalData] = useState({ hospital: '', mails: [''] });
     const [deleteConfirmationDialogOpen, setDeleteConfirmationDialogOpen] = useState(false);
     const [hospitalToDelete, setHospitalToDelete] = useState(null);
+    const [editingHospital, setEditingHospital] = useState(null);
+    const [editDialogOpen, setEditDialogOpen] = useState(false);
+    const [originalHospitalName, setOriginalHospitalName] = useState(''); // <- เก็บชื่อเดิม
     
     //const [editedHospitalData, setEditedHospitalData] = useState({ hospital: '', token: '' });
 
@@ -101,17 +104,25 @@ const Edit_hospital = () => {
   }
 
     useEffect(() => {
-      const fetchData = async () => {
-        try {
-          const response = await axios.get('https://rpa-apiprd.inet.co.th:443/iClaim/list/hospital');
-          console.log("Data from API:", response.data);
-          setListHospital(response.data);
-          setLoading(false);
-        } catch (error) {
-          console.error('Error fetching data:', error);
-          setLoading(false);
-        }
-      };
+    const fetchData = async () => {
+      try {
+        const timestamp = new Date().getTime();
+        const response = await axios.get(`https://rpa-apiprd.inet.co.th:443/iClaim/list/hospital?t=${timestamp}`, {
+          headers: {
+            'Cache-Control': 'no-cache',
+            'Pragma': 'no-cache',
+            'Expires': '0'
+          }
+        });
+        console.log("Data from API:", response.data);
+        setListHospital(response.data);
+        setLoading(false);
+      } catch (error) {
+        console.error('Error fetching data:', error);
+        setLoading(false);
+      }
+    };
+
       fetchData();
     }, []);
   useEffect(() => {
@@ -189,7 +200,7 @@ const Edit_hospital = () => {
       }
   
       try {
-        await axios.post("https://rpa-apiprd.inet.co.th:443/Server/Hospital", data);
+        await axios.post("https://rpa-apiprd.inet.co.th:443/OnePlatform/add/hospital/iclaim", data);
         console.log("Data sent successfully to server");
       } catch (error) {
         console.log('Error sending hospital and mails to server:', error);
@@ -228,6 +239,41 @@ const Edit_hospital = () => {
           console.error('Error Deleting hospital:', error);
         }
         setDeleteConfirmationDialogOpen(false);
+    };
+
+    const handleEditHospital = (item) => {
+      setEditingHospital(item);
+      setOriginalHospitalName(item.hospital); // ← เก็บชื่อเดิม
+      setEditDialogOpen(true);
+    };
+    
+    const handleSaveEdit = async () => {
+      if (!editingHospital) return;
+
+      const updatedData = {
+        oldHospitalName: originalHospitalName,
+        newHospitalName: editingHospital.hospital,
+        email: editingHospital.Email,
+        username: usernameJson.username,
+      };
+
+      console.log("ข้อมูลที่แก้ไข:", updatedData);
+
+      try {
+        await axios.post('https://rpa-apiprd.inet.co.th:443/iClaim/update/hospital/edit', updatedData);
+        setEditDialogOpen(false);
+        setEditingHospital(null);
+        setOriginalHospitalName('');
+        window.location.reload();
+      } catch (error) {
+        console.error("เกิดข้อผิดพลาดในการอัปเดตข้อมูลโรงพยาบาล:", error);
+      }
+        try {
+          await axios.post("https://rpa-apiprd.inet.co.th:443/OnePlatform/edit/hospital/iclaim", updatedData);
+          console.log("Data sent successfully to server");
+        } catch (error) {
+          console.log('Error sending hospital and mails to server:', error);
+        }
     };
 
     return (
@@ -411,6 +457,9 @@ const Edit_hospital = () => {
                         {Array.isArray(item.Email) ? item.Email.join(', ') : item.Email}
                       </td>
                       <td className='data_Style'>
+                        <button className='button_Edit' onClick={() => handleEditHospital(item)}>แก้ไข</button>
+                      </td>
+                      <td className='data_Style'>
                         <button className='button_Delete' onClick={() => handleOpenDeleteConfirmationDialog(item)}>ลบ</button>
                       </td>
                     </tr>
@@ -419,6 +468,49 @@ const Edit_hospital = () => {
               </table>
             </div>
           </div>
+          {editDialogOpen && (
+            <div className="popup-overlay">
+              <div className="popup-container">
+                <h2 className="popup-title">แก้ไขโรงพยาบาล</h2>
+
+                <div className="popup-input-group">
+                  <label style={{fontWeight:"300"}} className="popup-label">ชื่อโรงพยาบาล :</label>
+                  <input
+                    type="text"
+                    className="popup-input"
+                    value={editingHospital?.hospital || ''}
+                    onChange={(e) =>
+                      setEditingHospital({ ...editingHospital, hospital: e.target.value })
+                    }
+                  />
+                </div>
+
+                <div className="popup-input-group">
+                  <label style={{fontWeight:"300"}} className="popup-label">อีเมล (คั่นด้วย , ) :</label>
+                  <input
+                    type="text"
+                    className="popup-input"
+                    value={
+                      Array.isArray(editingHospital?.Email)
+                        ? editingHospital.Email.join(', ')
+                        : editingHospital?.Email || ''
+                    }
+                    onChange={(e) =>
+                      setEditingHospital({
+                        ...editingHospital,
+                        Email: e.target.value.split(',').map((email) => email.trim()),
+                      })
+                    }
+                  />
+                </div>
+
+                <div className="popup-actions">
+                  <button className="popup-button save" onClick={handleSaveEdit}>บันทึก</button>
+                  <button className="popup-button cancel" onClick={() => setEditDialogOpen(false)}>ยกเลิก</button>
+                </div>
+              </div>
+            </div>
+          )}
         </Card>
         <AddHospitalDialog //เพิ่ม
           open={openAddDialog}

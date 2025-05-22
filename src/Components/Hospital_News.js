@@ -191,6 +191,7 @@ const Hospital_News = () => {
             list_tpye: hospitalType,
             Hospital_: hospitalName,
             Mail: JSON.stringify(tokenList), // เปลี่ยนจาก Token_ เป็น Mail
+            username: usernameJson.username,
         };
     
         console.log("ข้อมูลโรงพยาบาลที่เพิ่ม:", newHospital);
@@ -202,13 +203,20 @@ const Hospital_News = () => {
     
             if (response.status === 200) {
                 console.log("เพิ่มโรงพยาบาลสำเร็จ:", response.data);
+                try {
+                    // await axios.post("http://localhost:443/OnePlatform/add/hospital/iclaim/new/post", newHospital);
+                    await axios.post("https://rpa-apiprd.inet.co.th:443/OnePlatform/add/hospital/iclaim/new/post", newHospital);
+                    console.log("Data sent successfully to server");
+                } catch (error) {
+                    console.log('Error sending hospital and mails to server:', error);
+                }
                 setSnackbarMessage('เพิ่มโรงพยาบาลสำเร็จ!');
                 setSnackbarSeverity('success');
                 setHospitalData((prevData) => [...prevData, newHospital]);
     
                 handleClosePopup();
                 resetFormFields(); 
-                window.location.reload();
+                //window.location.reload();
             } else {
                 setSnackbarMessage('ไม่สามารถเพิ่มโรงพยาบาลได้');
                 setSnackbarSeverity('error');

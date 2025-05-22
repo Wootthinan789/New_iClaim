@@ -287,7 +287,7 @@ const Internal = () => {
         });
   
         // await axios.post("http://localhost:443/send-message/uat", data);
-        await axios.post("https://rpa-apiprd.inet.co.th:443/prd/send-message/mail", data);
+         await axios.post("https://rpa-apiprd.inet.co.th:443/prd/send-message/mail", data);
         console.log("Data sent successfully send message");
   
         await Promise.all(logPromises);
